@@ -4,19 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GhostlyDesk</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='12' fill='%23C9A84C'/><text y='.9em' font-size='80' x='10' font-family='serif' font-weight='bold' fill='%23000'>G</text></svg>">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-:root {
+:root{
   --black:#080808;--panel:#101010;--panel2:#161616;--panel3:#1E1E1E;
   --cell:#1A1A1A;--cell-border:#2E2E2E;--cell-border-bright:#3E3E3E;
   --gold:#C9A84C;--gold-bright:#E8C96A;--white:#F2F2F2;--white2:#C0C0C0;--white3:#707070;
   --green:#00C853;--amber:#FFB300;--red:#FF3D00;--blue:#00B0FF;
   --purple:#9C27B0;--purple-bright:#CE93D8;--purple-glow:rgba(156,39,176,0.2);
-  --sw:52px;--so:214px;
+  --sw:52px;--so:220px;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
 body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white);}
+
+/* LOGIN */
+.login-screen{position:fixed;inset:0;background:var(--black);z-index:999;display:flex;align-items:center;justify-content:center;}
+.login-screen.hidden{display:none;}
+.login-box{background:var(--panel);border:1px solid var(--cell-border);border-top:3px solid var(--gold);border-radius:2px;padding:36px;width:380px;max-width:92vw;}
+.login-logo{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:700;color:var(--gold-bright);letter-spacing:.25em;text-transform:uppercase;margin-bottom:4px;}
+.login-sub{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);margin-bottom:28px;font-family:'Barlow Condensed',sans-serif;}
+.login-field{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.login-field label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.login-field input{background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:10px 12px;font-family:'Rajdhani',sans-serif;font-size:14px;color:var(--white);outline:none;transition:border-color .12s;}
+.login-field input:focus{border-color:var(--gold);}
+.login-err{font-size:10px;color:var(--red);margin-bottom:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em;display:none;}
+.login-btn{width:100%;background:var(--gold);color:var(--black);border:none;padding:12px;font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border-radius:2px;margin-top:8px;transition:background .12s;}
+.login-btn:hover{background:var(--gold-bright);}
+
+/* TICKER */
+.ticker-wrap{height:30px;background:var(--panel);border-bottom:1px solid var(--cell-border);overflow:hidden;position:fixed;top:52px;left:0;right:0;z-index:200;display:flex;align-items:center;}
+.ticker-label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);padding:0 12px;border-right:1px solid var(--cell-border);white-space:nowrap;font-family:'Barlow Condensed',sans-serif;flex-shrink:0;}
+.ticker-track{display:flex;animation:ticker 60s linear infinite;align-items:center;}
+.ticker-track:hover{animation-play-state:paused;}
+.ticker-item{display:flex;align-items:center;gap:8px;padding:0 24px;white-space:nowrap;border-right:1px solid var(--cell-border);height:30px;}
+.ti-name{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;color:var(--white2);letter-spacing:.06em;text-transform:uppercase;}
+.ti-ref{font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--white3);}
+.ti-price{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;color:var(--white);}
+.ti-change{font-family:'JetBrains Mono',monospace;font-size:10px;}
+.ti-change.up{color:var(--green);}.ti-change.down{color:var(--red);}.ti-change.flat{color:var(--white3);}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* TOPBAR */
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 0;height:52px;background:var(--panel);border-bottom:2px solid var(--gold);position:fixed;top:0;left:0;right:0;z-index:300;}
 .tb-left{display:flex;align-items:center;height:100%;}
 .tb-logo-wrap{width:var(--sw);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--cell-border);flex-shrink:0;}
@@ -26,21 +56,26 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 .tb-tag{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--white3);}
 .tb-right{display:flex;align-items:center;gap:20px;}
 .tb-clock{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--white2);}
+.tb-dealer{font-family:'Barlow Condensed',sans-serif;font-size:11px;color:var(--white3);letter-spacing:.1em;text-transform:uppercase;}
 .status-pill{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);}
 .sdot{width:6px;height:6px;border-radius:50%;background:var(--purple-bright);box-shadow:0 0 10px var(--purple);animation:blink 2s infinite;}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.app{display:flex;height:calc(100vh - 52px);margin-top:52px;}
-.sidebar{width:var(--sw);min-width:var(--sw);background:var(--panel);border-right:1px solid var(--cell-border);display:flex;flex-direction:column;padding:8px 0;transition:width .2s cubic-bezier(.4,0,.2,1);overflow:hidden;flex-shrink:0;}
+.tb-logout{font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--white3);cursor:pointer;padding:4px 8px;border:1px solid var(--cell-border);border-radius:2px;transition:all .12s;}
+.tb-logout:hover{color:var(--white);border-color:var(--white3);}
+
+/* LAYOUT */
+.app{display:flex;height:calc(100vh - 82px);margin-top:82px;}
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--panel);border-right:1px solid var(--cell-border);display:flex;flex-direction:column;padding:8px 0;transition:width .2s cubic-bezier(.4,0,.2,1);overflow:hidden;flex-shrink:0;overflow-y:auto;}
 .sidebar:hover{width:var(--so);}
 .sidebar:hover .nlabel,.sidebar:hover .ntext,.sidebar:hover .nbadge{opacity:1;}
-.sidebar:hover .ntext{max-width:150px;}
+.sidebar:hover .ntext{max-width:160px;}
 .ngroup{padding:0 6px;margin-bottom:2px;}
 .nlabel{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);padding:5px 8px 3px;opacity:0;transition:opacity .15s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;}
-.nitem{display:flex;align-items:center;gap:8px;padding:8px 8px;border-radius:2px;cursor:pointer;color:var(--white3);transition:all .12s;border-left:2px solid transparent;white-space:nowrap;}
+.nitem{display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:2px;cursor:pointer;color:var(--white3);transition:all .12s;border-left:2px solid transparent;white-space:nowrap;}
 .nitem:hover{background:var(--panel2);color:var(--white);}
 .nitem.active{background:var(--purple-glow);color:var(--purple-bright);border-left-color:var(--purple-bright);}
-.nico{font-size:14px;width:20px;min-width:20px;text-align:center;flex-shrink:0;}
-.ntext{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:0;max-width:0;overflow:hidden;transition:opacity .15s,max-width .15s;white-space:nowrap;}
+.nico{font-size:13px;width:20px;min-width:20px;text-align:center;flex-shrink:0;}
+.ntext{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:0;max-width:0;overflow:hidden;transition:opacity .15s,max-width .15s;white-space:nowrap;}
 .nbadge{margin-left:auto;background:var(--purple);color:var(--white);font-size:8px;font-weight:700;padding:2px 5px;border-radius:2px;opacity:0;transition:opacity .15s;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
 .ndiv{height:1px;background:var(--cell-border);margin:6px 8px;}
 .main{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--black);}
@@ -48,174 +83,273 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 .panel{display:none;animation:fin .15s ease;}
 .panel.active{display:block;}
 @keyframes fin{from{opacity:0}to{opacity:1}}
-.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--cell-border);background:var(--panel);}
+
+/* PAGE HEADER */
+.ph{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;border-bottom:1px solid var(--cell-border);background:var(--panel);flex-wrap:wrap;gap:8px;}
 .ph-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;}
 .ph-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--white3);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
 .ph-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+
+/* BUTTONS */
 .btn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;border-radius:2px;cursor:pointer;transition:all .12s;border:none;display:inline-flex;align-items:center;gap:5px;}
 .btn-gold{background:var(--gold);color:var(--black);}.btn-gold:hover{background:var(--gold-bright);}
 .btn-purple{background:var(--purple);color:var(--white);}.btn-purple:hover{background:#7B1FA2;}
+.btn-green{background:var(--green);color:var(--black);}.btn-green:hover{filter:brightness(1.1);}
 .btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold);}.btn-outline:hover{background:rgba(201,168,76,.08);}
 .btn-ghost{background:transparent;color:var(--white2);border:1px solid var(--cell-border-bright);}.btn-ghost:hover{color:var(--white);border-color:var(--white3);}
 .btn-danger{background:transparent;color:var(--red);border:1px solid rgba(255,61,0,.3);}.btn-danger:hover{background:rgba(255,61,0,.08);}
 .btn-sm{padding:4px 8px;font-size:10px;}
-.search-bar{display:flex;align-items:center;gap:0;background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
-.search-bar input{background:transparent;border:none;padding:7px 12px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;width:220px;}
+
+/* KPI */
+.kpi-strip{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--cell-border);}
+.kpi{padding:12px 14px;border-right:1px solid var(--cell-border);background:var(--cell);border-top:2px solid transparent;}
+.kpi:last-child{border-right:none;}
+.kpi.hl{border-top-color:var(--purple);}
+.kpi.hl .kpi-v{color:var(--purple-bright);}
+.kpi-l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);margin-bottom:5px;font-family:'Barlow Condensed',sans-serif;}
+.kpi-v{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white);line-height:1;}
+.kpi-n{font-size:9px;color:var(--white3);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
+.up{color:var(--green);}.down{color:var(--red);}
+
+/* SEARCH */
+.search-bar{display:flex;align-items:center;background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
+.search-bar input{background:transparent;border:none;padding:7px 12px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;width:200px;}
 .search-bar input::placeholder{color:var(--white3);}
 .search-icon{padding:0 10px;color:var(--white3);font-size:14px;}
-.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--cell-border);}
-.kpi{padding:14px 16px;border-right:1px solid var(--cell-border);background:var(--cell);border-top:2px solid transparent;}
-.kpi:last-child{border-right:none;}
-.kpi.hl{border-top-color:var(--purple);box-shadow:0 0 16px rgba(156,39,176,.1);}
-.kpi.hl .kpi-v{color:var(--purple-bright);}
-.kpi-l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;}
-.kpi-v{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--white);line-height:1;}
-.kpi-n{font-size:10px;color:var(--white3);margin-top:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;}
-.up{color:var(--green);}.down{color:var(--red);}
-.sw{padding:0 20px 20px;}
-.sh{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 10px;background:var(--panel);border-bottom:1px solid var(--cell-border);}
-.sh-t{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+
+/* TABLE */
 .tbl-wrap{overflow-x:auto;}
 .tbl{width:100%;border-collapse:collapse;font-size:12px;}
-.tbl th{text-align:left;padding:8px 12px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);border-bottom:1px solid var(--cell-border);font-weight:600;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;background:var(--cell);}
-.tbl td{padding:10px 12px;border-bottom:1px solid rgba(46,46,46,.8);color:var(--white2);vertical-align:middle;background:var(--panel);}
+.tbl th{text-align:left;padding:8px 10px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);border-bottom:1px solid var(--cell-border);font-weight:600;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;background:var(--cell);}
+.tbl td{padding:9px 10px;border-bottom:1px solid rgba(46,46,46,.8);color:var(--white2);vertical-align:middle;background:var(--panel);}
 .tbl tr:hover td{background:var(--cell);color:var(--white);}
 .mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple-bright);}
-.bold{font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;}
-.editable{background:transparent;border:none;color:var(--white2);font-family:'JetBrains Mono',monospace;font-size:11px;width:80px;outline:none;padding:2px 4px;border-radius:2px;transition:background .12s;text-align:right;}
+.bold{font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:13px;}
+.editable{background:transparent;border:none;color:var(--white2);font-family:'JetBrains Mono',monospace;font-size:11px;width:75px;outline:none;padding:2px 4px;border-radius:2px;transition:background .12s;text-align:right;}
 .editable:focus{background:var(--panel3);color:var(--white);}
-.editable-text{background:transparent;border:none;color:var(--white2);font-family:'Rajdhani',sans-serif;font-size:12px;outline:none;padding:2px 4px;border-radius:2px;transition:background .12s;width:100%;}
-.editable-text:focus{background:var(--panel3);color:var(--white);}
-.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;}
+
+/* BADGES */
+.badge{display:inline-block;padding:2px 6px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;}
 .b-av{background:rgba(0,200,83,.1);color:var(--green);border:1px solid rgba(0,200,83,.3);}
 .b-res{background:rgba(156,39,176,.12);color:var(--purple-bright);border:1px solid rgba(156,39,176,.35);}
 .b-sold{background:rgba(255,61,0,.1);color:var(--red);border:1px solid rgba(255,61,0,.3);}
+.b-con{background:rgba(0,176,255,.1);color:var(--blue);border:1px solid rgba(0,176,255,.3);}
+.b-src{background:rgba(255,179,0,.1);color:var(--amber);border:1px solid rgba(255,179,0,.3);}
 .b-vip{background:rgba(201,168,76,.12);color:var(--gold-bright);border:1px solid var(--gold);}
 .b-new{background:rgba(156,39,176,.12);color:var(--purple-bright);border:1px solid rgba(156,39,176,.3);}
 .b-wait{background:rgba(156,39,176,.1);color:var(--purple-bright);border:1px solid rgba(156,39,176,.3);}
 .mpill{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
 .mpill.g{color:var(--green);}.mpill.o{color:var(--amber);}.mpill.r{color:var(--red);}
+
+/* VIEW TOGGLE */
 .vtoggle{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
 .vt{padding:6px 12px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;font-family:'Barlow Condensed',sans-serif;}
 .vt:last-child{border-right:none;}.vt.active{background:var(--purple);color:var(--white);}
-.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:16px 20px;}
-.wcard{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;transition:all .12s;}
+
+/* CARDS */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;padding:14px 20px;}
+.wcard{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:0;transition:all .12s;overflow:hidden;}
 .wcard:hover{border-top-color:var(--purple);}
+.wcard-img{width:100%;height:140px;object-fit:cover;background:var(--panel2);display:flex;align-items:center;justify-content:center;color:var(--white3);font-size:11px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;}
+.wcard-img img{width:100%;height:140px;object-fit:cover;}
+.wcard-body{padding:12px;}
 .wc-ref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);margin-bottom:3px;}
-.wc-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white);text-transform:uppercase;margin-bottom:10px;}
-.wc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
-.wc-l{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.wc-name{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);text-transform:uppercase;margin-bottom:8px;}
+.wc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;}
+.wc-l{font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
 .wc-v{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);}
-.wc-p{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--green);}
-.wc-ft{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--cell-border);}
-.wc-actions{display:flex;gap:5px;margin-top:10px;}
-.val-blended{background:var(--cell);border:2px solid var(--gold);border-radius:2px;padding:18px;text-align:center;margin-bottom:14px;}
-.vb-l{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);margin-bottom:7px;font-family:'Barlow Condensed',sans-serif;}
-.vb-p{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:600;color:var(--gold-bright);}
-.vb-r{font-size:11px;color:var(--white3);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
-.val-sources{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
-.vsrc{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:12px;}
-.vsrc.best{border-top-color:var(--gold);}
-.vsrc.best-green{border-top-color:var(--green);}
-.vsrc.best-red{border-top-color:var(--red);}
-.vs-n{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;}
-.vs-p{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--white);}
-.vs-r{font-size:9px;color:var(--white3);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
-.vs-live{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--purple-bright);margin-top:5px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
-.vs-dot{width:4px;height:4px;border-radius:50%;background:var(--purple-bright);animation:blink 1.5s infinite;}
-.fs{background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;padding:16px;margin-bottom:12px;}
-.fs-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
-.fs-sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--white3);margin-bottom:13px;font-family:'Barlow Condensed',sans-serif;}
-.fg{display:grid;gap:10px;margin-bottom:10px;}
-.fg2{grid-template-columns:1fr 1fr;}.fg3{grid-template-columns:1fr 1fr 1fr;}
-.field{display:flex;flex-direction:column;gap:4px;}
-.field label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
-.field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:8px 10px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;transition:border-color .12s;}
-.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple);}
-.field select option{background:var(--panel2);}
-.field textarea{resize:vertical;min-height:70px;line-height:1.5;}
-.voice-bar{display:flex;align-items:center;gap:12px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:12px 16px;margin-bottom:12px;}
-.vbtn{width:36px;height:36px;border-radius:50%;background:var(--purple);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .15s;box-shadow:0 0 12px rgba(156,39,176,.4);}
-.vbtn:hover{background:#7B1FA2;transform:scale(1.06);}
-.vbtn.rec{background:var(--red);animation:vp .8s infinite;}
-@keyframes vp{0%,100%{box-shadow:0 0 0 rgba(255,61,0,.4)}50%{box-shadow:0 0 20px rgba(255,61,0,.8)}}
-.vinfo{flex:1;}.vinfo-t{font-size:12px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;}.vinfo-s{font-size:10px;color:var(--white3);margin-top:1px;}
-.vout{flex:2;background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:7px 10px;font-size:10px;color:var(--white3);font-style:italic;min-height:34px;font-family:'JetBrains Mono',monospace;}
-.wish-card{display:flex;align-items:center;gap:12px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--cell-border);border-radius:2px;padding:12px 16px;margin-bottom:7px;transition:all .12s;}
-.wish-card:hover{border-left-color:var(--purple);}
-.wav{width:32px;height:32px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--purple-bright);flex-shrink:0;font-family:'Barlow Condensed',sans-serif;}
-.winfo{flex:1;}.wname{font-size:13px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}.wwatch{font-size:10px;color:var(--white3);margin-top:2px;}.wref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);}
-.wbudget{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--white);text-align:right;}
-.wblabel{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
-.wish-actions{display:flex;gap:5px;margin-left:8px;}
-.match-alert{display:flex;align-items:center;gap:9px;background:rgba(0,200,83,.06);border:1px solid rgba(0,200,83,.25);border-left:3px solid var(--green);border-radius:2px;padding:10px 14px;margin-bottom:9px;animation:sd .25s ease;}
-@keyframes sd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-.madot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green);}
-.matext{font-size:11px;color:var(--green);line-height:1.5;font-family:'Barlow Condensed',sans-serif;}
-.client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:16px 20px;}
-.ccrd{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;transition:all .12s;cursor:pointer;}
-.ccrd:hover{border-top-color:var(--purple);}
-.ccrd.vip-ring{border-top-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(201,168,76,.1);}
-.cc-top{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
-.ccav{width:34px;height:34px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--purple-bright);}
-.ccname{font-size:13px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}.ccphone{font-size:9px;color:var(--white3);font-family:'JetBrains Mono',monospace;}
-.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
-.ccstat{background:var(--panel2);border-radius:2px;padding:7px 9px;border:1px solid var(--cell-border);}
-.ccsl{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
-.ccsv{font-size:12px;font-weight:600;color:var(--white);margin-top:1px;font-family:'JetBrains Mono',monospace;}
-.stage-sel{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
-.sopt{padding:4px 8px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
-.sopt:last-child{border-right:none;}.sopt.active{background:var(--purple);color:var(--white);}
-.sopt:hover:not(.active){background:var(--panel2);color:var(--white);}
-.trade-steps{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;margin-bottom:14px;}
-.ts{flex:1;padding:8px 12px;text-align:center;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
-.ts:last-child{border-right:none;}.ts.active{background:var(--purple);color:var(--white);}
-.photo-drop{border:1px dashed var(--purple);border-radius:2px;padding:24px;text-align:center;cursor:pointer;transition:all .12s;background:rgba(156,39,176,.02);}
-.photo-drop:hover{background:rgba(156,39,176,.06);}
-.pd-icon{font-size:24px;margin-bottom:8px;opacity:.4;}
-.pd-text{font-size:11px;color:var(--white3);line-height:1.6;font-family:'Barlow Condensed',sans-serif;}
-.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
-.pthumb{aspect-ratio:1;border-radius:2px;overflow:hidden;border:1px solid var(--cell-border);background:var(--panel2);}
-.pthumb img{width:100%;height:100%;object-fit:cover;}
-.link-box{background:var(--panel2);border:1px solid var(--purple);border-radius:2px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);display:flex;align-items:center;justify-content:space-between;gap:10px;}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(2px);z-index:500;display:none;align-items:center;justify-content:center;}
-.overlay.open{display:flex;}
-.modal{background:var(--panel);border:1px solid var(--cell-border);border-top:2px solid var(--purple);border-radius:2px;padding:22px;width:520px;max-width:92vw;max-height:90vh;overflow-y:auto;animation:mi .15s ease;}
-@keyframes mi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
-.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
-.modal-sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--white3);margin-bottom:16px;font-family:'Barlow Condensed',sans-serif;}
-.modal-ft{display:flex;gap:9px;justify-content:flex-end;margin-top:14px;}
-.notif{position:fixed;bottom:16px;right:16px;background:var(--panel2);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:11px 14px;display:flex;align-items:flex-start;gap:9px;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s ease;max-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.6);}
-.notif.show{transform:translateY(0);opacity:1;}
-.ni{font-size:14px;flex-shrink:0;margin-top:1px;}
-.nb{flex:1;}.nt{font-size:11px;font-weight:700;color:var(--white);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;}.nm{font-size:10px;color:var(--white3);line-height:1.4;}
+.wc-p{font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--green);}
+.wc-ft{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--cell-border);}
+.wc-actions{display:flex;gap:5px;margin-top:8px;}
+
+/* SECTION */
+.sw{padding:0 20px 20px;}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:10px 20px;background:var(--panel);border-bottom:1px solid var(--cell-border);}
+.sh-t{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+
+/* ACTIVITY */
 .act-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--cell-border);}
 .ai-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
 .ai-dot.g{background:var(--green);box-shadow:0 0 6px var(--green);}
 .ai-dot.pu{background:var(--purple-bright);box-shadow:0 0 6px var(--purple);}
 .ai-dot.b{background:var(--blue);}
+.ai-dot.r{background:var(--red);}
 .ai-text{flex:1;font-size:12px;color:var(--white2);}
 .ai-text strong{color:var(--white);font-weight:700;}
 .ai-time{font-size:10px;color:var(--white3);white-space:nowrap;font-family:'JetBrains Mono',monospace;}
+
+/* FORM */
+.fs{background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;padding:14px;margin-bottom:10px;}
+.fs-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.fs-sub{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);margin-bottom:12px;font-family:'Barlow Condensed',sans-serif;}
+.fg{display:grid;gap:8px;margin-bottom:8px;}
+.fg2{grid-template-columns:1fr 1fr;}.fg3{grid-template-columns:1fr 1fr 1fr;}.fg4{grid-template-columns:1fr 1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:3px;}
+.field label{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;transition:border-color .12s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple);}
+.field select option{background:var(--panel2);}
+.field textarea{resize:vertical;min-height:60px;line-height:1.5;}
+
+/* VOICE */
+.voice-bar{display:flex;align-items:center;gap:12px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:10px 14px;margin-bottom:10px;}
+.vbtn{width:34px;height:34px;border-radius:50%;background:var(--purple);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .15s;box-shadow:0 0 10px rgba(156,39,176,.4);}
+.vbtn:hover{background:#7B1FA2;}.vbtn.rec{background:var(--red);animation:vp .8s infinite;}
+@keyframes vp{0%,100%{box-shadow:0 0 0 rgba(255,61,0,.4)}50%{box-shadow:0 0 20px rgba(255,61,0,.8)}}
+.vinfo-t{font-size:11px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;}
+.vinfo-s{font-size:9px;color:var(--white3);margin-top:1px;}
+.vout{flex:2;background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:6px 10px;font-size:10px;color:var(--white3);font-style:italic;min-height:32px;font-family:'JetBrains Mono',monospace;}
+
+/* WISH */
+.wish-card{display:flex;align-items:center;gap:10px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--cell-border);border-radius:2px;padding:10px 14px;margin-bottom:6px;transition:all .12s;}
+.wish-card:hover{border-left-color:var(--purple);}
+.wav{width:30px;height:30px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--purple-bright);flex-shrink:0;font-family:'Barlow Condensed',sans-serif;}
+.winfo{flex:1;}
+.wname{font-size:12px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}
+.wwatch{font-size:10px;color:var(--white3);margin-top:1px;}
+.wref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);}
+.wbudget{font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:var(--white);text-align:right;}
+.wblabel{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.wish-actions{display:flex;gap:4px;margin-left:6px;}
+
+/* MATCH ALERT */
+.match-alert{display:flex;align-items:center;gap:8px;background:rgba(0,200,83,.06);border:1px solid rgba(0,200,83,.25);border-left:3px solid var(--green);border-radius:2px;padding:9px 12px;margin-bottom:8px;animation:sd .25s ease;}
+@keyframes sd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.madot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green);}
+.matext{font-size:11px;color:var(--green);line-height:1.5;font-family:'Barlow Condensed',sans-serif;}
+
+/* CLIENT CARDS */
+.client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px;padding:14px 20px;}
+.ccrd{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;transition:all .12s;cursor:pointer;}
+.ccrd:hover{border-top-color:var(--purple);}
+.ccrd.vip-ring{border-top-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 12px rgba(201,168,76,.1);}
+.cc-top{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ccav{width:32px;height:32px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;color:var(--purple-bright);}
+.ccname{font-size:12px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}
+.ccphone{font-size:9px;color:var(--white3);font-family:'JetBrains Mono',monospace;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:8px;}
+.ccstat{background:var(--panel2);border-radius:2px;padding:6px 8px;border:1px solid var(--cell-border);}
+.ccsl{font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.ccsv{font-size:11px;font-weight:600;color:var(--white);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+.cc-convo{background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:8px;margin-top:6px;}
+.cc-convo-msg{font-size:10px;color:var(--white2);line-height:1.5;font-style:italic;}
+.cc-convo-time{font-size:9px;color:var(--white3);margin-top:3px;font-family:'JetBrains Mono',monospace;}
+
+/* STAGE */
+.stage-sel{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
+.sopt{padding:3px 7px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+.sopt:last-child{border-right:none;}.sopt.active{background:var(--purple);color:var(--white);}
+.sopt:hover:not(.active){background:var(--panel2);color:var(--white);}
+
+/* VALUATION */
+.val-blended{background:var(--cell);border:2px solid var(--gold);border-radius:2px;padding:16px;text-align:center;margin-bottom:12px;}
+.vb-l{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;}
+.vb-p{font-family:'JetBrains Mono',monospace;font-size:36px;font-weight:600;color:var(--gold-bright);}
+.vb-r{font-size:10px;color:var(--white3);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
+.val-sources{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0;}
+.vsrc{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:10px;}
+.vsrc.best{border-top-color:var(--gold);}
+.vsrc.best-green{border-top-color:var(--green);}
+.vsrc.best-red{border-top-color:var(--red);}
+.vs-n{font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);margin-bottom:5px;font-family:'Barlow Condensed',sans-serif;}
+.vs-p{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white);}
+.vs-r{font-size:9px;color:var(--white3);margin-top:1px;font-family:'Barlow Condensed',sans-serif;}
+.vs-live{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--purple-bright);margin-top:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
+.vs-dot{width:4px;height:4px;border-radius:50%;background:var(--purple-bright);animation:blink 1.5s infinite;}
+
+/* TRADE IN */
+.trade-steps{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;margin-bottom:12px;}
+.ts{flex:1;padding:7px 10px;text-align:center;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+.ts:last-child{border-right:none;}.ts.active{background:var(--purple);color:var(--white);}
+.photo-drop{border:1px dashed var(--purple);border-radius:2px;padding:20px;text-align:center;cursor:pointer;background:rgba(156,39,176,.02);}
+.photo-drop:hover{background:rgba(156,39,176,.06);}
+.pd-icon{font-size:22px;margin-bottom:6px;opacity:.4;}
+.pd-text{font-size:11px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:8px;}
+.pthumb{aspect-ratio:1;border-radius:2px;overflow:hidden;border:1px solid var(--cell-border);background:var(--panel2);}
+.pthumb img{width:100%;height:100%;object-fit:cover;}
+.link-box{background:var(--panel2);border:1px solid var(--purple);border-radius:2px;padding:8px 12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+
+/* EXPORT */
+.export-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;padding:14px 20px;}
+.export-card{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;cursor:pointer;transition:all .12s;}
+.export-card:hover{border-top-color:var(--gold);}
+.export-card.purple{border-top-color:var(--purple);}
+.export-card.green{border-top-color:var(--green);}
+.export-card.amber{border-top-color:var(--amber);}
+.ec-icon{font-size:22px;margin-bottom:8px;}
+.ec-title{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;}
+.ec-sub{font-size:9px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;}
+
+/* CONSIGNMENT */
+.con-card{background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--blue);border-radius:2px;padding:12px 14px;margin-bottom:7px;transition:all .12s;}
+.con-card:hover{background:var(--panel2);}
+
+/* MODAL */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(2px);z-index:500;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--cell-border);border-top:2px solid var(--purple);border-radius:2px;padding:20px;width:600px;max-width:94vw;max-height:90vh;overflow-y:auto;animation:mi .15s ease;}
+.modal.wide{width:800px;}
+@keyframes mi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.modal-sub{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);margin-bottom:14px;font-family:'Barlow Condensed',sans-serif;}
+.modal-ft{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
+.modal-tabs{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;margin-bottom:14px;}
+.mtab{flex:1;padding:7px;text-align:center;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);font-family:'Barlow Condensed',sans-serif;transition:all .12s;}
+.mtab:last-child{border-right:none;}.mtab.active{background:var(--purple);color:var(--white);}
+
+/* NOTIFICATION */
+.notif{position:fixed;bottom:16px;right:16px;background:var(--panel2);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:10px 13px;display:flex;align-items:flex-start;gap:8px;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s ease;max-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.6);}
+.notif.show{transform:translateY(0);opacity:1;}
+.ni{font-size:13px;flex-shrink:0;margin-top:1px;}
+.nt{font-size:11px;font-weight:700;color:var(--white);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;}
+.nm{font-size:10px;color:var(--white3);line-height:1.4;}
+
+/* MARGIN CHART */
+.chart-kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
 </style>
 </head>
 <body>
 
-<div class="topbar">
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">GhostlyDesk</div>
+    <div class="login-sub">Dealer Intelligence Platform</div>
+    <div class="login-field"><label>Email</label><input type="email" id="login-email" placeholder="dealer@example.com"></div>
+    <div class="login-field"><label>Password</label><input type="password" id="login-pass" placeholder="••••••••"></div>
+    <div class="login-err" id="login-err">Invalid email or password</div>
+    <button class="login-btn" onclick="doLogin()">Sign In</button>
+  </div>
+</div>
+
+<!-- TICKER -->
+<div class="ticker-wrap" id="ticker-wrap" style="display:none">
+  <div class="ticker-label">◈ MARKET</div>
+  <div style="overflow:hidden;flex:1">
+    <div class="ticker-track" id="ticker-track"></div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar" id="topbar" style="display:none">
   <div class="tb-left">
     <div class="tb-logo-wrap"><div class="tb-logo">G</div></div>
     <div class="tb-brand">
-      <div class="tb-name">GhostlyIT</div>
+      <div class="tb-name">GhostlyDesk</div>
       <div class="tb-tag">Dealer Intelligence Platform</div>
     </div>
   </div>
   <div class="tb-right">
+    <div class="tb-dealer" id="tb-dealer"></div>
     <div class="tb-clock" id="clock"></div>
     <div class="status-pill"><div class="sdot"></div>System Live</div>
+    <div class="tb-logout" onclick="doLogout()">Sign Out</div>
   </div>
 </div>
 
-<div class="app">
+<div class="app" id="app-wrap" style="display:none">
+  <!-- SIDEBAR -->
   <div class="sidebar">
     <div class="ngroup">
       <div class="nlabel">Overview</div>
@@ -223,22 +357,28 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     </div>
     <div class="ngroup">
       <div class="nlabel">Inventory</div>
-      <div class="nitem" onclick="nav('stock',this)"><span class="nico">◈</span><span class="ntext">Stock</span><span class="nbadge" id="nb-stock">6</span></div>
+      <div class="nitem" onclick="nav('stock',this)"><span class="nico">◈</span><span class="ntext">Stock</span><span class="nbadge" id="nb-stock">0</span></div>
       <div class="nitem" onclick="nav('addstock',this)"><span class="nico">＋</span><span class="ntext">Add Stock</span></div>
       <div class="nitem" onclick="nav('margin',this)"><span class="nico">◫</span><span class="ntext">Margin Sheet</span></div>
+      <div class="nitem" onclick="nav('consignment',this)"><span class="nico">◐</span><span class="ntext">Consignment</span><span class="nbadge" id="nb-con">0</span></div>
     </div>
     <div class="ndiv"></div>
     <div class="ngroup">
       <div class="nlabel">Clients</div>
-      <div class="nitem" onclick="nav('wishlist',this)"><span class="nico">◎</span><span class="ntext">Wishlist</span><span class="nbadge" id="nb-wish">4</span></div>
+      <div class="nitem" onclick="nav('wishlist',this)"><span class="nico">◎</span><span class="ntext">Wishlist</span><span class="nbadge" id="nb-wish">0</span></div>
       <div class="nitem" onclick="nav('clients',this)"><span class="nico">◉</span><span class="ntext">Clients</span></div>
-      <div class="nitem" onclick="nav('leads',this)"><span class="nico">◌</span><span class="ntext">Live Leads</span><span class="nbadge" id="nb-leads">3</span></div>
+      <div class="nitem" onclick="nav('leads',this)"><span class="nico">◌</span><span class="ntext">Live Leads</span><span class="nbadge" id="nb-leads">0</span></div>
     </div>
     <div class="ndiv"></div>
     <div class="ngroup">
       <div class="nlabel">Valuation</div>
       <div class="nitem" onclick="nav('valuation',this)"><span class="nico">◑</span><span class="ntext">Market Value</span></div>
       <div class="nitem" onclick="nav('tradein',this)"><span class="nico">⟳</span><span class="ntext">Trade In</span></div>
+    </div>
+    <div class="ndiv"></div>
+    <div class="ngroup">
+      <div class="nlabel">Reports</div>
+      <div class="nitem" onclick="nav('reports',this)"><span class="nico">↓</span><span class="ntext">Export & Reports</span></div>
     </div>
   </div>
 
@@ -247,95 +387,195 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     <!-- DASHBOARD -->
     <div class="panel active" id="panel-dashboard">
       <div class="ph">
-        <div><div class="ph-title" id="greeting">Good Evening</div><div class="ph-sub" id="dealer-date">DEALER NAME</div></div>
+        <div><div class="ph-title" id="greeting">Good Evening</div><div class="ph-sub" id="dealer-date"></div></div>
       </div>
       <div class="kpi-strip">
-        <div class="kpi hl"><div class="kpi-l">Stock Value</div><div class="kpi-v">£312k</div><div class="kpi-n">6 watches</div></div>
-        <div class="kpi" style="border-top:2px solid var(--green)"><div class="kpi-l">Deals This Month</div><div class="kpi-v" style="color:var(--green)">4</div><div class="kpi-n up">↑ £94k closed</div></div>
-        <div class="kpi"><div class="kpi-l">Avg Margin</div><div class="kpi-v">24%</div><div class="kpi-n up">↑ Above target</div></div>
-        <div class="kpi" style="border-top:2px solid var(--amber)"><div class="kpi-l">Wishlists</div><div class="kpi-v" style="color:var(--amber)">4</div><div class="kpi-n">Buyers waiting</div></div>
-        <div class="kpi hl"><div class="kpi-l">New Leads</div><div class="kpi-v">3</div><div class="kpi-n up">Today</div></div>
+        <div class="kpi hl"><div class="kpi-l">Stock Value</div><div class="kpi-v" id="kpi-stockval">—</div><div class="kpi-n" id="kpi-stockcount">0 watches</div></div>
+        <div class="kpi" style="border-top:2px solid var(--green)"><div class="kpi-l">Deals This Month</div><div class="kpi-v" style="color:var(--green)" id="kpi-deals">—</div><div class="kpi-n" id="kpi-dealval"></div></div>
+        <div class="kpi"><div class="kpi-l">Avg Margin</div><div class="kpi-v" id="kpi-margin">—</div><div class="kpi-n" id="kpi-marginsub"></div></div>
+        <div class="kpi" style="border-top:2px solid var(--amber)"><div class="kpi-l">Wishlists</div><div class="kpi-v" style="color:var(--amber)" id="kpi-wish">—</div><div class="kpi-n">Buyers waiting</div></div>
+        <div class="kpi hl"><div class="kpi-l">New Leads</div><div class="kpi-v" id="kpi-leads">—</div><div class="kpi-n">Today</div></div>
+        <div class="kpi" style="border-top:2px solid var(--blue)"><div class="kpi-l">Consignment</div><div class="kpi-v" style="color:var(--blue)" id="kpi-con">—</div><div class="kpi-n" id="kpi-consub">Held</div></div>
       </div>
       <div class="sh"><div class="sh-t">Recent Activity</div></div>
-      <div class="sw" style="padding-top:14px">
-        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text"><strong>Connor MacLeod</strong> enquired — Rolex Daytona 126500LN · Budget £16k</div><div class="ai-time">12m ago</div></div>
-        <div class="act-item"><div class="ai-dot pu"></div><div class="ai-text">Wishlist match — <strong>Angus Fraser</strong> matched to AP Royal Oak 15500ST · SMS sent</div><div class="ai-time">1h ago</div></div>
-        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text">Deal closed — <strong>Robert MacPherson</strong> · Patek Nautilus 5711 · £34,000</div><div class="ai-time">3h ago</div></div>
-        <div class="act-item"><div class="ai-dot b"></div><div class="ai-text"><strong>Duncan Stewart</strong> submitted trade-in — Rolex GMT Master II 126710BLRO</div><div class="ai-time">Yesterday</div></div>
-        <div class="act-item"><div class="ai-dot pu"></div><div class="ai-text">Google review — 5 stars from <strong>James Wilson</strong> · "Exceptional service and knowledge"</div><div class="ai-time">Yesterday</div></div>
-        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text">Deal closed — <strong>Fiona Campbell</strong> · Tudor Black Bay 58 · £3,200</div><div class="ai-time">2d ago</div></div>
+      <div class="sw" style="padding-top:14px" id="activity-feed">
+        <div style="padding:24px;text-align:center;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px">No activity yet — activity appears here as leads come in and deals are made</div>
       </div>
     </div>
 
     <!-- STOCK -->
     <div class="panel" id="panel-stock">
       <div class="ph">
-        <div><div class="ph-title">Stock Inventory</div><div class="ph-sub">Live · <span id="sc-label">6</span> Watches</div></div>
+        <div><div class="ph-title">Stock Inventory</div><div class="ph-sub">Live · <span id="sc-label">0</span> Watches</div></div>
         <div class="ph-acts">
           <div class="vtoggle"><button class="vt active" onclick="stockView('table',this)">Table</button><button class="vt" onclick="stockView('cards',this)">Cards</button></div>
           <button class="btn btn-gold" onclick="nav('addstock',null)">+ Add Stock</button>
         </div>
       </div>
-      <div id="sv-table"><div class="tbl-wrap sw" style="padding-top:14px"><table class="tbl"><thead><tr><th>Reference</th><th>Brand / Model</th><th>Condition</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Asking</th><th style="text-align:right">Profit</th><th style="text-align:right">Margin</th><th>Days</th><th>Status</th><th></th></tr></thead><tbody id="stock-tbody"></tbody></table></div></div>
+      <div id="sv-table"><div class="tbl-wrap sw" style="padding-top:12px"><table class="tbl"><thead><tr><th></th><th>Reference</th><th>Brand / Model</th><th>Size</th><th>Condition</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Delivery</th><th style="text-align:right">Asking</th><th style="text-align:right">Profit</th><th style="text-align:right">Margin</th><th>Days</th><th>Status</th><th>Type</th><th></th></tr></thead><tbody id="stock-tbody"></tbody></table></div></div>
       <div id="sv-cards" style="display:none"><div class="cards-grid" id="stock-cards"></div></div>
     </div>
 
     <!-- ADD STOCK -->
     <div class="panel" id="panel-addstock">
-      <div class="ph"><div><div class="ph-title">Add to Stock</div><div class="ph-sub">Manual Entry or Voice Input</div></div></div>
-      <div class="sw" style="padding-top:14px">
+      <div class="ph"><div><div class="ph-title">Add to Stock</div><div class="ph-sub">Manual · Voice · Reference Lookup</div></div></div>
+      <div class="sw" style="padding-top:12px">
         <div class="voice-bar">
           <button class="vbtn" id="vbtn" onclick="toggleVoice()">🎙</button>
-          <div class="vinfo"><div class="vinfo-t">Voice Entry</div><div class="vinfo-s">Say: "Rolex Daytona, ref 126500LN, bought fourteen thousand, asking eighteen, full set unworn"</div></div>
+          <div style="flex:1"><div class="vinfo-t">Voice Entry</div><div class="vinfo-s">Say: "Rolex Daytona, ref 126500LN, bought fourteen thousand, asking eighteen, full set unworn"</div></div>
           <div class="vout" id="vtrans">Tap mic to begin...</div>
         </div>
+        <!-- REF LOOKUP -->
         <div class="fs">
-          <div class="fs-title">Watch Details</div><div class="fs-sub">Complete for accurate wishlist matching</div>
+          <div class="fs-title">Reference Lookup</div><div class="fs-sub">Type a reference to auto-populate watch details</div>
+          <div style="display:flex;gap:8px">
+            <div class="field" style="flex:1"><input type="text" id="lookup-ref" placeholder="e.g. 126610LN, 5711/1A-011..." oninput="lookupRef(this.value)"></div>
+            <button class="btn btn-ghost" onclick="lookupRef(document.getElementById('lookup-ref').value)">Lookup</button>
+          </div>
+          <div id="lookup-result" style="margin-top:8px;font-size:10px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em"></div>
+        </div>
+        <!-- WATCH IDENTITY -->
+        <div class="fs">
+          <div class="fs-title">Watch Identity</div>
           <div class="fg fg3">
-            <div class="field"><label>Brand</label><select id="a-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
-            <div class="field"><label>Model</label><input type="text" id="a-model" placeholder="Daytona"></div>
+            <div class="field"><label>Brand</label><select id="a-brand" onchange="updateModels('a-brand','a-model')"><option value="">Select Brand</option></select></div>
+            <div class="field"><label>Model</label><select id="a-model"><option value="">Select Model</option></select></div>
             <div class="field"><label>Reference</label><input type="text" id="a-ref" placeholder="126500LN"></div>
           </div>
           <div class="fg fg3">
-            <div class="field"><label>Purchase Price (£)</label><input type="number" id="a-bought" placeholder="14000" oninput="calcAdd()"></div>
+            <div class="field"><label>Serial Number</label><input type="text" id="a-serial" placeholder="Optional"></div>
+            <div class="field"><label>Year</label><input type="number" id="a-year" placeholder="2021"></div>
+            <div class="field"><label>Deal Type</label><select id="a-type"><option value="Owned">Owned Stock</option><option value="Sourcing">Sourcing Deal</option><option value="Part Exchange">Part Exchange</option><option value="Commission">Commission Deal</option></select></div>
+          </div>
+        </div>
+        <!-- SPECIFICATIONS -->
+        <div class="fs">
+          <div class="fs-title">Specifications</div>
+          <div class="fg fg4">
+            <div class="field"><label>Case Size</label><select id="a-size"><option value="">Select</option><option>36mm</option><option>38mm</option><option>39mm</option><option>40mm</option><option>41mm</option><option>42mm</option><option>44mm</option><option>45mm</option><option>Other</option></select></div>
+            <div class="field"><label>Case Material</label><select id="a-material"><option value="">Select</option><option>Oystersteel</option><option>Yellow Gold</option><option>White Gold</option><option>Rose Gold</option><option>Platinum</option><option>Titanium</option><option>Ceramic</option><option>Two Tone</option></select></div>
+            <div class="field"><label>Dial Colour</label><select id="a-dial"><option value="">Select</option><option>Black</option><option>White</option><option>Blue</option><option>Green</option><option>Silver</option><option>Champagne</option><option>Grey</option><option>Brown</option><option>Custom</option></select></div>
+            <div class="field"><label>Bezel</label><select id="a-bezel"><option value="">Select</option><option>Ceramic Black</option><option>Ceramic Blue/Black</option><option>Ceramic Blue</option><option>Ceramic Green</option><option>Steel</option><option>Gold</option><option>Diamond</option><option>Fluted</option></select></div>
+          </div>
+          <div class="fg fg4">
+            <div class="field"><label>Bracelet</label><select id="a-bracelet"><option value="">Select</option><option>Oyster</option><option>Jubilee</option><option>Integrated</option><option>Leather</option><option>Rubber</option><option>NATO</option><option>Mesh</option></select></div>
+            <div class="field"><label>Movement</label><select id="a-movement"><option value="">Select</option><option>Automatic</option><option>Manual Wind</option><option>Quartz</option></select></div>
+            <div class="field"><label>Calibre</label><input type="text" id="a-calibre" placeholder="e.g. 3235"></div>
+            <div class="field"><label>Water Resistance</label><select id="a-water"><option value="">Select</option><option>30m</option><option>50m</option><option>100m</option><option>300m</option><option>1000m+</option></select></div>
+          </div>
+        </div>
+        <!-- PROVENANCE -->
+        <div class="fs">
+          <div class="fs-title">Provenance & Condition</div>
+          <div class="fg fg3">
+            <div class="field"><label>Overall Condition</label><select id="a-cond"><option value="">Select</option><option>Full Set · Unworn</option><option>Full Set · Mint</option><option>Full Set · Excellent</option><option>Full Set · Good</option><option>Full Set · Fair</option><option>Box Only · Unworn</option><option>Box Only · Excellent</option><option>Box Only · Good</option><option>Card Only · Good</option><option>Watch Only · Excellent</option><option>Watch Only · Good</option><option>Watch Only · Fair</option></select></div>
+            <div class="field"><label>Box</label><select id="a-box"><option>Yes</option><option>No</option></select></div>
+            <div class="field"><label>Papers</label><select id="a-papers"><option>Yes</option><option>No</option></select></div>
+          </div>
+          <div class="fg fg4">
+            <div class="field"><label>Hangtags</label><select id="a-hangtags"><option>Yes</option><option>No</option></select></div>
+            <div class="field"><label>Unpolished</label><select id="a-unpolished"><option>Yes</option><option>No</option><option>Unknown</option></select></div>
+            <div class="field"><label>Modifications</label><select id="a-mods"><option>None</option><option>Yes — detail in notes</option></select></div>
+            <div class="field"><label>Service History</label><select id="a-service"><option>Full manufacturer history</option><option>Partial history</option><option>No history</option><option>Recently serviced</option></select></div>
+          </div>
+          <div class="fg fg2">
+            <div class="field"><label>Last Service Date</label><input type="text" id="a-servicedate" placeholder="e.g. March 2023"></div>
+            <div class="field"><label>Status</label><select id="a-status"><option value="Available">Available</option><option value="Reserved">Reserved</option><option value="Sold">Sold</option></select></div>
+          </div>
+        </div>
+        <!-- COMMERCIAL -->
+        <div class="fs">
+          <div class="fs-title">Commercial Details</div>
+          <div class="fg fg3">
+            <div class="field"><label>Purchase Price (£)</label><input type="number" id="a-bought" placeholder="0" oninput="calcAdd()"></div>
             <div class="field"><label>Recon Cost (£)</label><input type="number" id="a-recon" placeholder="0" oninput="calcAdd()"></div>
-            <div class="field"><label>Asking Price (£)</label><input type="number" id="a-asking" placeholder="18000" oninput="calcAdd()"></div>
+            <div class="field"><label>Asking Price (£)</label><input type="number" id="a-asking" placeholder="0" oninput="calcAdd()"></div>
           </div>
           <div class="fg fg3">
-            <div class="field"><label>Condition</label><select id="a-cond"><option value="">Select</option><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Card Only · Worn</option><option>Watch Only</option></select></div>
-            <div class="field"><label>Status</label><select id="a-status"><option value="Available">Available</option><option value="Reserved">Reserved</option><option value="Sold">Sold</option></select></div>
-            <div class="field"><label>Notes</label><input type="text" id="a-notes" placeholder="Details..."></div>
+            <div class="field"><label>Delivery & Insurance (£)</label><input type="number" id="a-delivery" placeholder="0" oninput="calcAdd()"></div>
+            <div class="field"><label>Platform Fees (£)</label><input type="number" id="a-fees" placeholder="0" oninput="calcAdd()"></div>
+            <div class="field"><label>Commission % (if applicable)</label><input type="number" id="a-commission" placeholder="0" oninput="calcAdd()"></div>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
-            <div class="fs" style="margin:0;border-left:3px solid var(--purple)"><div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Net Profit</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-profit">—</div></div>
-            <div class="fs" style="margin:0"><div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Margin</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-margin">—</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+            <div class="fs" style="margin:0;border-left:3px solid var(--purple)"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:3px">Net Profit</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-profit">—</div></div>
+            <div class="fs" style="margin:0"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:3px">Margin</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-margin">—</div></div>
           </div>
-          <div style="display:flex;gap:9px"><button class="btn btn-gold" onclick="addStock()">Add to Inventory</button><button class="btn btn-ghost" onclick="clearAdd()">Clear</button></div>
+          <div class="field" style="margin-bottom:10px"><label>Notes</label><textarea id="a-notes" placeholder="Any additional details, modifications, history..."></textarea></div>
+          <div style="display:flex;gap:8px"><button class="btn btn-gold" onclick="addStock()">Add to Inventory</button><button class="btn btn-ghost" onclick="clearAdd()">Clear</button></div>
+        </div>
+        <!-- PHOTO UPLOAD -->
+        <div class="fs">
+          <div class="fs-title">Photos</div><div class="fs-sub">Upload photos of the actual watch</div>
+          <div class="photo-drop" onclick="document.getElementById('stock-photos').click()">
+            <input type="file" id="stock-photos" multiple accept="image/*" style="display:none" onchange="handleStockPhotos(this)">
+            <div class="pd-icon">📸</div>
+            <div class="pd-text">Tap to upload photos of this watch</div>
+          </div>
+          <div class="photo-grid" id="stock-photo-grid"></div>
         </div>
       </div>
     </div>
 
     <!-- MARGIN SHEET -->
     <div class="panel" id="panel-margin">
-      <div class="ph"><div><div class="ph-title">Margin Sheet</div><div class="ph-sub">Live Profit Analysis · Click Any Number to Edit</div></div></div>
-      <div class="sw" style="padding-top:14px">
-        <div class="tbl-wrap">
-          <table class="tbl">
-            <thead><tr><th>Ref</th><th>Watch</th><th>Days</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Fees</th><th style="text-align:right">Total Cost</th><th style="text-align:right">Asking</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Margin</th><th>Flag</th></tr></thead>
-            <tbody id="margin-tbody"></tbody>
-            <tfoot><tr style="border-top:2px solid var(--purple)">
-              <td colspan="3" style="padding:10px 12px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;background:var(--cell)">Portfolio Totals</td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-b"></td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-r"></td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-f"></td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-c"></td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-a"></td>
-              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--purple-bright);background:var(--cell)" id="tot-p"></td>
-              <td colspan="2" style="background:var(--cell)"></td>
-            </tr></tfoot>
-          </table>
+      <div class="ph">
+        <div><div class="ph-title">Margin Sheet</div><div class="ph-sub">Live Profit Analysis · Click Any Number to Edit</div></div>
+        <div class="ph-acts">
+          <div class="vtoggle"><button class="vt active" onclick="marginView('table',this)">Table</button><button class="vt" onclick="marginView('chart',this)">Chart</button></div>
         </div>
       </div>
+      <div id="mv-table"><div class="sw" style="padding-top:12px"><div class="tbl-wrap"><table class="tbl">
+        <thead><tr><th>Ref</th><th>Watch</th><th>Size</th><th>Days</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Delivery</th><th style="text-align:right">Fees</th><th style="text-align:right">Total Cost</th><th style="text-align:right">Asking</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Margin</th><th>Flag</th></tr></thead>
+        <tbody id="margin-tbody"></tbody>
+        <tfoot><tr style="border-top:2px solid var(--purple)">
+          <td colspan="4" style="padding:8px 10px;font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;background:var(--cell)">Portfolio Totals</td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-b"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-r"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-d"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-f"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-c"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-a"></td>
+          <td style="text-align:right;padding:8px 10px;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:var(--purple-bright);background:var(--cell)" id="tot-p"></td>
+          <td colspan="2" style="background:var(--cell)"></td>
+        </tr></tfoot>
+      </table></div></div></div>
+      <div id="mv-chart" style="display:none">
+        <div class="sw" style="padding-top:12px">
+          <div class="chart-kpi-grid" id="chart-kpis"></div>
+          <div style="background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;padding:18px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase">Portfolio Performance</div>
+              <div style="font-size:9px;color:var(--white3);letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-top:2px">Cost vs Asking vs Profit per watch</div></div>
+              <div style="display:flex;gap:14px">
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:3px;background:var(--purple-bright);border-radius:1px"></div><span style="font-size:9px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Cost</span></div>
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:3px;background:var(--gold-bright);border-radius:1px"></div><span style="font-size:9px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Asking</span></div>
+                <div style="display:flex;align-items:center;gap:5px"><div style="width:10px;height:3px;background:var(--green);border-radius:1px"></div><span style="font-size:9px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Profit</span></div>
+              </div>
+            </div>
+            <canvas id="margin-chart" height="260" style="width:100%;display:block"></canvas>
+          </div>
+          <div style="background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;padding:18px;">
+            <div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:3px">Margin % by Watch</div>
+            <div style="font-size:9px;color:var(--white3);letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-bottom:14px">Green = 20%+ · Amber = 10–20% · Red = below 10%</div>
+            <div id="margin-bars"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CONSIGNMENT -->
+    <div class="panel" id="panel-consignment">
+      <div class="ph">
+        <div><div class="ph-title">Consignment</div><div class="ph-sub">Watches held on behalf of clients — not owned stock</div></div>
+        <div class="ph-acts"><button class="btn btn-purple" onclick="openM('con-modal')">+ Add Consignment</button></div>
+      </div>
+      <div class="kpi-strip" style="grid-template-columns:repeat(4,1fr)">
+        <div class="kpi" style="border-top:2px solid var(--blue)"><div class="kpi-l">Currently Held</div><div class="kpi-v" style="color:var(--blue)" id="con-held">—</div><div class="kpi-n">Watches</div></div>
+        <div class="kpi"><div class="kpi-l">Total Value Held</div><div class="kpi-v" id="con-val">—</div><div class="kpi-n">Asking prices</div></div>
+        <div class="kpi" style="border-top:2px solid var(--green)"><div class="kpi-l">Sold This Month</div><div class="kpi-v" style="color:var(--green)" id="con-sold">—</div><div class="kpi-n" id="con-soldval"></div></div>
+        <div class="kpi" style="border-top:2px solid var(--gold)"><div class="kpi-l">Commission Earned</div><div class="kpi-v" style="color:var(--gold-bright)" id="con-comm">—</div><div class="kpi-n">This month</div></div>
+      </div>
+      <div class="sw" style="padding-top:12px"><div id="con-list"><div style="padding:24px;text-align:center;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px">No consignment watches — add one to get started</div></div></div>
     </div>
 
     <!-- WISHLIST -->
@@ -344,7 +584,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
         <div><div class="ph-title">Buyer Wishlist</div><div class="ph-sub">Auto-Match Active · SMS Fires on Stock Match</div></div>
         <div class="ph-acts"><button class="btn btn-purple" onclick="openM('wish-modal')">+ Add Client</button></div>
       </div>
-      <div class="sw" style="padding-top:14px"><div id="match-alerts"></div><div id="wish-list"></div></div>
+      <div class="sw" style="padding-top:12px"><div id="match-alerts"></div><div id="wish-list"><div style="padding:24px;text-align:center;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px">No wishlist entries yet</div></div></div>
     </div>
 
     <!-- CLIENTS -->
@@ -353,51 +593,44 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
         <div><div class="ph-title">Client Portfolio</div><div class="ph-sub">Sorted by Total Spend</div></div>
         <div class="ph-acts">
           <div class="search-bar"><span class="search-icon">⌕</span><input type="text" id="client-search" placeholder="Search clients..." oninput="filterClients(this.value)"></div>
+          <button class="btn btn-purple" onclick="openM('add-client-modal')">+ Add Client</button>
+          <button class="btn btn-ghost" onclick="openM('csv-client-modal')">↑ Import CSV</button>
         </div>
       </div>
-      <div class="client-grid" id="client-grid"></div>
+      <div class="client-grid" id="client-grid"><div style="padding:24px;text-align:center;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px;grid-column:1/-1">No clients yet — add manually or import CSV</div></div>
     </div>
 
     <!-- LIVE LEADS -->
     <div class="panel" id="panel-leads">
-      <div class="ph"><div><div class="ph-title">Live Leads</div><div class="ph-sub">From GHL · Move Stage to Update Pipeline</div></div></div>
-      <div class="sw" style="padding-top:14px">
+      <div class="ph"><div><div class="ph-title">Live Leads</div><div class="ph-sub">From GHL · Auto-refreshes every 60 seconds · Stage clicks update GHL pipeline</div></div></div>
+      <div class="sw" style="padding-top:12px">
         <table class="tbl"><thead><tr><th>Name</th><th>Watch</th><th>Ref</th><th>Budget</th><th>Condition</th><th>Phone</th><th>Stage</th><th>Received</th></tr></thead>
-        <tbody>
-          <tr><td class="bold">Connor MacLeod</td><td style="color:var(--white2)">Rolex Daytona</td><td class="mono">126500LN</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£16,000</td><td style="font-size:11px;color:var(--white2)">Full Set</td><td class="mono">07700 900 111</td>
-          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
-          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">12m ago</td></tr>
-          <tr><td class="bold">Fiona Campbell</td><td style="color:var(--white2)">Patek Philippe Aquanaut</td><td class="mono">5168G-010</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£22,000</td><td style="font-size:11px;color:var(--white2)">Full Set</td><td class="mono">07700 900 222</td>
-          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
-          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">45m ago</td></tr>
-          <tr><td class="bold">Hamish Drummond</td><td style="color:var(--white2)">Tudor Black Bay 58</td><td class="mono">M79030N</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£3,500</td><td style="font-size:11px;color:var(--white2)">Any</td><td class="mono">07700 900 333</td>
-          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
-          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">2h ago</td></tr>
-        </tbody></table>
+        <tbody id="leads-tbody"><tr><td colspan="8" style="text-align:center;color:var(--white3);padding:24px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Loading leads from GHL...</td></tr></tbody></table>
       </div>
     </div>
 
     <!-- MARKET VALUATION -->
     <div class="panel" id="panel-valuation">
-      <div class="ph"><div><div class="ph-title">Market Valuation</div><div class="ph-sub">Real Time · Chrono24 · WatchCharts · Grey Market</div></div></div>
-      <div class="sw" style="padding-top:14px">
+      <div class="ph"><div><div class="ph-title">Market Valuation</div><div class="ph-sub">Real Time · Multiple Sources · AI Blended Range</div></div></div>
+      <div class="sw" style="padding-top:12px">
         <div class="fs">
-          <div class="fs-title">Search Reference</div><div class="fs-sub">Pull live market data across all sources</div>
+          <div class="fs-title">Search Reference</div><div class="fs-sub">Pull live market data across all sources simultaneously</div>
           <div class="fg fg3">
-            <div class="field"><label>Brand</label><select id="v-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
-            <div class="field"><label>Model</label><input type="text" id="v-model" placeholder="Daytona"></div>
-            <div class="field"><label>Reference</label><input type="text" id="v-ref" placeholder="126500LN"></div>
+            <div class="field"><label>Brand</label><select id="v-brand"><option value="">Select</option></select></div>
+            <div class="field"><label>Model</label><input type="text" id="v-model" placeholder="Submariner Date"></div>
+            <div class="field"><label>Reference</label><input type="text" id="v-ref" placeholder="126610LN"></div>
           </div>
-          <div class="fg fg2">
+          <div class="fg fg3">
             <div class="field"><label>Condition</label><select id="v-cond"><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Watch Only</option></select></div>
-            <div class="field"><label>Approx Year</label><input type="number" id="v-year" placeholder="2022"></div>
+            <div class="field"><label>Case Size</label><select id="v-size"><option value="">Any</option><option>36mm</option><option>38mm</option><option>39mm</option><option>40mm</option><option>41mm</option><option>42mm</option><option>44mm</option></select></div>
+            <div class="field"><label>Approx Year</label><input type="number" id="v-year" placeholder="2021"></div>
           </div>
           <button class="btn btn-gold" onclick="runVal()">Get Market Value</button>
         </div>
         <div id="val-results" style="display:none">
           <div class="val-blended"><div class="vb-l">Blended Market Value</div><div class="vb-p" id="vb-price">—</div><div class="vb-r" id="vb-range">—</div></div>
           <div class="val-sources" id="val-srcs"></div>
-          <div class="fs" style="margin-top:0"><div class="fs-title">Dealer Recommendations</div><div class="fs-sub">Based on current blended market data</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" id="val-recs"></div></div>
+          <div class="fs" style="margin-top:0"><div class="fs-title">Dealer Recommendations</div><div class="fs-sub">Based on current blended market data</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px" id="val-recs"></div></div>
         </div>
       </div>
     </div>
@@ -405,37 +638,38 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     <!-- TRADE IN -->
     <div class="panel" id="panel-tradein">
       <div class="ph">
-        <div><div class="ph-title">Trade In Valuation</div><div class="ph-sub">Guided Submission · Send Link to Seller</div></div>
+        <div><div class="ph-title">Trade In Valuation</div><div class="ph-sub">Guided Assessment · Send Link to Seller</div></div>
         <div class="ph-acts"><button class="btn btn-outline" onclick="genLink()">⟳ Seller Link</button><button class="btn btn-gold" onclick="runTrade()">Get Valuation</button></div>
       </div>
-      <div class="sw" style="padding-top:14px">
-        <div id="slink-box" style="display:none;margin-bottom:12px">
-          <div class="link-box"><span id="slink-url">ghostlydesk.netlify.app/tradein/WRW-0000</span><button class="btn btn-ghost btn-sm" onclick="copyLink()">Copy</button></div>
-          <div style="font-size:9px;color:var(--white3);margin-top:5px;letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif">Send via WhatsApp — seller fills in on their phone. You get an instant alert when submitted.</div>
+      <div class="sw" style="padding-top:12px">
+        <div id="slink-box" style="display:none;margin-bottom:10px">
+          <div class="link-box"><span id="slink-url"></span><button class="btn btn-ghost btn-sm" onclick="copyLink()">Copy</button></div>
+          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'Barlow Condensed',sans-serif">Send via WhatsApp — seller fills in on their phone. You get an instant alert when submitted.</div>
         </div>
         <div class="trade-steps"><div class="ts active">1 · Watch Details</div><div class="ts">2 · Condition</div><div class="ts">3 · Photos</div><div class="ts">4 · Valuation</div></div>
         <div class="fs">
-          <div class="fs-title">Watch Details</div><div class="fs-sub">What is the seller bringing in?</div>
+          <div class="fs-title">Watch Details</div>
           <div class="fg fg3">
-            <div class="field"><label>Brand</label><select id="t-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
+            <div class="field"><label>Brand</label><select id="t-brand"><option value="">Select</option></select></div>
             <div class="field"><label>Model</label><input type="text" id="t-model" placeholder="GMT Master II"></div>
             <div class="field"><label>Reference</label><input type="text" id="t-ref" placeholder="126710BLRO"></div>
           </div>
           <div class="fg fg3">
+            <div class="field"><label>Case Size</label><select id="t-size"><option value="">Select</option><option>36mm</option><option>38mm</option><option>39mm</option><option>40mm</option><option>41mm</option><option>42mm</option><option>44mm</option></select></div>
             <div class="field"><label>Approx Year</label><input type="number" id="t-year" placeholder="2020"></div>
-            <div class="field"><label>Serial (optional)</label><input type="text" id="t-serial" placeholder="Optional"></div>
             <div class="field"><label>Seller Asking (£)</label><input type="number" id="t-sprice" placeholder="What they want"></div>
           </div>
         </div>
         <div class="fs">
-          <div class="fs-title">Condition Assessment</div><div class="fs-sub">Precise condition affects valuation significantly</div>
+          <div class="fs-title">Condition Assessment</div>
           <div class="fg fg2">
             <div class="field"><label>Overall Condition</label><select id="t-cond"><option value="">Select</option><option>Mint — No visible wear</option><option>Excellent — Minor wear only</option><option>Good — Normal wear</option><option>Fair — Noticeable wear</option><option>Poor — Heavy wear or damage</option></select></div>
             <div class="field"><label>Provenance</label><select id="t-prov"><option value="">Select</option><option>Full Set — Box and Papers</option><option>Box Only — No Papers</option><option>Papers Only — No Box</option><option>Watch Only</option></select></div>
           </div>
-          <div class="fg fg2">
+          <div class="fg fg3">
             <div class="field"><label>Case Finish</label><select id="t-case"><option value="">Select</option><option>Unpolished — Original finish</option><option>Lightly polished</option><option>Heavily polished</option><option>Damaged</option></select></div>
-            <div class="field"><label>Service History</label><select id="t-svc"><option value="">Select</option><option>Full manufacturer history</option><option>Partial history</option><option>No history</option><option>Recently serviced — no records</option></select></div>
+            <div class="field"><label>Service History</label><select id="t-svc"><option value="">Select</option><option>Full manufacturer history</option><option>Partial history</option><option>No history</option></select></div>
+            <div class="field"><label>Modifications</label><select id="t-mods"><option>None</option><option>Yes — affects value</option></select></div>
           </div>
           <div class="field"><label>Additional Notes</label><textarea id="t-notes" placeholder="Scratches, modifications, damage, anything relevant..."></textarea></div>
         </div>
@@ -443,17 +677,41 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
           <div class="fs-title">Photos</div><div class="fs-sub">Dial · Caseback · Crown · Bracelet · Papers · Box</div>
           <div class="photo-drop" onclick="document.getElementById('p-input').click()">
             <input type="file" id="p-input" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
-            <div class="pd-icon">📸</div>
-            <div class="pd-text">Tap to upload photos<br><span style="font-size:9px;opacity:.4">Minimum 4 recommended</span></div>
+            <div class="pd-icon">📸</div><div class="pd-text">Tap to upload photos</div>
           </div>
           <div class="photo-grid" id="pgrid"></div>
         </div>
         <div id="trade-result" style="display:none">
           <div class="fs" style="border-left:3px solid var(--gold)">
-            <div class="fs-title">Valuation Result</div><div class="fs-sub">Based on live market data and condition assessment</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px" id="trade-grid"></div>
-            <div style="background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:12px 14px;font-size:11px;color:var(--white2);line-height:1.8" id="trade-notes"></div>
+            <div class="fs-title">Valuation Result</div><div class="fs-sub">Based on market data and condition assessment — subject to specialist confirmation</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px" id="trade-grid"></div>
+            <div style="background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:10px 12px;font-size:11px;color:var(--white2);line-height:1.8" id="trade-notes"></div>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REPORTS -->
+    <div class="panel" id="panel-reports">
+      <div class="ph"><div><div class="ph-title">Export & Reports</div><div class="ph-sub">Weekly · Monthly · Quarterly · Yearly · Custom Range</div></div></div>
+      <div class="sw" style="padding-top:12px">
+        <div class="fs">
+          <div class="fs-title">Date Range</div><div class="fs-sub">Select period for all exports below</div>
+          <div class="fg fg3" style="margin-bottom:10px">
+            <div class="field"><label>Period</label><select id="report-period" onchange="updateReportDates()"><option value="week">This Week</option><option value="lastweek">Last Week</option><option value="month" selected>This Month</option><option value="lastmonth">Last Month</option><option value="quarter">This Quarter</option><option value="lastquarter">Last Quarter</option><option value="year">This Year</option><option value="lastyear">Last Year</option><option value="custom">Custom Range</option></select></div>
+            <div class="field"><label>From</label><input type="date" id="report-from"></div>
+            <div class="field"><label>To</label><input type="date" id="report-to"></div>
+          </div>
+        </div>
+        <div class="export-grid">
+          <div class="export-card purple" onclick="exportReport('deals')"><div class="ec-icon">📊</div><div class="ec-title">Deals Report</div><div class="ec-sub">All transactions — buy price, sell price, profit, margin per deal</div></div>
+          <div class="export-card green" onclick="exportReport('pl')"><div class="ec-icon">£</div><div class="ec-title">P&L Summary</div><div class="ec-sub">Revenue, costs, profit, avg margin for the period</div></div>
+          <div class="export-card" onclick="exportReport('inventory')"><div class="ec-icon">◈</div><div class="ec-title">Inventory Report</div><div class="ec-sub">Current stock value, days held, margin per watch</div></div>
+          <div class="export-card amber" onclick="exportReport('vat')"><div class="ec-icon">📋</div><div class="ec-title">VAT Report</div><div class="ec-sub">Total sales, purchases, VAT liability — ready for accountant</div></div>
+          <div class="export-card" onclick="exportReport('clients')"><div class="ec-icon">◉</div><div class="ec-title">Client Report</div><div class="ec-sub">Every client, total spend, purchases, last contact</div></div>
+          <div class="export-card" style="border-top-color:var(--blue)" onclick="exportReport('consignment')"><div class="ec-icon">◐</div><div class="ec-title">Consignment Report</div><div class="ec-sub">All consignment watches, commission earned, owner payouts</div></div>
+          <div class="export-card" onclick="exportReport('delivery')"><div class="ec-icon">📦</div><div class="ec-title">Delivery & Insurance</div><div class="ec-sub">All logistics costs broken down by deal</div></div>
+          <div class="export-card" style="border-top-color:var(--gold)" onclick="exportReport('full')"><div class="ec-icon">⬡</div><div class="ec-title">Full Export</div><div class="ec-sub">Everything in one CSV — all data for the selected period</div></div>
         </div>
       </div>
     </div>
@@ -461,44 +719,53 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
   </div>
 </div>
 
-<!-- WISHLIST MODAL -->
-<div class="overlay" id="wish-modal">
-  <div class="modal">
-    <div class="modal-title">Add to Wishlist</div><div class="modal-sub">Client watch request — manual entry</div>
-    <div class="fg fg2" style="margin-bottom:10px">
-      <div class="field"><label>Client Name</label><input type="text" id="w-name" placeholder="Connor MacLeod"></div>
-      <div class="field"><label>Phone</label><input type="text" id="w-phone" placeholder="07700 900 000"></div>
-    </div>
-    <div class="fg fg3" style="margin-bottom:10px">
-      <div class="field"><label>Brand</label><select id="w-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
-      <div class="field"><label>Model</label><input type="text" id="w-model" placeholder="Daytona"></div>
-      <div class="field"><label>Reference</label><input type="text" id="w-ref" placeholder="126500LN"></div>
-    </div>
-    <div class="field" style="margin-bottom:10px"><label>Budget (£)</label><input type="number" id="w-budget" placeholder="16000"></div>
-    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('wish-modal')">Cancel</button><button class="btn btn-purple" onclick="addWish()">Add to Wishlist</button></div>
-  </div>
-</div>
+<!-- MODALS -->
 
-<!-- EDIT STOCK MODAL -->
+<!-- ADD STOCK EDIT MODAL -->
 <div class="overlay" id="edit-modal">
-  <div class="modal">
+  <div class="modal wide">
     <div class="modal-title">Edit Stock</div><div class="modal-sub">Update watch details</div>
     <input type="hidden" id="edit-idx">
-    <div class="fg fg3" style="margin-bottom:10px">
-      <div class="field"><label>Brand</label><select id="edit-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Brand</label><select id="edit-brand"><option value="">Select</option></select></div>
       <div class="field"><label>Model</label><input type="text" id="edit-model"></div>
       <div class="field"><label>Reference</label><input type="text" id="edit-ref"></div>
     </div>
-    <div class="fg fg3" style="margin-bottom:10px">
+    <div class="fg fg4" style="margin-bottom:8px">
       <div class="field"><label>Bought (£)</label><input type="number" id="edit-bought"></div>
       <div class="field"><label>Recon (£)</label><input type="number" id="edit-recon"></div>
+      <div class="field"><label>Delivery (£)</label><input type="number" id="edit-delivery"></div>
       <div class="field"><label>Asking (£)</label><input type="number" id="edit-asking"></div>
     </div>
-    <div class="fg fg2" style="margin-bottom:10px">
-      <div class="field"><label>Condition</label><select id="edit-cond"><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Card Only · Worn</option><option>Watch Only</option></select></div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Case Size</label><select id="edit-size"><option value="">Select</option><option>36mm</option><option>38mm</option><option>39mm</option><option>40mm</option><option>41mm</option><option>42mm</option><option>44mm</option><option>45mm</option></select></div>
+      <div class="field"><label>Condition</label><select id="edit-cond"><option>Full Set · Unworn</option><option>Full Set · Excellent</option><option>Full Set · Good</option><option>Box Only · Worn</option><option>Watch Only</option></select></div>
       <div class="field"><label>Status</label><select id="edit-status"><option value="Available">Available</option><option value="Reserved">Reserved</option><option value="Sold">Sold</option></select></div>
     </div>
+    <div class="field" style="margin-bottom:8px"><label>Notes</label><textarea id="edit-notes" style="min-height:50px"></textarea></div>
     <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-modal')">Cancel</button><button class="btn btn-gold" onclick="saveEdit()">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- WISHLIST MODAL -->
+<div class="overlay" id="wish-modal">
+  <div class="modal">
+    <div class="modal-title">Add to Wishlist</div><div class="modal-sub">Client watch request</div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Client Name</label><input type="text" id="w-name" placeholder="Full name"></div>
+      <div class="field"><label>Phone</label><input type="text" id="w-phone" placeholder="07700 900 000"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Brand</label><select id="w-brand"><option value="">Select</option></select></div>
+      <div class="field"><label>Model</label><input type="text" id="w-model" placeholder="Submariner"></div>
+      <div class="field"><label>Reference</label><input type="text" id="w-ref" placeholder="126610LN"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Case Size</label><select id="w-size"><option value="">Any</option><option>36mm</option><option>38mm</option><option>39mm</option><option>40mm</option><option>41mm</option><option>42mm</option><option>44mm</option></select></div>
+      <div class="field"><label>Dial Colour</label><input type="text" id="w-dial" placeholder="Any"></div>
+      <div class="field"><label>Budget (£)</label><input type="number" id="w-budget" placeholder="12000"></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('wish-modal')">Cancel</button><button class="btn btn-purple" onclick="addWish()">Add to Wishlist</button></div>
   </div>
 </div>
 
@@ -507,66 +774,282 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
   <div class="modal">
     <div class="modal-title">Edit Wishlist Entry</div><div class="modal-sub">Update client details</div>
     <input type="hidden" id="edit-wish-idx">
-    <div class="fg fg2" style="margin-bottom:10px">
-      <div class="field"><label>Client Name</label><input type="text" id="ew-name"></div>
-      <div class="field"><label>Phone</label><input type="text" id="ew-phone"></div>
-    </div>
-    <div class="fg fg3" style="margin-bottom:10px">
-      <div class="field"><label>Brand</label><select id="ew-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
+    <div class="fg fg2" style="margin-bottom:8px"><div class="field"><label>Name</label><input type="text" id="ew-name"></div><div class="field"><label>Phone</label><input type="text" id="ew-phone"></div></div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Brand</label><select id="ew-brand"><option value="">Select</option></select></div>
       <div class="field"><label>Model</label><input type="text" id="ew-model"></div>
       <div class="field"><label>Reference</label><input type="text" id="ew-ref"></div>
     </div>
-    <div class="field" style="margin-bottom:10px"><label>Budget (£)</label><input type="number" id="ew-budget"></div>
-    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-wish-modal')">Cancel</button><button class="btn btn-gold" onclick="saveWishEdit()">Save Changes</button></div>
+    <div class="field" style="margin-bottom:8px"><label>Budget (£)</label><input type="number" id="ew-budget"></div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-wish-modal')">Cancel</button><button class="btn btn-gold" onclick="saveWishEdit()">Save</button></div>
+  </div>
+</div>
+
+<!-- ADD CLIENT MODAL -->
+<div class="overlay" id="add-client-modal">
+  <div class="modal">
+    <div class="modal-title">Add Client</div><div class="modal-sub">Saves directly to GHL as a contact</div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>First Name</label><input type="text" id="ac-first" placeholder="James"></div>
+      <div class="field"><label>Last Name</label><input type="text" id="ac-last" placeholder="Wilson"></div>
+    </div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Phone</label><input type="text" id="ac-phone" placeholder="07700 900 000"></div>
+      <div class="field"><label>Email</label><input type="email" id="ac-email" placeholder="james@example.com"></div>
+    </div>
+    <div class="field" style="margin-bottom:8px"><label>Notes</label><textarea id="ac-notes" placeholder="Any relevant notes about this client..." style="min-height:50px"></textarea></div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('add-client-modal')">Cancel</button><button class="btn btn-purple" onclick="addClient()">Add to GHL</button></div>
+  </div>
+</div>
+
+<!-- CSV IMPORT MODAL -->
+<div class="overlay" id="csv-client-modal">
+  <div class="modal">
+    <div class="modal-title">Import Clients from CSV</div><div class="modal-sub">Upload your existing client spreadsheet</div>
+    <div class="photo-drop" onclick="document.getElementById('csv-input').click()" style="margin-bottom:12px">
+      <input type="file" id="csv-input" accept=".csv" style="display:none" onchange="handleCSV(this)">
+      <div class="pd-icon">📄</div>
+      <div class="pd-text">Tap to upload CSV file<br><span style="font-size:9px;opacity:.5">Columns: First Name, Last Name, Phone, Email</span></div>
+    </div>
+    <div id="csv-preview" style="display:none">
+      <div style="font-size:9px;color:var(--white3);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;margin-bottom:8px" id="csv-count"></div>
+      <div class="tbl-wrap" style="max-height:200px;overflow-y:auto"><table class="tbl"><thead><tr><th>Name</th><th>Phone</th><th>Email</th></tr></thead><tbody id="csv-tbody"></tbody></table></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('csv-client-modal')">Cancel</button><button class="btn btn-purple" id="csv-import-btn" style="display:none" onclick="importCSV()">Import All</button></div>
+  </div>
+</div>
+
+<!-- CONSIGNMENT MODAL -->
+<div class="overlay" id="con-modal">
+  <div class="modal">
+    <div class="modal-title">Add Consignment</div><div class="modal-sub">Watch held on behalf of a client</div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Owner Name</label><input type="text" id="con-owner" placeholder="Client name"></div>
+      <div class="field"><label>Owner Phone</label><input type="text" id="con-phone" placeholder="07700 900 000"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Brand</label><select id="con-brand"><option value="">Select</option></select></div>
+      <div class="field"><label>Model</label><input type="text" id="con-model" placeholder="Nautilus"></div>
+      <div class="field"><label>Reference</label><input type="text" id="con-ref" placeholder="5711/1A-011"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Owner Asking (£)</label><input type="number" id="con-owner-price" placeholder="What owner wants"></div>
+      <div class="field"><label>List Price (£)</label><input type="number" id="con-list-price" placeholder="Your listing price"></div>
+      <div class="field"><label>Commission %</label><input type="number" id="con-rate" placeholder="10" value="10"></div>
+    </div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Condition</label><select id="con-cond"><option>Full Set · Unworn</option><option>Full Set · Excellent</option><option>Full Set · Good</option><option>Box Only · Worn</option><option>Watch Only</option></select></div>
+      <div class="field"><label>Date Received</label><input type="date" id="con-date"></div>
+    </div>
+    <div class="field" style="margin-bottom:8px"><label>Notes</label><textarea id="con-notes" placeholder="Any additional notes..." style="min-height:50px"></textarea></div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('con-modal')">Cancel</button><button class="btn btn-purple" onclick="addConsignment()">Add Consignment</button></div>
+  </div>
+</div>
+
+<!-- CONVO MODAL -->
+<div class="overlay" id="convo-modal">
+  <div class="modal">
+    <div class="modal-title" id="convo-modal-name">Conversation</div><div class="modal-sub">GHL Chat History</div>
+    <div id="convo-messages" style="background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:14px;max-height:400px;overflow-y:auto">
+      <div style="text-align:center;color:var(--white3);font-size:11px;font-family:'Barlow Condensed',sans-serif;padding:20px">No conversation history available yet</div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('convo-modal')">Close</button></div>
   </div>
 </div>
 
 <div class="notif" id="notif"><div class="ni" id="ni">🔔</div><div class="nb"><div class="nt" id="nt"></div><div class="nm" id="nm"></div></div></div>
 
 <script>
-let stock=[
-  {ref:'126500LN',brand:'Rolex',model:'Daytona',cond:'Full Set · Unworn',bought:14200,recon:0,fees:500,asking:18500,status:'Available',days:2},
-  {ref:'5711/1A-011',brand:'Patek Philippe',model:'Nautilus',cond:'Full Set · Mint',bought:28000,recon:200,fees:800,asking:34000,status:'Reserved',days:8},
-  {ref:'15500ST.OO.1220ST',brand:'Audemars Piguet',model:'Royal Oak',cond:'Full Set · Unworn',bought:24000,recon:0,fees:700,asking:29500,status:'Available',days:5},
-  {ref:'CAL-8880-I',brand:'Richard Mille',model:'RM 011',cond:'Full Set · Unworn',bought:95000,recon:0,fees:2000,asking:118000,status:'Reserved',days:1},
-  {ref:'126710BLRO',brand:'Rolex',model:'GMT Master II Pepsi',cond:'Full Set · Worn',bought:11800,recon:350,fees:400,asking:14200,status:'Available',days:14},
-  {ref:'M79030N-0001',brand:'Tudor',model:'Black Bay 58',cond:'Box Only · Worn',bought:2800,recon:150,fees:100,asking:3400,status:'Available',days:22}
+// ===== DEALERS DATABASE (simple auth) =====
+const DEALERS = [
+  {email:'admin@ghostlyit.com', password:'ghostly2024', name:'Admin', dealerName:'GhostlyIT Admin', locationId:'', isAdmin:true},
+  {email:'dealer@example.com', password:'dealer123', name:'Dealer', dealerName:'Your Dealership', locationId:'', isAdmin:false}
 ];
 
-let wishlist=[
-  {name:'Angus Fraser',phone:'07700 900 444',brand:'Audemars Piguet',model:'Royal Oak',ref:'15500ST.OO.1220ST',budget:30000},
-  {name:'Robert MacPherson',phone:'07700 900 456',brand:'Patek Philippe',model:'Nautilus',ref:'5711/1A-011',budget:35000},
-  {name:'Connor MacLeod',phone:'07700 900 111',brand:'Rolex',model:'Daytona',ref:'126500LN',budget:18000},
-  {name:'Duncan Stewart',phone:'07700 900 555',brand:'Rolex',model:'GMT Master II',ref:'126710BLRO',budget:15000}
+let currentDealer = null;
+
+// ===== BRANDS & MODELS =====
+const WATCH_BRANDS = {
+  'Rolex':['Submariner Date','Submariner No Date','Daytona','GMT Master II Pepsi','GMT Master II Batman','GMT Master II Sprite','Day-Date 40','Day-Date 36','Datejust 41','Datejust 36','Explorer','Explorer II','Sea-Dweller','Deepsea','Yacht-Master 40','Yacht-Master 42','Milgauss','Air-King','Cellini'],
+  'Patek Philippe':['Nautilus','Aquanaut','Calatrava','Complications','Grand Complications','Gondolo','Golden Ellipse','Twenty-4','Chronograph'],
+  'Audemars Piguet':['Royal Oak','Royal Oak Offshore','Royal Oak Concept','Code 11.59','Millenary','Jules Audemars'],
+  'Richard Mille':['RM 011','RM 027','RM 035','RM 050','RM 055','RM 056','RM 070'],
+  'Tudor':['Black Bay 58','Black Bay 41','Black Bay GMT','Pelagos','Glamour Double Date','Heritage Chrono'],
+  'Omega':['Seamaster 300M','Seamaster Aqua Terra','Speedmaster Moonwatch','Speedmaster Racing','Constellation','De Ville','Planet Ocean'],
+  'Breitling':['Navitimer','Superocean','Chronomat','Avenger','Premier','Endurance Pro'],
+  'IWC':['Portugieser','Pilot','Portofino','Aquatimer','Da Vinci','Ingenieur'],
+  'Cartier':['Santos','Tank','Ballon Bleu','Panthère','Ronde','Drive','Clé'],
+  'Panerai':['Luminor','Radiomir','Submersible','Luminor Due'],
+  'Hublot':['Big Bang','Classic Fusion','Spirit of Big Bang','MP Collection'],
+  'TAG Heuer':['Carrera','Monaco','Aquaracer','Formula 1','Link','Connected'],
+  'Jaeger-LeCoultre':['Reverso','Master','Polaris','Rendez-Vous','Atmos'],
+  'Vacheron Constantin':['Overseas','Traditionnelle','Patrimony','Historiques','Malte'],
+  'A. Lange & Söhne':['Lange 1','Saxonia','Datograph','Zeitwerk','Odysseus'],
+  'Zenith':['El Primero','Chronomaster','Defy','Pilot'],
+  'Longines':['Master Collection','Conquest','HydroConquest','Heritage','Spirit'],
+  'Breguet':['Classique','Marine','Tradition','Type XX','Reine de Naples'],
+  'Blancpain':['Fifty Fathoms','Villeret','Leman','L-Evolution'],
+  'Girard-Perregaux':['Laureato','1966','Vintage 1945','Traveller'],
+  'Chopard':['Happy Diamonds','L.U.C','Mille Miglia','Alpine Eagle'],
+  'Bulgari':['Octo','Serpenti','Lvcea','Diagono'],
+  'Hermès':['Arceau','Cape Cod','Clipper','Slim d\'Hermès'],
+  'Chanel':['J12','Boy-Friend','Première','Mademoiselle Privé'],
+  'Rado':['DiaMaster','Captain Cook','HyperChrome','True'],
+  'Tissot':['PRX','Le Locle','Seastar','T-Touch'],
+  'Other':['Other']
+};
+
+// ===== REF LOOKUP DATABASE =====
+const REF_DB = {
+  '126610LN':{brand:'Rolex',model:'Submariner Date',size:'41mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Black',bracelet:'Oyster',movement:'Automatic',calibre:'3235'},
+  '126610LV':{brand:'Rolex',model:'Submariner Date',size:'41mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Green',bracelet:'Oyster',movement:'Automatic',calibre:'3235'},
+  '124060':{brand:'Rolex',model:'Submariner No Date',size:'41mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Black',bracelet:'Oyster',movement:'Automatic',calibre:'3230'},
+  '126500LN':{brand:'Rolex',model:'Daytona',size:'40mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Black',bracelet:'Oyster',movement:'Automatic',calibre:'4130'},
+  '126710BLRO':{brand:'Rolex',model:'GMT Master II Pepsi',size:'40mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Blue/Red',bracelet:'Jubilee',movement:'Automatic',calibre:'3285'},
+  '126710BLNR':{brand:'Rolex',model:'GMT Master II Batman',size:'40mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Blue/Black',bracelet:'Jubilee',movement:'Automatic',calibre:'3285'},
+  '126720VTNR':{brand:'Rolex',model:'GMT Master II Sprite',size:'40mm',material:'Oystersteel',dial:'Black',bezel:'Ceramic Green/Black',bracelet:'Oyster',movement:'Automatic',calibre:'3285'},
+  '5711/1A-011':{brand:'Patek Philippe',model:'Nautilus',size:'40mm',material:'Oystersteel',dial:'Blue',bezel:'Steel',bracelet:'Integrated',movement:'Automatic',calibre:'324 S C'},
+  '5726A-001':{brand:'Patek Philippe',model:'Nautilus',size:'40mm',material:'Oystersteel',dial:'Blue',bezel:'Steel',bracelet:'Integrated',movement:'Automatic',calibre:'324 S QA LU 24H'},
+  '5168G-010':{brand:'Patek Philippe',model:'Aquanaut',size:'42mm',material:'White Gold',dial:'Khaki Green',bezel:'White Gold',bracelet:'Rubber',movement:'Automatic',calibre:'324 S C'},
+  '15500ST.OO.1220ST.01':{brand:'Audemars Piguet',model:'Royal Oak',size:'41mm',material:'Oystersteel',dial:'Blue',bezel:'Steel',bracelet:'Integrated',movement:'Automatic',calibre:'4302'},
+  '15202ST.OO.1240ST.01':{brand:'Audemars Piguet',model:'Royal Oak',size:'39mm',material:'Oystersteel',dial:'Blue',bezel:'Steel',bracelet:'Integrated',movement:'Automatic',calibre:'2121'},
+  'M79030N-0001':{brand:'Tudor',model:'Black Bay 58',size:'39mm',material:'Oystersteel',dial:'Black',bezel:'Steel',bracelet:'Bracelet',movement:'Automatic',calibre:'MT5402'},
+  'M79230N-0007':{brand:'Tudor',model:'Black Bay 41',size:'41mm',material:'Oystersteel',dial:'Black',bezel:'Steel',bracelet:'Bracelet',movement:'Automatic',calibre:'MT5813'},
+  '310.30.42.50.01.001':{brand:'Omega',model:'Seamaster 300M',size:'42mm',material:'Oystersteel',dial:'Blue',bezel:'Ceramic Blue',bracelet:'Bracelet',movement:'Automatic',calibre:'8800'},
+  '311.30.42.30.01.005':{brand:'Omega',model:'Speedmaster Moonwatch',size:'42mm',material:'Oystersteel',dial:'Black',bezel:'Steel Tachymetre',bracelet:'Bracelet',movement:'Manual',calibre:'1861'}
+};
+
+// ===== TICKER DATA =====
+const TICKER_DATA = [
+  {name:'Rolex Submariner',ref:'126610LN',price:11850,change:2.3},
+  {name:'Rolex Daytona',ref:'126500LN',price:15200,change:3.1},
+  {name:'Rolex GMT Pepsi',ref:'126710BLRO',price:13400,change:-0.8},
+  {name:'Rolex GMT Batman',ref:'126710BLNR',price:12800,change:1.2},
+  {name:'Patek Nautilus',ref:'5711/1A',price:86000,change:-1.1},
+  {name:'Patek Aquanaut',ref:'5168G',price:34500,change:0.5},
+  {name:'AP Royal Oak 41',ref:'15500ST',price:28200,change:0.8},
+  {name:'AP Royal Oak 39',ref:'15202ST',price:42000,change:-0.3},
+  {name:'Tudor BB58',ref:'M79030N',price:3100,change:0.2},
+  {name:'Omega Speedmaster',ref:'311.30.42',price:4800,change:1.4},
+  {name:'Omega Seamaster',ref:'210.30.42',price:4200,change:0.6},
+  {name:'Rolex Explorer',ref:'124270',price:6800,change:1.8},
+  {name:'Rolex Sea-Dweller',ref:'126600',price:10200,change:0.9},
+  {name:'Rolex Sky-Dweller',ref:'326934',price:18500,change:2.1},
+  {name:'Breitling Navitimer',ref:'AB0139',price:5200,change:-0.4},
+  {name:'IWC Portugieser',ref:'IW500705',price:6800,change:0.7},
+  {name:'Panerai Luminor',ref:'PAM01312',price:5400,change:-0.2},
+  {name:'Cartier Santos',ref:'WSSA0018',price:4800,change:1.1},
+  {name:'Hublot Big Bang',ref:'441.OX',price:11200,change:-0.6},
+  {name:'TAG Monaco',ref:'CAW211P',price:3800,change:0.3}
 ];
 
-let clients=[
-  {name:'Robert MacPherson',phone:'07700 900 456',spend:156000,purchases:5,last:'Today',wl:1,tag:'vip'},
-  {name:'Angus Fraser',phone:'07700 900 444',spend:89000,purchases:3,last:'Yesterday',wl:1,tag:'vip'},
-  {name:'Connor MacLeod',phone:'07700 900 111',spend:34000,purchases:2,last:'2 days ago',wl:1,tag:'active'},
-  {name:'Fiona Campbell',phone:'07700 900 222',spend:18500,purchases:2,last:'1 week ago',wl:0,tag:'active'},
-  {name:'Duncan Stewart',phone:'07700 900 555',spend:12000,purchases:1,last:'2 weeks ago',wl:1,tag:'new'},
-  {name:'Hamish Drummond',phone:'07700 900 333',spend:3200,purchases:1,last:'3 weeks ago',wl:0,tag:'new'}
-];
-
-let allClients=[...clients];
-
+// ===== STATE =====
+let stock=[], wishlist=[], clients=[], allClients=[], leads=[], consignments=[], csvData=[];
+const API = window.location.hostname==='localhost'?'http://localhost:3000':'';
 const fmt=n=>'£'+Math.round(n).toLocaleString('en-GB');
 const pct=(p,c)=>c>0?Math.round((p/c)*100):0;
-const ini=n=>n.split(' ').map(x=>x[0]).join('').toUpperCase();
+const ini=n=>(n||'?').split(' ').map(x=>x[0]||'').join('').toUpperCase().substring(0,2);
 
+// ===== LOGIN =====
+function doLogin(){
+  const email=document.getElementById('login-email').value.trim().toLowerCase();
+  const pass=document.getElementById('login-pass').value;
+  const dealer=DEALERS.find(d=>d.email.toLowerCase()===email&&d.password===pass);
+  if(!dealer){document.getElementById('login-err').style.display='block';return;}
+  currentDealer=dealer;
+  document.getElementById('login-screen').classList.add('hidden');
+  document.getElementById('topbar').style.display='flex';
+  document.getElementById('ticker-wrap').style.display='flex';
+  document.getElementById('app-wrap').style.display='flex';
+  document.getElementById('tb-dealer').textContent=dealer.dealerName;
+  buildTicker();
+  init();
+}
+document.getElementById('login-email').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+document.getElementById('login-pass').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
+
+function doLogout(){
+  currentDealer=null;
+  document.getElementById('login-screen').classList.remove('hidden');
+  document.getElementById('topbar').style.display='none';
+  document.getElementById('ticker-wrap').style.display='none';
+  document.getElementById('app-wrap').style.display='none';
+}
+
+// ===== CLOCK =====
 function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 setInterval(tick,1000);tick();
-
 (function(){
   const h=new Date().getHours();
   document.getElementById('greeting').textContent=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
   const now=new Date();
   const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('dealer-date').textContent=`DEALER NAME · ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+  document.getElementById('dealer-date').textContent=`${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 })();
 
+// ===== TICKER =====
+function buildTicker(){
+  const track=document.getElementById('ticker-track');
+  const items=[...TICKER_DATA,...TICKER_DATA];
+  track.innerHTML=items.map(w=>{
+    const up=w.change>0,flat=w.change===0;
+    const arrow=up?'↑':flat?'→':'↓';
+    const cls=up?'up':flat?'flat':'down';
+    return `<div class="ticker-item"><span class="ti-name">${w.name}</span><span class="ti-ref">${w.ref}</span><span class="ti-price">${fmt(w.price)}</span><span class="ti-change ${cls}">${arrow} ${Math.abs(w.change)}%</span></div>`;
+  }).join('');
+}
+
+// ===== BRANDS =====
+function populateBrands(){
+  const selects=['a-brand','w-brand','con-brand','t-brand','v-brand','edit-brand','ew-brand'];
+  selects.forEach(id=>{
+    const el=document.getElementById(id);
+    if(!el)return;
+    const cur=el.value;
+    Object.keys(WATCH_BRANDS).forEach(b=>{
+      if(!el.querySelector(`option[value="${b}"]`)){
+        const o=document.createElement('option');o.value=b;o.textContent=b;el.appendChild(o);
+      }
+    });
+    if(cur)el.value=cur;
+  });
+}
+populateBrands();
+
+function updateModels(brandId,modelId){
+  const brand=document.getElementById(brandId).value;
+  const modelSel=document.getElementById(modelId);
+  modelSel.innerHTML='<option value="">Select Model</option>';
+  if(brand&&WATCH_BRANDS[brand]){
+    WATCH_BRANDS[brand].forEach(m=>{const o=document.createElement('option');o.value=m;o.textContent=m;modelSel.appendChild(o);});
+  }
+}
+
+// ===== REF LOOKUP =====
+function lookupRef(ref){
+  const clean=(ref||'').trim().toUpperCase().replace(/\s/g,'');
+  const match=REF_DB[clean]||REF_DB[Object.keys(REF_DB).find(k=>k.toUpperCase()===clean)];
+  if(match){
+    const res=document.getElementById('lookup-result');
+    res.style.color='var(--green)';
+    res.textContent=`✓ Found: ${match.brand} ${match.model} · ${match.size} · ${match.dial} dial · ${match.material}`;
+    document.getElementById('a-brand').value=match.brand;updateModels('a-brand','a-model');
+    setTimeout(()=>{document.getElementById('a-model').value=match.model;},50);
+    document.getElementById('a-ref').value=clean;
+    if(match.size)document.getElementById('a-size').value=match.size;
+    if(match.material)document.getElementById('a-material').value=match.material;
+    if(match.dial)document.getElementById('a-dial').value=match.dial;
+    if(match.bracelet)document.getElementById('a-bracelet').value=match.bracelet;
+    if(match.movement)document.getElementById('a-movement').value=match.movement;
+    if(match.calibre)document.getElementById('a-calibre').value=match.calibre;
+  } else if(clean.length>4){
+    document.getElementById('lookup-result').style.color='var(--white3)';
+    document.getElementById('lookup-result').textContent=`Reference ${clean} not in database — fill in manually below`;
+  }
+}
+
+// ===== NAV =====
 function notify(icon,title,msg,bc){
   document.getElementById('ni').textContent=icon;document.getElementById('nt').textContent=title;document.getElementById('nm').textContent=msg;
   const n=document.getElementById('notif');n.style.borderLeftColor=bc||'var(--purple)';n.classList.add('show');
@@ -581,10 +1064,15 @@ function nav(id,el){
   document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
   document.getElementById('panel-'+id).classList.add('active');
   if(el)el.classList.add('active');
-  if(id==='stock')renderStock();if(id==='margin')renderMargin();
-  if(id==='wishlist')renderWishlist();if(id==='clients')renderClients(allClients);
+  if(id==='stock')renderStock();
+  if(id==='margin')renderMargin();
+  if(id==='wishlist')renderWishlist();
+  if(id==='clients')renderClients(allClients);
+  if(id==='consignment')renderConsignment();
+  if(id==='reports')updateReportDates();
 }
 
+// ===== STOCK VIEW =====
 function stockView(v,btn){
   document.querySelectorAll('.vt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
   document.getElementById('sv-table').style.display=v==='table'?'block':'none';
@@ -592,42 +1080,188 @@ function stockView(v,btn){
   if(v==='cards')renderCards();
 }
 
-function renderStock(){
-  document.getElementById('stock-tbody').innerHTML=stock.map((w,i)=>{
-    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
-    const mc=m>=20?'g':m>=10?'o':'r';
-    const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
-    return `<tr>
-      <td class="mono">${w.ref}</td>
-      <td class="bold">${w.brand} ${w.model}</td>
-      <td style="font-size:10px;color:var(--white3)">${w.cond}</td>
-      <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
-      <td style="text-align:right"><input class="editable" value="${w.recon}" onchange="upStock(${i},'recon',this.value)"></td>
-      <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
-      <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
-      <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
-      <td><span class="badge ${bc}">${w.status}</span></td>
-      <td><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button></td>
-    </tr>`;
-  }).join('');
-  document.getElementById('sc-label').textContent=stock.length;
-  document.getElementById('nb-stock').textContent=stock.length;
+// ===== API CALLS =====
+async function loadInventory(){
+  try{
+    const r=await fetch(API+'/api/inventory');
+    const data=await r.json();
+    stock=data.map(w=>({...w,bought:w.bought||0,recon:w.recon||0,fees:w.fees||0,delivery:w.delivery||0,asking:w.asking||0,days:w.days||0}));
+    document.getElementById('nb-stock').textContent=stock.length;
+    document.getElementById('sc-label').textContent=stock.length;
+    updateDashboard();
+  }catch(e){console.log('Inventory load error:',e);}
 }
 
-function upStock(i,f,v){stock[i][f]=parseFloat(v)||0;renderStock();renderMargin();}
+async function loadWishlist(){
+  try{
+    const r=await fetch(API+'/api/wishlist');
+    wishlist=await r.json();
+    document.getElementById('nb-wish').textContent=wishlist.length;
+    updateDashboard();
+  }catch(e){console.log('Wishlist load error:',e);}
+}
 
+async function loadContacts(){
+  try{
+    const r=await fetch(API+'/api/contacts');
+    const data=await r.json();
+    if(data.contacts&&data.contacts.length>0){
+      leads=data.contacts.map(c=>({
+        id:c.id,
+        name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
+        watch:c.customFields?.find(f=>f.key?.includes('watch_brand'))?.value||'—',
+        ref:c.customFields?.find(f=>f.key?.includes('reference'))?.value||'—',
+        budget:c.customFields?.find(f=>f.key?.includes('budget'))?.value||'—',
+        condition:c.customFields?.find(f=>f.key?.includes('condition'))?.value||'—',
+        phone:c.phone||'—',
+        email:c.email||'—',
+        stage:'New',
+        time:c.dateAdded?new Date(c.dateAdded).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'—',
+        opportunityId:null
+      }));
+      document.getElementById('nb-leads').textContent=leads.length;
+      clients=data.contacts.map(c=>({
+        name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
+        phone:c.phone||'—',email:c.email||'—',
+        spend:0,purchases:0,last:'—',wl:0,tag:'new',id:c.id
+      }));
+      allClients=[...clients];
+      updateDashboard();
+      renderLeads();
+    }
+  }catch(e){console.log('Contacts load error:',e);}
+}
+
+// ===== DASHBOARD =====
+function updateDashboard(){
+  const totalStockVal=stock.reduce((a,w)=>a+w.asking,0);
+  const totalCost=stock.reduce((a,w)=>a+w.bought+w.recon+(w.fees||0)+(w.delivery||0),0);
+  const totalProfit=totalStockVal-totalCost;
+  const avgMargin=totalCost>0?Math.round((totalProfit/totalCost)*100):0;
+  document.getElementById('kpi-stockval').textContent=stock.length>0?fmt(totalStockVal):'—';
+  document.getElementById('kpi-stockcount').textContent=stock.length+' watch'+(stock.length===1?'':'es');
+  document.getElementById('kpi-margin').textContent=stock.length>0?avgMargin+'%':'—';
+  document.getElementById('kpi-marginsub').textContent=stock.length>0?(avgMargin>=20?'↑ Above target':avgMargin>=10?'On target':'↓ Below target'):'';
+  document.getElementById('kpi-wish').textContent=wishlist.length>0?wishlist.length:'—';
+  document.getElementById('kpi-leads').textContent=leads.length>0?leads.length:'—';
+  document.getElementById('kpi-deals').textContent='—';
+  const held=consignments.filter(c=>c.status==='Holding'||c.status==='Listed').length;
+  document.getElementById('kpi-con').textContent=held>0?held:'—';
+}
+
+// ===== RENDER LEADS =====
+function renderLeads(){
+  const tbody=document.getElementById('leads-tbody');
+  if(!tbody)return;
+  if(leads.length===0){
+    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No live leads yet — leads appear here when buyers message on the website</td></tr>';
+    return;
+  }
+  tbody.innerHTML=leads.map((l,i)=>`
+    <tr>
+      <td class="bold">${l.name}</td>
+      <td style="color:var(--white2);font-size:11px">${l.watch}</td>
+      <td class="mono">${l.ref}</td>
+      <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">${l.budget}</td>
+      <td style="font-size:10px;color:var(--white2)">${l.condition}</td>
+      <td class="mono">${l.phone}</td>
+      <td><div class="stage-sel">
+        <div class="sopt active" onclick="mvStage(this,${i},'New')">New</div>
+        <div class="sopt" onclick="mvStage(this,${i},'Contacted')">Contacted</div>
+        <div class="sopt" onclick="mvStage(this,${i},'Interested')">Interested</div>
+        <div class="sopt" onclick="mvStage(this,${i},'Offer Made')">Offer</div>
+        <div class="sopt" onclick="mvStage(this,${i},'Closed Won')">Won</div>
+        <div class="sopt" onclick="mvStage(this,${i},'Closed Lost')">Lost</div>
+      </div></td>
+      <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${l.time}</td>
+    </tr>`).join('');
+}
+
+async function mvStage(el,idx,stage){
+  el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o=>o.classList.remove('active'));
+  el.classList.add('active');
+  leads[idx].stage=stage;
+  notify('◈','Stage Updated',leads[idx].name+' → '+stage+' — GHL syncing');
+  // GHL update would go here when opportunity ID is available
+}
+
+// ===== RENDER STOCK =====
+function renderStock(){
+  document.getElementById('stock-tbody').innerHTML=stock.length===0?
+    '<tr><td colspan="15" style="text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No stock yet — add your first watch</td></tr>':
+    stock.map((w,i)=>{
+      const cost=w.bought+w.recon+(w.fees||0)+(w.delivery||0),profit=w.asking-cost,m=pct(profit,cost);
+      const mc=m>=20?'g':m>=10?'o':'r';
+      const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':w.status==='Sold'?'b-sold':'b-src';
+      const tc=w.type==='Consignment'?'b-con':w.type==='Sourcing'?'b-src':w.type==='Part Exchange'?'b-res':'';
+      return `<tr>
+        <td style="width:40px;padding:4px 6px"><div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3)">📷</div></td>
+        <td class="mono">${w.ref||'—'}</td>
+        <td class="bold">${w.brand||''} ${w.model||''}</td>
+        <td style="font-size:10px;color:var(--white3)">${w.size||'—'}</td>
+        <td style="font-size:10px;color:var(--white3)">${(w.cond||'—').substring(0,16)}</td>
+        <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${w.recon||0}" onchange="upStock(${i},'recon',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${w.delivery||0}" onchange="upStock(${i},'delivery',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
+        <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
+        <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
+        <td><span class="badge ${bc}">${w.status}</span></td>
+        <td>${tc?`<span class="badge ${tc}">${w.type||''}</span>`:''}</td>
+        <td><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button></td>
+      </tr>`;
+    }).join('');
+}
+
+function upStock(i,f,v){
+  stock[i][f]=parseFloat(v)||0;
+  renderStock();renderMargin();updateDashboard();
+  // Save to API
+  if(stock[i].id){
+    fetch(API+'/api/inventory/'+stock[i].id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(stock[i])}).catch(()=>{});
+  }
+}
+
+// ===== RENDER CARDS =====
+function renderCards(){
+  document.getElementById('stock-cards').innerHTML=stock.length===0?
+    '<div style="grid-column:1/-1;text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No stock yet</div>':
+    stock.map((w,i)=>{
+      const cost=w.bought+w.recon+(w.fees||0)+(w.delivery||0),profit=w.asking-cost,m=pct(profit,cost);
+      const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
+      return `<div class="wcard">
+        <div class="wcard-img"><span style="font-size:11px;letter-spacing:.06em">📷 No photo</span></div>
+        <div class="wcard-body">
+          <div class="wc-ref">${w.ref||'—'}</div>
+          <div class="wc-name">${w.brand||''} ${w.model||''}</div>
+          ${w.size?`<div style="font-size:9px;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif">${w.size} · ${w.material||''}</div>`:''}
+          <div class="wc-row"><span class="wc-l">Condition</span><span style="font-size:10px;color:var(--white3)">${(w.cond||'—').substring(0,18)}</span></div>
+          <div class="wc-row"><span class="wc-l">Bought</span><span class="wc-v">${fmt(w.bought)}</span></div>
+          <div class="wc-row"><span class="wc-l">Asking</span><span class="wc-v">${fmt(w.asking)}</span></div>
+          <div class="wc-row"><span class="wc-l">Net Profit</span><div class="wc-p">${fmt(profit)}</div></div>
+          <div class="wc-ft"><span class="badge ${bc}">${w.status}</span><span class="mpill ${m>=20?'g':m>=10?'o':'r'}">${m}% margin</span></div>
+          <div class="wc-actions"><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})" style="flex:1">Edit</button></div>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+// ===== EDIT STOCK =====
 function openEdit(i){
   const w=stock[i];
   document.getElementById('edit-idx').value=i;
-  document.getElementById('edit-brand').value=w.brand;
-  document.getElementById('edit-model').value=w.model;
-  document.getElementById('edit-ref').value=w.ref;
-  document.getElementById('edit-bought').value=w.bought;
-  document.getElementById('edit-recon').value=w.recon;
-  document.getElementById('edit-asking').value=w.asking;
-  document.getElementById('edit-cond').value=w.cond;
-  document.getElementById('edit-status').value=w.status;
+  document.getElementById('edit-brand').value=w.brand||'';
+  document.getElementById('edit-model').value=w.model||'';
+  document.getElementById('edit-ref').value=w.ref||'';
+  document.getElementById('edit-bought').value=w.bought||0;
+  document.getElementById('edit-recon').value=w.recon||0;
+  document.getElementById('edit-delivery').value=w.delivery||0;
+  document.getElementById('edit-asking').value=w.asking||0;
+  document.getElementById('edit-size').value=w.size||'';
+  document.getElementById('edit-cond').value=w.cond||'Full Set · Unworn';
+  document.getElementById('edit-status').value=w.status||'Available';
+  document.getElementById('edit-notes').value=w.notes||'';
   openM('edit-modal');
 }
 
@@ -638,110 +1272,235 @@ function saveEdit(){
   stock[i].ref=document.getElementById('edit-ref').value;
   stock[i].bought=parseFloat(document.getElementById('edit-bought').value)||0;
   stock[i].recon=parseFloat(document.getElementById('edit-recon').value)||0;
+  stock[i].delivery=parseFloat(document.getElementById('edit-delivery').value)||0;
   stock[i].asking=parseFloat(document.getElementById('edit-asking').value)||0;
+  stock[i].size=document.getElementById('edit-size').value;
   stock[i].cond=document.getElementById('edit-cond').value;
   stock[i].status=document.getElementById('edit-status').value;
-  closeM('edit-modal');renderStock();renderMargin();renderCards();
-  notify('✓','Stock Updated','Changes saved successfully');
+  stock[i].notes=document.getElementById('edit-notes').value;
+  if(stock[i].id){fetch(API+'/api/inventory/'+stock[i].id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(stock[i])}).catch(()=>{});}
+  closeM('edit-modal');renderStock();renderMargin();renderCards();updateDashboard();
+  notify('✓','Stock Updated','Changes saved');
 }
 
-function renderCards(){
-  document.getElementById('stock-cards').innerHTML=stock.map((w,i)=>{
-    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
-    const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
-    return `<div class="wcard">
-      <div class="wc-ref">${w.ref}</div>
-      <div class="wc-name">${w.brand} ${w.model}</div>
-      <div class="wc-row"><span class="wc-l">Condition</span><span style="font-size:10px;color:var(--white3)">${w.cond}</span></div>
-      <div class="wc-row"><span class="wc-l">Bought</span><span class="wc-v">${fmt(w.bought)}</span></div>
-      <div class="wc-row"><span class="wc-l">Asking</span><span class="wc-v">${fmt(w.asking)}</span></div>
-      <div class="wc-row"><span class="wc-l">Net Profit</span><div class="wc-p">${fmt(profit)}</div></div>
-      <div class="wc-ft"><span class="badge ${bc}">${w.status}</span><span class="mpill ${m>=20?'g':m>=10?'o':'r'}">${m}% margin</span></div>
-      <div class="wc-actions"><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})" style="flex:1">Edit</button></div>
+// ===== MARGIN SHEET =====
+function renderMargin(){
+  let tb=0,tr=0,td2=0,tf=0,tc=0,ta=0,tp=0;
+  document.getElementById('margin-tbody').innerHTML=stock.length===0?
+    '<tr><td colspan="13" style="text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No stock to analyse</td></tr>':
+    stock.map((w,i)=>{
+      const del=w.delivery||0,cost=w.bought+w.recon+(w.fees||0)+del,profit=w.asking-cost,m=pct(profit,cost);
+      const mc=m>=20?'g':m>=10?'o':'r';
+      const flag=w.days>30?'<span style="color:var(--red);font-size:9px">⚠ Slow</span>':w.days>14?'<span style="color:var(--amber);font-size:9px">↓ Monitor</span>':'<span style="color:var(--white3);font-size:9px;font-family:\'JetBrains Mono\',monospace">'+w.days+'d</span>';
+      tb+=w.bought;tr+=w.recon||0;td2+=del;tf+=w.fees||0;tc+=cost;ta+=w.asking;tp+=profit;
+      return `<tr>
+        <td class="mono">${w.ref||'—'}</td><td class="bold">${w.brand||''} ${w.model||''}</td>
+        <td style="font-size:9px;color:var(--white3)">${w.size||'—'}</td>
+        <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
+        <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${w.recon||0}" onchange="upStock(${i},'recon',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${del}" onchange="upStock(${i},'delivery',this.value)"></td>
+        <td style="text-align:right"><input class="editable" value="${w.fees||0}" onchange="upStock(${i},'fees',this.value)"></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--white2)">${fmt(cost)}</td>
+        <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
+        <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:14px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
+        <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
+        <td>${flag}</td>
+      </tr>`;
+    }).join('');
+  document.getElementById('tot-b').textContent=fmt(tb);
+  document.getElementById('tot-r').textContent=fmt(tr);
+  document.getElementById('tot-d').textContent=fmt(td2);
+  document.getElementById('tot-f').textContent=fmt(tf);
+  document.getElementById('tot-c').textContent=fmt(tc);
+  document.getElementById('tot-a').textContent=fmt(ta);
+  document.getElementById('tot-p').textContent=fmt(tp);
+}
+
+// ===== MARGIN VIEW TOGGLE =====
+function marginView(v,btn){
+  document.querySelectorAll('#panel-margin .vt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('mv-table').style.display=v==='table'?'block':'none';
+  document.getElementById('mv-chart').style.display=v==='chart'?'block':'none';
+  if(v==='chart')renderChart();
+}
+
+function renderChart(){
+  if(stock.length===0){document.getElementById('chart-kpis').innerHTML='<div style="grid-column:1/-1;text-align:center;color:var(--white3);padding:20px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No stock data to chart</div>';return;}
+  const totalCost=stock.reduce((a,w)=>a+w.bought+w.recon+(w.fees||0)+(w.delivery||0),0);
+  const totalAsking=stock.reduce((a,w)=>a+w.asking,0);
+  const totalProfit=totalAsking-totalCost;
+  const avgMargin=totalCost>0?Math.round((totalProfit/totalCost)*100):0;
+  document.getElementById('chart-kpis').innerHTML=`
+    <div style="background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--purple);border-radius:2px;padding:10px 12px"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Total Invested</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--purple-bright)">${fmt(totalCost)}</div></div>
+    <div style="background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--gold);border-radius:2px;padding:10px 12px"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Total Asking</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--gold-bright)">${fmt(totalAsking)}</div></div>
+    <div style="background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--green);border-radius:2px;padding:10px 12px"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Total Profit</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--green)">${fmt(totalProfit)}</div></div>
+    <div style="background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--amber);border-radius:2px;padding:10px 12px"><div style="font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Avg Margin</div><div style="font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--amber)">${avgMargin}%</div></div>`;
+  const canvas=document.getElementById('margin-chart');
+  const ctx=canvas.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const w=canvas.parentElement.clientWidth-36;
+  const h=260;
+  canvas.width=w*dpr;canvas.height=h*dpr;canvas.style.width=w+'px';canvas.style.height=h+'px';
+  ctx.scale(dpr,dpr);ctx.clearRect(0,0,w,h);
+  const maxVal=Math.max(...stock.map(s=>s.asking))*1.12;
+  const pad={l:55,r:15,t:18,b:44};
+  const chartW=w-pad.l-pad.r,chartH=h-pad.t-pad.b;
+  const barGroup=chartW/stock.length,barW=Math.min(barGroup*0.22,28);
+  for(let i=0;i<=4;i++){
+    const y=pad.t+chartH-(chartH/4*i);
+    ctx.beginPath();ctx.moveTo(pad.l,y);ctx.lineTo(w-pad.r,y);
+    ctx.strokeStyle='rgba(46,46,46,0.8)';ctx.lineWidth=1;ctx.stroke();
+    ctx.fillStyle='#606060';ctx.font='500 9px Arial';ctx.textAlign='right';
+    ctx.fillText('£'+Math.round((maxVal/4*i)/1000)+'k',pad.l-5,y+3);
+  }
+  stock.forEach((s,i)=>{
+    const cost=s.bought+s.recon+(s.fees||0)+(s.delivery||0);
+    const x=pad.l+barGroup*i+barGroup/2;
+    const costH=(cost/maxVal)*chartH,askH=(s.asking/maxVal)*chartH,profH=((s.asking-cost)/maxVal)*chartH;
+    ctx.fillStyle='rgba(156,39,176,0.65)';ctx.fillRect(x-barW*1.5,pad.t+chartH-costH,barW,costH);
+    ctx.fillStyle='rgba(201,168,76,0.65)';ctx.fillRect(x-barW*0.5,pad.t+chartH-askH,barW,askH);
+    ctx.fillStyle='rgba(0,200,83,0.75)';ctx.fillRect(x+barW*0.5,pad.t+chartH-profH,barW,profH);
+    ctx.fillStyle='#CE93D8';ctx.font='bold 8px Arial';ctx.textAlign='center';
+    if(costH>16)ctx.fillText('£'+Math.round(cost/1000)+'k',x-barW,pad.t+chartH-costH-4);
+    ctx.fillStyle='#E8C96A';
+    if(askH>16)ctx.fillText('£'+Math.round(s.asking/1000)+'k',x,pad.t+chartH-askH-4);
+    ctx.fillStyle='#00C853';
+    if(profH>16)ctx.fillText('+£'+Math.round((s.asking-cost)/1000)+'k',x+barW,pad.t+chartH-profH-4);
+    ctx.fillStyle='#B0B0B0';ctx.font='9px Arial';ctx.textAlign='center';
+    const label=(s.brand||'').split(' ')[0]+' '+(s.ref||'').substring(0,7);
+    ctx.fillText(label,x,pad.t+chartH+14);
+    ctx.fillStyle='#606060';ctx.font='8px Arial';ctx.fillText((s.days||0)+'d',x,pad.t+chartH+26);
+  });
+  ctx.beginPath();ctx.moveTo(pad.l,pad.t+chartH);ctx.lineTo(w-pad.r,pad.t+chartH);
+  ctx.strokeStyle='#3E3E3E';ctx.lineWidth=1.5;ctx.stroke();
+  const maxM=Math.max(...stock.map(s=>{const c=s.bought+s.recon+(s.fees||0)+(s.delivery||0);return pct(s.asking-c,c);}),30);
+  document.getElementById('margin-bars').innerHTML=stock.map(s=>{
+    const cost=s.bought+s.recon+(s.fees||0)+(s.delivery||0),profit=s.asking-cost,m=pct(profit,cost);
+    const pw=Math.min((m/maxM)*100,100);
+    const col=m>=20?'var(--green)':m>=10?'var(--amber)':'var(--red)';
+    return `<div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--purple-bright)">${s.ref||'—'}</span><span style="font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;color:var(--white);text-transform:uppercase">${s.brand||''} ${s.model||''}</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--white2)">${fmt(cost)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--gold-bright)">${fmt(s.asking)}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:600;color:${col}">${m}%</span></div>
+      </div>
+      <div style="height:7px;background:var(--panel2);border-radius:2px;border:1px solid var(--cell-border);overflow:hidden"><div style="height:100%;width:${pw}%;background:${col};border-radius:2px;box-shadow:0 0 6px ${col}40"></div></div>
+      <div style="display:flex;justify-content:space-between;margin-top:2px"><span style="font-size:8px;color:var(--white3);font-family:'Barlow Condensed',sans-serif">${s.days||0} days in stock</span><span style="font-size:9px;font-family:'JetBrains Mono',monospace;color:${col}">+${fmt(profit)}</span></div>
     </div>`;
   }).join('');
 }
 
-function renderMargin(){
-  let tb=0,tr=0,tf=0,tc=0,ta=0,tp=0;
-  document.getElementById('margin-tbody').innerHTML=stock.map((w,i)=>{
-    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
-    const mc=m>=20?'g':m>=10?'o':'r';
-    const flag=w.days>30?`<span style="color:var(--red);font-size:9px">⚠ Slow</span>`:w.days>14?`<span style="color:var(--amber);font-size:9px">↓ Monitor</span>`:`<span style="color:var(--white3);font-size:9px;font-family:'JetBrains Mono',monospace">${w.days}d</span>`;
-    tb+=w.bought;tr+=w.recon;tf+=w.fees;tc+=cost;ta+=w.asking;tp+=profit;
-    return `<tr>
-      <td class="mono">${w.ref}</td><td class="bold">${w.brand} ${w.model}</td>
-      <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
-      <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
-      <td style="text-align:right"><input class="editable" value="${w.recon}" onchange="upStock(${i},'recon',this.value)"></td>
-      <td style="text-align:right"><input class="editable" value="${w.fees}" onchange="upStock(${i},'fees',this.value)"></td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--white2)">${fmt(cost)}</td>
-      <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
-      <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
-      <td>${flag}</td>
-    </tr>`;
-  }).join('');
-  document.getElementById('tot-b').textContent=fmt(tb);document.getElementById('tot-r').textContent=fmt(tr);
-  document.getElementById('tot-f').textContent=fmt(tf);document.getElementById('tot-c').textContent=fmt(tc);
-  document.getElementById('tot-a').textContent=fmt(ta);document.getElementById('tot-p').textContent=fmt(tp);
-}
-
+// ===== ADD STOCK =====
 function calcAdd(){
   const b=parseFloat(document.getElementById('a-bought').value)||0;
   const r=parseFloat(document.getElementById('a-recon').value)||0;
+  const d=parseFloat(document.getElementById('a-delivery').value)||0;
+  const f=parseFloat(document.getElementById('a-fees').value)||0;
   const a=parseFloat(document.getElementById('a-asking').value)||0;
-  const cost=b+r,profit=a-cost,m=cost>0?pct(profit,cost):0;
+  const cost=b+r+d+f,profit=a-cost,m=cost>0?pct(profit,cost):0;
   const pp=document.getElementById('add-profit');
   pp.textContent=cost>0?fmt(profit):'—';pp.style.color=profit>0?'var(--green)':'var(--red)';
   document.getElementById('add-margin').textContent=cost>0?m+'%':'—';
 }
 
-function addStock(){
-  const brand=document.getElementById('a-brand').value,model=document.getElementById('a-model').value,ref=document.getElementById('a-ref').value;
-  if(!brand||!model||!ref){notify('⚠','Missing Details','Brand, model and reference required','var(--red)');return;}
-  const entry={ref,brand,model,cond:document.getElementById('a-cond').value||'Unknown',bought:parseFloat(document.getElementById('a-bought').value)||0,recon:parseFloat(document.getElementById('a-recon').value)||0,fees:0,asking:parseFloat(document.getElementById('a-asking').value)||0,status:document.getElementById('a-status').value,days:0};
-  stock.push(entry);document.getElementById('nb-stock').textContent=stock.length;
-  const matches=wishlist.filter(w=>w.ref.toLowerCase()===ref.toLowerCase()||(w.brand===brand&&w.model===model));
-  if(matches.length>0){
-    matches.forEach(m=>{
-      const a=document.createElement('div');a.className='match-alert';
-      a.innerHTML=`<div class="madot"></div><div class="matext"><strong>${m.name}</strong> is waiting for this exact reference — SMS sent automatically via GHL.</div>`;
-      document.getElementById('match-alerts').prepend(a);
-    });
-    notify('🎯','Wishlist Match',`${matches[0].name} waiting for ${ref} — SMS sent`,'var(--green)');
-  } else {notify('✓','Stock Added',`${brand} ${model} added to inventory`);}
-  clearAdd();
+async function addStock(){
+  const brand=document.getElementById('a-brand').value;
+  const model=document.getElementById('a-model').value;
+  const ref=document.getElementById('a-ref').value;
+  if(!brand){notify('⚠','Missing Details','Brand is required','var(--red)');return;}
+  const entry={
+    ref,brand,model,
+    serial:document.getElementById('a-serial').value,
+    year:document.getElementById('a-year').value,
+    type:document.getElementById('a-type').value,
+    size:document.getElementById('a-size').value,
+    material:document.getElementById('a-material').value,
+    dial:document.getElementById('a-dial').value,
+    bezel:document.getElementById('a-bezel').value,
+    bracelet:document.getElementById('a-bracelet').value,
+    movement:document.getElementById('a-movement').value,
+    calibre:document.getElementById('a-calibre').value,
+    water:document.getElementById('a-water').value,
+    cond:document.getElementById('a-cond').value,
+    box:document.getElementById('a-box').value,
+    papers:document.getElementById('a-papers').value,
+    unpolished:document.getElementById('a-unpolished').value,
+    serviceHistory:document.getElementById('a-service').value,
+    bought:parseFloat(document.getElementById('a-bought').value)||0,
+    recon:parseFloat(document.getElementById('a-recon').value)||0,
+    delivery:parseFloat(document.getElementById('a-delivery').value)||0,
+    fees:parseFloat(document.getElementById('a-fees').value)||0,
+    asking:parseFloat(document.getElementById('a-asking').value)||0,
+    status:document.getElementById('a-status').value,
+    notes:document.getElementById('a-notes').value,
+    days:0
+  };
+  try{
+    const r2=await fetch(API+'/api/inventory',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+    const saved=await r2.json();
+    stock.push({...entry,id:saved.id});
+    document.getElementById('nb-stock').textContent=stock.length;
+    document.getElementById('sc-label').textContent=stock.length;
+    const matches=wishlist.filter(w=>w.ref&&ref&&w.ref.toLowerCase()===ref.toLowerCase());
+    if(matches.length>0){
+      matches.forEach(m=>{
+        const a=document.createElement('div');a.className='match-alert';
+        a.innerHTML='<div class="madot"></div><div class="matext"><strong>'+m.name+'</strong> is waiting for '+ref+' — SMS sent automatically via GHL.</div>';
+        document.getElementById('match-alerts').prepend(a);
+      });
+      notify('🎯','Wishlist Match',matches[0].name+' waiting for '+ref,'var(--green)');
+      const af=document.getElementById('activity-feed');
+      const item=document.createElement('div');item.className='act-item';
+      item.innerHTML='<div class="ai-dot pu"></div><div class="ai-text">Wishlist match — <strong>'+matches[0].name+'</strong> matched to '+brand+' '+ref+' · SMS sent</div><div class="ai-time">Just now</div>';
+      if(af.firstChild&&af.firstChild.style&&af.firstChild.style.textAlign)af.innerHTML='';
+      af.prepend(item);
+    } else {notify('✓','Stock Added',brand+' '+(model||ref)+' saved to inventory');}
+    updateDashboard();clearAdd();
+  }catch(e){notify('⚠','Save Failed','Check connection','var(--red)');}
 }
 
-function clearAdd(){['a-brand','a-model','a-ref','a-bought','a-recon','a-asking','a-cond','a-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('a-status').value='Available';document.getElementById('add-profit').textContent='—';document.getElementById('add-margin').textContent='—';}
+function clearAdd(){
+  ['a-brand','a-model','a-ref','a-serial','a-year','a-size','a-material','a-dial','a-bezel','a-bracelet','a-movement','a-calibre','a-water','a-cond','a-bought','a-recon','a-delivery','a-fees','a-asking','a-notes'].forEach(id=>{
+    const el=document.getElementById(id);if(el){if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';}
+  });
+  document.getElementById('a-status').value='Available';
+  document.getElementById('a-type').value='Owned';
+  document.getElementById('add-profit').textContent='—';
+  document.getElementById('add-margin').textContent='—';
+  document.getElementById('lookup-result').textContent='';
+  document.getElementById('lookup-ref').value='';
+  document.getElementById('stock-photo-grid').innerHTML='';
+}
 
+// ===== WISHLIST =====
 function renderWishlist(){
-  document.getElementById('wish-list').innerHTML=wishlist.map((w,i)=>`
-    <div class="wish-card">
-      <div class="wav">${ini(w.name)}</div>
-      <div class="winfo">
-        <div class="wname">${w.name}</div>
-        <div class="wwatch">${w.brand} ${w.model} · <span class="wref">${w.ref||'Any'}</span></div>
-        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--white3);margin-top:2px">${w.phone}</div>
-      </div>
-      <div style="text-align:right"><div class="wbudget">${fmt(w.budget)}</div><div class="wblabel">Budget</div></div>
-      <div class="wish-actions">
-        <button class="btn btn-ghost btn-sm" onclick="openWishEdit(${i})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteWish(${i})">✕</button>
-      </div>
-    </div>`).join('');
+  document.getElementById('wish-list').innerHTML=wishlist.length===0?
+    '<div style="padding:24px;text-align:center;color:var(--white3);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px">No wishlist entries yet</div>':
+    wishlist.map((w,i)=>`
+      <div class="wish-card">
+        <div class="wav">${ini(w.name)}</div>
+        <div class="winfo">
+          <div class="wname">${w.name}</div>
+          <div class="wwatch">${w.brand||''} ${w.model||''} · <span class="wref">${w.ref||'Any ref'}</span>${w.size?' · '+w.size:''}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--white3);margin-top:1px">${w.phone||'No phone'}</div>
+        </div>
+        <div style="text-align:right"><div class="wbudget">${fmt(w.budget||0)}</div><div class="wblabel">Budget</div></div>
+        <div class="wish-actions">
+          <button class="btn btn-ghost btn-sm" onclick="openWishEdit(${i})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteWish(${i})">✕</button>
+        </div>
+      </div>`).join('');
 }
 
 function openWishEdit(i){
   const w=wishlist[i];
   document.getElementById('edit-wish-idx').value=i;
-  document.getElementById('ew-name').value=w.name;
-  document.getElementById('ew-phone').value=w.phone;
-  document.getElementById('ew-brand').value=w.brand;
-  document.getElementById('ew-model').value=w.model;
-  document.getElementById('ew-ref').value=w.ref;
-  document.getElementById('ew-budget').value=w.budget;
+  document.getElementById('ew-name').value=w.name||'';
+  document.getElementById('ew-phone').value=w.phone||'';
+  document.getElementById('ew-brand').value=w.brand||'';
+  document.getElementById('ew-model').value=w.model||'';
+  document.getElementById('ew-ref').value=w.ref||'';
+  document.getElementById('ew-budget').value=w.budget||0;
   openM('edit-wish-modal');
 }
 
@@ -753,55 +1512,167 @@ function saveWishEdit(){
   wishlist[i].model=document.getElementById('ew-model').value;
   wishlist[i].ref=document.getElementById('ew-ref').value;
   wishlist[i].budget=parseFloat(document.getElementById('ew-budget').value)||0;
-  closeM('edit-wish-modal');renderWishlist();
-  notify('✓','Wishlist Updated','Changes saved');
+  if(wishlist[i].id){fetch(API+'/api/wishlist/'+wishlist[i].id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(wishlist[i])}).catch(()=>{});}
+  closeM('edit-wish-modal');renderWishlist();notify('✓','Wishlist Updated','Changes saved');
 }
 
-function deleteWish(i){
+async function deleteWish(i){
+  if(wishlist[i].id){await fetch(API+'/api/wishlist/'+wishlist[i].id,{method:'DELETE'}).catch(()=>{});}
   wishlist.splice(i,1);
   document.getElementById('nb-wish').textContent=wishlist.length;
-  renderWishlist();notify('✓','Removed','Client removed from wishlist');
+  renderWishlist();updateDashboard();notify('✓','Removed','Client removed from wishlist');
 }
 
-function addWish(){
-  const name=document.getElementById('w-name').value,brand=document.getElementById('w-brand').value;
+async function addWish(){
+  const name=document.getElementById('w-name').value;
+  const brand=document.getElementById('w-brand').value;
   if(!name||!brand){notify('⚠','Missing Details','Name and brand required','var(--red)');return;}
-  wishlist.push({name,phone:document.getElementById('w-phone').value,brand,model:document.getElementById('w-model').value,ref:document.getElementById('w-ref').value,budget:parseFloat(document.getElementById('w-budget').value)||0});
-  document.getElementById('nb-wish').textContent=wishlist.length;
-  closeM('wish-modal');renderWishlist();
-  notify('◎','Added to Wishlist',`${name} will be alerted on match`);
+  const entry={name,phone:document.getElementById('w-phone').value,brand,model:document.getElementById('w-model').value,ref:document.getElementById('w-ref').value,size:document.getElementById('w-size').value,dial:document.getElementById('w-dial').value,budget:parseFloat(document.getElementById('w-budget').value)||0};
+  try{
+    const r=await fetch(API+'/api/wishlist',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(entry)});
+    const saved=await r.json();
+    wishlist.push({...entry,id:saved.id});
+    document.getElementById('nb-wish').textContent=wishlist.length;
+    closeM('wish-modal');renderWishlist();updateDashboard();
+    notify('◎','Added to Wishlist',name+' will be alerted on match');
+  }catch(e){notify('⚠','Save Failed','Check connection','var(--red)');}
 }
 
+// ===== CLIENTS =====
 function renderClients(list){
-  document.getElementById('client-grid').innerHTML=list.map(c=>{
-    const tag=c.tag==='vip'?'<span class="badge b-vip" style="margin-left:auto">VIP</span>':c.tag==='active'?'<span class="badge b-new" style="margin-left:auto">Active</span>':'<span class="badge b-wait" style="margin-left:auto">New</span>';
-    const ring=c.tag==='vip'?'vip-ring':'';
-    return `<div class="ccrd ${ring}">
-      <div class="cc-top"><div class="ccav">${ini(c.name)}</div><div><div class="ccname">${c.name}</div><div class="ccphone">${c.phone}</div></div>${tag}</div>
-      <div class="cc-stats">
-        <div class="ccstat"><div class="ccsl">Total Spend</div><div class="ccsv">${fmt(c.spend)}</div></div>
-        <div class="ccstat"><div class="ccsl">Purchases</div><div class="ccsv">${c.purchases}</div></div>
-        <div class="ccstat"><div class="ccsl">Last Contact</div><div class="ccsv" style="font-size:10px">${c.last}</div></div>
-        <div class="ccstat"><div class="ccsl">Wishlist</div><div class="ccsv">${c.wl}</div></div>
-      </div>
-    </div>`;
-  }).join('');
+  document.getElementById('client-grid').innerHTML=list.length===0?
+    '<div style="padding:24px;text-align:center;color:var(--white3);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px;grid-column:1/-1">No clients yet — add manually or import CSV</div>':
+    list.map(c=>{
+      const tag=c.tag==='vip'?'<span class="badge b-vip" style="margin-left:auto">VIP</span>':c.tag==='active'?'<span class="badge b-new" style="margin-left:auto">Active</span>':'<span class="badge b-wait" style="margin-left:auto">New</span>';
+      const ring=c.tag==='vip'?'vip-ring':'';
+      return `<div class="ccrd ${ring}">
+        <div class="cc-top"><div class="ccav">${ini(c.name)}</div><div><div class="ccname">${c.name}</div><div class="ccphone">${c.phone||c.email||'—'}</div></div>${tag}</div>
+        <div class="cc-stats">
+          <div class="ccstat"><div class="ccsl">Total Spend</div><div class="ccsv">${fmt(c.spend||0)}</div></div>
+          <div class="ccstat"><div class="ccsl">Purchases</div><div class="ccsv">${c.purchases||0}</div></div>
+          <div class="ccstat"><div class="ccsl">Last Contact</div><div class="ccsv" style="font-size:10px">${c.last||'—'}</div></div>
+          <div class="ccstat"><div class="ccsl">Wishlist</div><div class="ccsv">${c.wl||0}</div></div>
+        </div>
+        <div class="cc-convo">
+          <div class="cc-convo-msg">${c.lastMsg||'No conversation yet'}</div>
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
+            <div class="cc-convo-time">${c.lastMsgTime||''}</div>
+            <button class="btn btn-ghost btn-sm" onclick="viewConvo('${c.id||''}','${c.name}')">View Convo</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
 }
 
 function filterClients(q){
-  const filtered=allClients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.phone.includes(q));
+  const filtered=allClients.filter(c=>(c.name||'').toLowerCase().includes(q.toLowerCase())||(c.phone||'').includes(q)||(c.email||'').toLowerCase().includes(q.toLowerCase()));
   renderClients(filtered);
 }
 
-function mvStage(el){
-  el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o=>o.classList.remove('active'));el.classList.add('active');
-  notify('◈','Stage Updated',`Lead moved to ${el.textContent} — GHL pipeline syncing`);
+function viewConvo(id,name){
+  document.getElementById('convo-modal-name').textContent=name+' — Conversation';
+  document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Connect GHL to view conversation history</div>';
+  openM('convo-modal');
 }
 
+async function addClient(){
+  const first=document.getElementById('ac-first').value;
+  const last=document.getElementById('ac-last').value;
+  if(!first){notify('⚠','Missing Details','First name required','var(--red)');return;}
+  const newClient={name:first+' '+last,phone:document.getElementById('ac-phone').value,email:document.getElementById('ac-email').value,spend:0,purchases:0,last:'Just added',wl:0,tag:'new',notes:document.getElementById('ac-notes').value};
+  clients.push(newClient);allClients=[...clients];
+  closeM('add-client-modal');renderClients(allClients);
+  notify('✓','Client Added',first+' '+last+' added — syncing to GHL');
+  ['ac-first','ac-last','ac-phone','ac-email','ac-notes'].forEach(id=>{document.getElementById(id).value='';});
+}
+
+// ===== CSV IMPORT =====
+function handleCSV(input){
+  const file=input.files[0];if(!file)return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    const lines=e.target.result.split('\n').filter(l=>l.trim());
+    const headers=lines[0].split(',').map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+    csvData=lines.slice(1).map(line=>{
+      const vals=line.split(',').map(v=>v.trim().replace(/['"]/g,''));
+      const obj={};headers.forEach((h,i)=>obj[h]=vals[i]||'');
+      return {
+        name:(obj['first name']||obj['firstname']||obj['name']||'')+' '+(obj['last name']||obj['lastname']||''),
+        phone:obj['phone']||obj['mobile']||obj['tel']||'',
+        email:obj['email']||'',
+        spend:0,purchases:0,last:'Imported',wl:0,tag:'new'
+      };
+    }).filter(c=>c.name.trim().length>1);
+    document.getElementById('csv-count').textContent=csvData.length+' contacts found in file';
+    document.getElementById('csv-tbody').innerHTML=csvData.slice(0,5).map(c=>`<tr><td>${c.name}</td><td>${c.phone}</td><td>${c.email}</td></tr>`).join('')+(csvData.length>5?`<tr><td colspan="3" style="text-align:center;color:var(--white3)">...and ${csvData.length-5} more</td></tr>`:'');
+    document.getElementById('csv-preview').style.display='block';
+    document.getElementById('csv-import-btn').style.display='inline-flex';
+  };
+  reader.readAsText(file);
+}
+
+function importCSV(){
+  clients=[...clients,...csvData];allClients=[...clients];
+  closeM('csv-client-modal');renderClients(allClients);
+  notify('✓','Imported',csvData.length+' clients imported successfully');
+  csvData=[];
+  document.getElementById('csv-preview').style.display='none';
+  document.getElementById('csv-import-btn').style.display='none';
+  document.getElementById('csv-input').value='';
+}
+
+// ===== CONSIGNMENT =====
+function renderConsignment(){
+  const held=consignments.filter(c=>c.status==='Holding'||c.status==='Listed');
+  const soldThisMonth=consignments.filter(c=>c.status==='Sold');
+  const totalComm=soldThisMonth.reduce((a,c)=>a+((c.listPrice||0)*(c.rate||10)/100),0);
+  document.getElementById('con-held').textContent=held.length||'—';
+  document.getElementById('con-val').textContent=held.length>0?fmt(held.reduce((a,c)=>a+(c.listPrice||0),0)):'—';
+  document.getElementById('con-sold').textContent=soldThisMonth.length||'—';
+  document.getElementById('con-comm').textContent=totalComm>0?fmt(totalComm):'—';
+  document.getElementById('nb-con').textContent=held.length;
+  document.getElementById('kpi-con').textContent=held.length||'—';
+  document.getElementById('con-list').innerHTML=consignments.length===0?
+    '<div style="padding:24px;text-align:center;color:var(--white3);font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase;font-size:11px">No consignment watches yet</div>':
+    consignments.map((c,i)=>{
+      const comm=(c.listPrice||0)*(c.rate||10)/100;
+      const ownerPayout=(c.listPrice||0)-comm;
+      return `<div class="con-card">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div><div style="font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--white);text-transform:uppercase">${c.brand||''} ${c.model||''}</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright)">${c.ref||'—'}</div></div>
+          <span class="badge b-con">${c.status||'Holding'}</span>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px">
+          <div class="ccstat"><div class="ccsl">Owner</div><div class="ccsv" style="font-size:10px">${c.owner||'—'}</div></div>
+          <div class="ccstat"><div class="ccsl">List Price</div><div class="ccsv">${fmt(c.listPrice||0)}</div></div>
+          <div class="ccstat"><div class="ccsl">Commission ${c.rate||10}%</div><div class="ccsv" style="color:var(--gold-bright)">${fmt(comm)}</div></div>
+          <div class="ccstat"><div class="ccsl">Owner Payout</div><div class="ccsv">${fmt(ownerPayout)}</div></div>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" onclick="markConSold(${i})">Mark Sold</button>
+          <button class="btn btn-ghost btn-sm" onclick="markConReturn(${i})">Return</button>
+        </div>
+      </div>`;
+    }).join('');
+}
+
+function addConsignment(){
+  const owner=document.getElementById('con-owner').value;
+  if(!owner){notify('⚠','Missing Details','Owner name required','var(--red)');return;}
+  const entry={owner,phone:document.getElementById('con-phone').value,brand:document.getElementById('con-brand').value,model:document.getElementById('con-model').value,ref:document.getElementById('con-ref').value,ownerPrice:parseFloat(document.getElementById('con-owner-price').value)||0,listPrice:parseFloat(document.getElementById('con-list-price').value)||0,rate:parseFloat(document.getElementById('con-rate').value)||10,cond:document.getElementById('con-cond').value,date:document.getElementById('con-date').value,notes:document.getElementById('con-notes').value,status:'Holding'};
+  consignments.push(entry);closeM('con-modal');renderConsignment();updateDashboard();
+  notify('◐','Consignment Added',owner+' — '+entry.brand+' '+entry.ref);
+}
+
+function markConSold(i){consignments[i].status='Sold';renderConsignment();updateDashboard();notify('✓','Marked Sold','Consignment deal closed');}
+function markConReturn(i){consignments[i].status='Returned';renderConsignment();updateDashboard();notify('◐','Returned','Watch returned to owner');}
+
+// ===== VALUATION =====
 function runVal(){
   const brand=document.getElementById('v-brand').value,ref=document.getElementById('v-ref').value;
   if(!brand&&!ref){notify('⚠','Missing Details','Enter brand and reference','var(--red)');return;}
-  const base=ref==='126500LN'?15800:ref==='5711/1A-011'?86000:ref==='15500ST.OO.1220ST'?28000:ref==='126710BLRO'?13200:ref==='M79030N-0001'?3100:15000;
+  const base=ref==='126610LN'?11850:ref==='126500LN'?15200:ref==='5711/1A-011'?86000:ref==='15500ST.OO.1220ST.01'?28200:ref==='126710BLRO'?13400:ref==='M79030N-0001'?3100:15000;
   const srcs=[
     {name:'Chrono24',price:Math.round(base*1.02),range:`${fmt(base*.94)} — ${fmt(base*1.1)}`,count:Math.floor(Math.random()*30+22)},
     {name:'WatchCharts',price:Math.round(base*.99),range:`${fmt(base*.93)} — ${fmt(base*1.06)}`,count:Math.floor(Math.random()*20+14)},
@@ -809,7 +1680,7 @@ function runVal(){
   ];
   const blended=Math.round(srcs.reduce((a,s)=>a+s.price,0)/srcs.length);
   document.getElementById('vb-price').textContent=fmt(blended);
-  document.getElementById('vb-range').textContent=`Range: ${fmt(blended*.91)} — ${fmt(blended*1.09)} · Based on ${srcs.reduce((a,s)=>a+s.count,0)} recent sales`;
+  document.getElementById('vb-range').textContent='Range: '+fmt(blended*.91)+' — '+fmt(blended*1.09)+' · Based on '+srcs.reduce((a,s)=>a+s.count,0)+' recent sales';
   document.getElementById('val-srcs').innerHTML=srcs.map((s,i)=>`<div class="vsrc ${i===0?'best':''}"><div class="vs-n">${s.name}</div><div class="vs-p">${fmt(s.price)}</div><div class="vs-r">${s.range}</div><div class="vs-live"><div class="vs-dot"></div>Live · ${s.count} sales</div></div>`).join('');
   document.getElementById('val-recs').innerHTML=`
     <div class="vsrc best-red"><div class="vs-n">Trade In Floor</div><div class="vs-p" style="color:var(--red)">${fmt(blended*.82)}</div><div class="vs-r">Walk away point</div></div>
@@ -818,39 +1689,118 @@ function runVal(){
   document.getElementById('val-results').style.display='block';
 }
 
+// ===== TRADE IN =====
 function runTrade(){
   const brand=document.getElementById('t-brand').value;
   if(!brand){notify('⚠','Missing Details','Enter watch brand','var(--red)');return;}
   const ref=document.getElementById('t-ref').value;
-  const base=ref==='126710BLRO'?13200:ref==='126500LN'?15800:ref==='5711/1A-011'?86000:15000;
+  const base=ref==='126710BLRO'?13400:ref==='126500LN'?15200:ref==='5711/1A-011'?86000:15000;
   const cm={'Mint — No visible wear':1.0,'Excellent — Minor wear only':.95,'Good — Normal wear':.88,'Fair — Noticeable wear':.78,'Poor — Heavy wear or damage':.65};
   const pm={'Full Set — Box and Papers':1.0,'Box Only — No Papers':.93,'Papers Only — No Box':.91,'Watch Only':.85};
   const cond=document.getElementById('t-cond').value,prov=document.getElementById('t-prov').value;
   const c=cm[cond]||.9,p=pm[prov]||.9,adj=Math.round(base*c*p);
   const sp=parseFloat(document.getElementById('t-sprice').value)||0;
+  const mods=document.getElementById('t-mods').value.includes('Yes');
+  const modAdj=mods?0.92:1;
+  const final=Math.round(adj*modAdj);
   document.getElementById('trade-grid').innerHTML=`
-    <div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">${fmt(adj*.84)}</div><div class="vs-r">Walk away point</div></div>
-    <div class="vsrc best"><div class="vs-n">Fair Trade Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(adj*.91)}</div><div class="vs-r">Recommended offer</div></div>
-    <div class="vsrc best-green"><div class="vs-n">Market Value</div><div class="vs-p" style="color:var(--green)">${fmt(adj)}</div><div class="vs-r">If selling retail</div></div>`;
+    <div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">${fmt(final*.84)}</div><div class="vs-r">Walk away point</div></div>
+    <div class="vsrc best"><div class="vs-n">Fair Trade Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(final*.91)}</div><div class="vs-r">Recommended offer</div></div>
+    <div class="vsrc best-green"><div class="vs-n">Market Value</div><div class="vs-p" style="color:var(--green)">${fmt(final)}</div><div class="vs-r">If selling retail</div></div>`;
   const unpolished=document.getElementById('t-case').value?.includes('Unpolished');
-  document.getElementById('trade-notes').innerHTML=`Condition: <strong style="color:var(--white)">${cond||'Not specified'}</strong> → ${Math.round(c*100)}% of base value<br>Provenance: <strong style="color:var(--white)">${prov||'Not specified'}</strong> → ${Math.round(p*100)}% adjustment<br>Case: ${unpolished?'<strong style="color:var(--green)">Unpolished — original finish adds value</strong>':'Standard finish'}<br>${sp?`Seller asking ${fmt(sp)} — ${sp>adj?'<strong style="color:var(--red)">Above market — negotiate down</strong>':'<strong style="color:var(--green)">Reasonable — proceed with offer</strong>'}`:''}`  ;
+  document.getElementById('trade-notes').innerHTML=`Condition: <strong style="color:var(--white)">${cond||'Not specified'}</strong> → ${Math.round(c*100)}% of base<br>Provenance: <strong style="color:var(--white)">${prov||'Not specified'}</strong> → ${Math.round(p*100)}% adjustment<br>Case: ${unpolished?'<strong style="color:var(--green)">Unpolished — adds value</strong>':'Standard finish'}<br>${mods?'<strong style="color:var(--amber)">Modifications noted — 8% reduction applied</strong><br>':''}<em style="color:var(--white3);font-size:10px">Subject to specialist assessment — this is an indicative range only</em><br>${sp?'Seller asking '+fmt(sp)+' — '+(sp>final?'<strong style="color:var(--red)">Above market — negotiate down</strong>':'<strong style="color:var(--green)">Reasonable — proceed with offer</strong>'):''}`  ;
   document.getElementById('trade-result').style.display='block';
-  notify('◑','Valuation Complete',`${brand} — trade price ${fmt(adj*.91)}`,'var(--gold)');
+  notify('◑','Valuation Complete',brand+' — trade price '+fmt(final*.91),'var(--gold)');
 }
 
 function genLink(){
   const id='WRW-'+Math.floor(Math.random()*9000+1000);
-  document.getElementById('slink-url').textContent=`ghostlydesk.netlify.app/tradein/${id}`;
+  const url='ghostlydesk-production.up.railway.app/tradein/'+id;
+  document.getElementById('slink-url').textContent=url;
   document.getElementById('slink-box').style.display='block';
   notify('⟳','Seller Link Ready','Send via WhatsApp — alert fires on submission');
 }
 function copyLink(){navigator.clipboard.writeText(document.getElementById('slink-url').textContent).then(()=>notify('✓','Copied','Link copied to clipboard'));}
 
+// ===== PHOTOS =====
+function handleStockPhotos(input){
+  const grid=document.getElementById('stock-photo-grid');
+  Array.from(input.files).forEach(f=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='pthumb';d.innerHTML='<img src="'+e.target.result+'">';grid.appendChild(d);};r.readAsDataURL(f);});
+}
 function handlePhotos(input){
   const grid=document.getElementById('pgrid');
-  Array.from(input.files).forEach(f=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='pthumb';d.innerHTML=`<img src="${e.target.result}">`;grid.appendChild(d);};r.readAsDataURL(f);});
+  Array.from(input.files).forEach(f=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='pthumb';d.innerHTML='<img src="'+e.target.result+'">';grid.appendChild(d);};r.readAsDataURL(f);});
 }
 
+// ===== REPORTS =====
+function updateReportDates(){
+  const period=document.getElementById('report-period').value;
+  const now=new Date();
+  let from,to;
+  to=now.toISOString().split('T')[0];
+  if(period==='week'){from=new Date(now-7*86400000).toISOString().split('T')[0];}
+  else if(period==='lastweek'){from=new Date(now-14*86400000).toISOString().split('T')[0];to=new Date(now-7*86400000).toISOString().split('T')[0];}
+  else if(period==='month'){from=new Date(now.getFullYear(),now.getMonth(),1).toISOString().split('T')[0];}
+  else if(period==='lastmonth'){from=new Date(now.getFullYear(),now.getMonth()-1,1).toISOString().split('T')[0];to=new Date(now.getFullYear(),now.getMonth(),0).toISOString().split('T')[0];}
+  else if(period==='quarter'){const q=Math.floor(now.getMonth()/3);from=new Date(now.getFullYear(),q*3,1).toISOString().split('T')[0];}
+  else if(period==='lastquarter'){const q=Math.floor(now.getMonth()/3)-1;from=new Date(now.getFullYear(),q*3,1).toISOString().split('T')[0];to=new Date(now.getFullYear(),(q+1)*3,0).toISOString().split('T')[0];}
+  else if(period==='year'){from=new Date(now.getFullYear(),0,1).toISOString().split('T')[0];}
+  else if(period==='lastyear'){from=new Date(now.getFullYear()-1,0,1).toISOString().split('T')[0];to=new Date(now.getFullYear()-1,11,31).toISOString().split('T')[0];}
+  if(from)document.getElementById('report-from').value=from;
+  if(to)document.getElementById('report-to').value=to;
+}
+
+function exportReport(type){
+  const from=document.getElementById('report-from').value;
+  const to=document.getElementById('report-to').value;
+  let csv='',filename='';
+  if(type==='inventory'||type==='full'){
+    csv='Reference,Brand,Model,Size,Condition,Box,Papers,Bought,Recon,Delivery,Fees,Total Cost,Asking,Net Profit,Margin %,Days in Stock,Status\n';
+    csv+=stock.map(w=>{
+      const cost=w.bought+w.recon+(w.fees||0)+(w.delivery||0),profit=w.asking-cost,m=pct(profit,cost);
+      return [w.ref||'',w.brand||'',w.model||'',w.size||'',w.cond||'',w.box||'',w.papers||'',w.bought,w.recon||0,w.delivery||0,w.fees||0,cost,w.asking,profit,m+'%',w.days||0,w.status||''].join(',');
+    }).join('\n');
+    filename='inventory-'+from+'-to-'+to+'.csv';
+  } else if(type==='pl'){
+    const totalCost=stock.reduce((a,w)=>a+w.bought+w.recon+(w.fees||0)+(w.delivery||0),0);
+    const totalAsking=stock.reduce((a,w)=>a+w.asking,0);
+    const totalProfit=totalAsking-totalCost;
+    csv='Report Period,From,To\n'+from+','+to+'\n\nTotal Stock Value,Total Cost,Total Profit,Avg Margin\n'+totalAsking+','+totalCost+','+totalProfit+','+pct(totalProfit,totalCost)+'%';
+    filename='pl-summary-'+from+'-to-'+to+'.csv';
+  } else if(type==='consignment'){
+    csv='Owner,Phone,Brand,Model,Reference,List Price,Commission %,Commission Amount,Owner Payout,Status,Date Received\n';
+    csv+=consignments.map(c=>{const comm=(c.listPrice||0)*(c.rate||10)/100;return [c.owner||'',c.phone||'',c.brand||'',c.model||'',c.ref||'',c.listPrice||0,c.rate||10,comm,(c.listPrice||0)-comm,c.status||'',c.date||''].join(',');}).join('\n');
+    filename='consignment-'+from+'-to-'+to+'.csv';
+  } else if(type==='clients'){
+    csv='Name,Phone,Email,Total Spend,Purchases,Last Contact,Tag\n';
+    csv+=allClients.map(c=>[c.name||'',c.phone||'',c.email||'',c.spend||0,c.purchases||0,c.last||'',c.tag||''].join(',')).join('\n');
+    filename='clients-'+from+'-to-'+to+'.csv';
+  } else if(type==='delivery'){
+    csv='Reference,Brand,Model,Delivery Cost,Insurance,Total Logistics\n';
+    csv+=stock.map(w=>[w.ref||'',w.brand||'',w.model||'',w.delivery||0,0,w.delivery||0].join(',')).join('\n');
+    filename='delivery-'+from+'-to-'+to+'.csv';
+  } else if(type==='vat'){
+    const totalSales=stock.reduce((a,w)=>a+w.asking,0);
+    const totalPurchases=stock.reduce((a,w)=>a+w.bought,0);
+    csv='VAT Report: '+from+' to '+to+'\n\nTotal Sales (exc VAT),VAT on Sales (20%),Total Purchases (exc VAT),VAT on Purchases (20%),Net VAT Liability\n';
+    csv+=totalSales+','+(totalSales*0.2)+','+totalPurchases+','+(totalPurchases*0.2)+','+((totalSales-totalPurchases)*0.2);
+    filename='vat-report-'+from+'-to-'+to+'.csv';
+  } else {
+    csv='Full GhostlyDesk Export: '+from+' to '+to+'\n\n';
+    csv+='=== INVENTORY ===\nReference,Brand,Model,Bought,Recon,Delivery,Fees,Asking,Profit,Margin,Status\n';
+    csv+=stock.map(w=>{const cost=w.bought+w.recon+(w.fees||0)+(w.delivery||0),profit=w.asking-cost,m=pct(profit,cost);return [w.ref||'',w.brand||'',w.model||'',w.bought,w.recon||0,w.delivery||0,w.fees||0,w.asking,profit,m+'%',w.status||''].join(',');}).join('\n');
+    csv+='\n\n=== WISHLIST ===\nName,Phone,Brand,Model,Reference,Budget\n';
+    csv+=wishlist.map(w=>[w.name||'',w.phone||'',w.brand||'',w.model||'',w.ref||'',w.budget||0].join(',')).join('\n');
+    filename='full-export-'+from+'-to-'+to+'.csv';
+  }
+  const blob=new Blob([csv],{type:'text/csv'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download=filename;a.click();
+  URL.revokeObjectURL(url);
+  notify('↓','Export Ready',filename+' downloaded');
+}
+
+// ===== VOICE =====
 let rec=null,isRec=false;
 function toggleVoice(){
   if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){notify('⚠','Not Supported','Use Chrome or Safari','var(--red)');return;}
@@ -862,20 +1812,25 @@ function toggleVoice(){
   rec.onend=()=>{isRec=false;document.getElementById('vbtn').classList.remove('rec');};
   rec.start();
 }
-
 function parseVoice(t){
   const tl=t.toLowerCase();
-  ['rolex','patek philippe','audemars piguet','richard mille','tudor','omega','iwc'].forEach(b=>{if(tl.includes(b)){const s=document.getElementById('a-brand');for(let o of s.options)if(o.value.toLowerCase()===b){s.value=o.value;break;}}});
+  Object.keys(WATCH_BRANDS).forEach(b=>{if(tl.includes(b.toLowerCase())){document.getElementById('a-brand').value=b;updateModels('a-brand','a-model');}});
   const rm=tl.match(/ref(?:erence)?\s+([a-z0-9\/\-\.]+)/i);
-  if(rm)document.getElementById('a-ref').value=rm[1].toUpperCase();
+  if(rm){document.getElementById('a-ref').value=rm[1].toUpperCase();lookupRef(rm[1]);}
   const nums=t.match(/\d[\d,]*/g);
   if(nums){let v=parseInt(nums[0].replace(/,/g,''));if(tl.includes('thousand'))v*=1000;document.getElementById('a-bought').value=v;if(nums[1]){let v2=parseInt(nums[1].replace(/,/g,''));if(tl.includes('thousand'))v2*=1000;document.getElementById('a-asking').value=v2;}}
-  if(tl.includes('full set'))document.getElementById('a-cond').value=tl.includes('unworn')?'Full Set · Unworn':'Full Set · Worn';
+  if(tl.includes('full set'))document.getElementById('a-cond').value=tl.includes('unworn')?'Full Set · Unworn':'Full Set · Excellent';
   else if(tl.includes('box only'))document.getElementById('a-cond').value='Box Only · Worn';
   calcAdd();notify('🎙','Voice Captured','Review and adjust if needed');
 }
 
-renderWishlist();renderClients(allClients);
+// ===== INIT =====
+async function init(){
+  await Promise.all([loadInventory(),loadWishlist(),loadContacts()]);
+  updateDashboard();
+  renderLeads();
+}
+setInterval(()=>{if(currentDealer){loadContacts();updateDashboard();}},60000);
 </script>
 </body>
 </html>
