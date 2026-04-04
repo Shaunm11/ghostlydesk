@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GhostlyDesk</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Barlow+Condensed:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black:#080808;--panel:#101010;--panel2:#161616;--panel3:#1E1E1E;
+  --cell:#1A1A1A;--cell-border:#2E2E2E;--cell-border-bright:#3E3E3E;
+  --gold:#C9A84C;--gold-bright:#E8C96A;--white:#F2F2F2;--white2:#C0C0C0;--white3:#707070;
+  --green:#00C853;--amber:#FFB300;--red:#FF3D00;--blue:#00B0FF;
+  --purple:#9C27B0;--purple-bright:#CE93D8;--purple-glow:rgba(156,39,176,0.2);
+  --sw:52px;--so:214px;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white);}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:0 20px 0 0;height:52px;background:var(--panel);border-bottom:2px solid var(--gold);position:fixed;top:0;left:0;right:0;z-index:300;}
+.tb-left{display:flex;align-items:center;height:100%;}
+.tb-logo-wrap{width:var(--sw);height:100%;display:flex;align-items:center;justify-content:center;border-right:1px solid var(--cell-border);flex-shrink:0;}
+.tb-logo{width:32px;height:32px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--black);}
+.tb-brand{padding:0 16px;}
+.tb-name{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--gold-bright);letter-spacing:.2em;text-transform:uppercase;}
+.tb-tag{font-size:8px;letter-spacing:.3em;text-transform:uppercase;color:var(--white3);}
+.tb-right{display:flex;align-items:center;gap:20px;}
+.tb-clock{font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--white2);}
+.status-pill{display:flex;align-items:center;gap:6px;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);}
+.sdot{width:6px;height:6px;border-radius:50%;background:var(--purple-bright);box-shadow:0 0 10px var(--purple);animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.app{display:flex;height:calc(100vh - 52px);margin-top:52px;}
+.sidebar{width:var(--sw);min-width:var(--sw);background:var(--panel);border-right:1px solid var(--cell-border);display:flex;flex-direction:column;padding:8px 0;transition:width .2s cubic-bezier(.4,0,.2,1);overflow:hidden;flex-shrink:0;}
+.sidebar:hover{width:var(--so);}
+.sidebar:hover .nlabel,.sidebar:hover .ntext,.sidebar:hover .nbadge{opacity:1;}
+.sidebar:hover .ntext{max-width:150px;}
+.ngroup{padding:0 6px;margin-bottom:2px;}
+.nlabel{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);padding:5px 8px 3px;opacity:0;transition:opacity .15s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;}
+.nitem{display:flex;align-items:center;gap:8px;padding:8px 8px;border-radius:2px;cursor:pointer;color:var(--white3);transition:all .12s;border-left:2px solid transparent;white-space:nowrap;}
+.nitem:hover{background:var(--panel2);color:var(--white);}
+.nitem.active{background:var(--purple-glow);color:var(--purple-bright);border-left-color:var(--purple-bright);}
+.nico{font-size:14px;width:20px;min-width:20px;text-align:center;flex-shrink:0;}
+.ntext{font-size:12px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;opacity:0;max-width:0;overflow:hidden;transition:opacity .15s,max-width .15s;white-space:nowrap;}
+.nbadge{margin-left:auto;background:var(--purple);color:var(--white);font-size:8px;font-weight:700;padding:2px 5px;border-radius:2px;opacity:0;transition:opacity .15s;flex-shrink:0;font-family:'JetBrains Mono',monospace;}
+.ndiv{height:1px;background:var(--cell-border);margin:6px 8px;}
+.main{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--black);}
+::-webkit-scrollbar{width:3px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--cell-border-bright);}
+.panel{display:none;animation:fin .15s ease;}
+.panel.active{display:block;}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+.ph{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;border-bottom:1px solid var(--cell-border);background:var(--panel);}
+.ph-title{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;}
+.ph-sub{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--white3);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.ph-acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.btn{font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;padding:7px 14px;border-radius:2px;cursor:pointer;transition:all .12s;border:none;display:inline-flex;align-items:center;gap:5px;}
+.btn-gold{background:var(--gold);color:var(--black);}.btn-gold:hover{background:var(--gold-bright);}
+.btn-purple{background:var(--purple);color:var(--white);}.btn-purple:hover{background:#7B1FA2;}
+.btn-outline{background:transparent;color:var(--gold);border:1px solid var(--gold);}.btn-outline:hover{background:rgba(201,168,76,.08);}
+.btn-ghost{background:transparent;color:var(--white2);border:1px solid var(--cell-border-bright);}.btn-ghost:hover{color:var(--white);border-color:var(--white3);}
+.btn-danger{background:transparent;color:var(--red);border:1px solid rgba(255,61,0,.3);}.btn-danger:hover{background:rgba(255,61,0,.08);}
+.btn-sm{padding:4px 8px;font-size:10px;}
+.search-bar{display:flex;align-items:center;gap:0;background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
+.search-bar input{background:transparent;border:none;padding:7px 12px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;width:220px;}
+.search-bar input::placeholder{color:var(--white3);}
+.search-icon{padding:0 10px;color:var(--white3);font-size:14px;}
+.kpi-strip{display:grid;grid-template-columns:repeat(5,1fr);border-bottom:1px solid var(--cell-border);}
+.kpi{padding:14px 16px;border-right:1px solid var(--cell-border);background:var(--cell);border-top:2px solid transparent;}
+.kpi:last-child{border-right:none;}
+.kpi.hl{border-top-color:var(--purple);box-shadow:0 0 16px rgba(156,39,176,.1);}
+.kpi.hl .kpi-v{color:var(--purple-bright);}
+.kpi-l{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;}
+.kpi-v{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--white);line-height:1;}
+.kpi-n{font-size:10px;color:var(--white3);margin-top:4px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;}
+.up{color:var(--green);}.down{color:var(--red);}
+.sw{padding:0 20px 20px;}
+.sh{display:flex;align-items:center;justify-content:space-between;padding:12px 20px 10px;background:var(--panel);border-bottom:1px solid var(--cell-border);}
+.sh-t{font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.tbl-wrap{overflow-x:auto;}
+.tbl{width:100%;border-collapse:collapse;font-size:12px;}
+.tbl th{text-align:left;padding:8px 12px;font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);border-bottom:1px solid var(--cell-border);font-weight:600;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;background:var(--cell);}
+.tbl td{padding:10px 12px;border-bottom:1px solid rgba(46,46,46,.8);color:var(--white2);vertical-align:middle;background:var(--panel);}
+.tbl tr:hover td{background:var(--cell);color:var(--white);}
+.mono{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--purple-bright);}
+.bold{font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;font-size:14px;}
+.editable{background:transparent;border:none;color:var(--white2);font-family:'JetBrains Mono',monospace;font-size:11px;width:80px;outline:none;padding:2px 4px;border-radius:2px;transition:background .12s;text-align:right;}
+.editable:focus{background:var(--panel3);color:var(--white);}
+.editable-text{background:transparent;border:none;color:var(--white2);font-family:'Rajdhani',sans-serif;font-size:12px;outline:none;padding:2px 4px;border-radius:2px;transition:background .12s;width:100%;}
+.editable-text:focus{background:var(--panel3);color:var(--white);}
+.badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;}
+.b-av{background:rgba(0,200,83,.1);color:var(--green);border:1px solid rgba(0,200,83,.3);}
+.b-res{background:rgba(156,39,176,.12);color:var(--purple-bright);border:1px solid rgba(156,39,176,.35);}
+.b-sold{background:rgba(255,61,0,.1);color:var(--red);border:1px solid rgba(255,61,0,.3);}
+.b-vip{background:rgba(201,168,76,.12);color:var(--gold-bright);border:1px solid var(--gold);}
+.b-new{background:rgba(156,39,176,.12);color:var(--purple-bright);border:1px solid rgba(156,39,176,.3);}
+.b-wait{background:rgba(156,39,176,.1);color:var(--purple-bright);border:1px solid rgba(156,39,176,.3);}
+.mpill{font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:600;}
+.mpill.g{color:var(--green);}.mpill.o{color:var(--amber);}.mpill.r{color:var(--red);}
+.vtoggle{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
+.vt{padding:6px 12px;font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;font-family:'Barlow Condensed',sans-serif;}
+.vt:last-child{border-right:none;}.vt.active{background:var(--purple);color:var(--white);}
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;padding:16px 20px;}
+.wcard{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;transition:all .12s;}
+.wcard:hover{border-top-color:var(--purple);}
+.wc-ref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);margin-bottom:3px;}
+.wc-name{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:700;color:var(--white);text-transform:uppercase;margin-bottom:10px;}
+.wc-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.wc-l{font-size:8px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.wc-v{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);}
+.wc-p{font-family:'JetBrains Mono',monospace;font-size:17px;font-weight:600;color:var(--green);}
+.wc-ft{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px solid var(--cell-border);}
+.wc-actions{display:flex;gap:5px;margin-top:10px;}
+.val-blended{background:var(--cell);border:2px solid var(--gold);border-radius:2px;padding:18px;text-align:center;margin-bottom:14px;}
+.vb-l{font-size:8px;letter-spacing:.25em;text-transform:uppercase;color:var(--white3);margin-bottom:7px;font-family:'Barlow Condensed',sans-serif;}
+.vb-p{font-family:'JetBrains Mono',monospace;font-size:38px;font-weight:600;color:var(--gold-bright);}
+.vb-r{font-size:11px;color:var(--white3);margin-top:3px;font-family:'Barlow Condensed',sans-serif;}
+.val-sources{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0;}
+.vsrc{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:12px;}
+.vsrc.best{border-top-color:var(--gold);}
+.vsrc.best-green{border-top-color:var(--green);}
+.vsrc.best-red{border-top-color:var(--red);}
+.vs-n{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);margin-bottom:6px;font-family:'Barlow Condensed',sans-serif;}
+.vs-p{font-family:'JetBrains Mono',monospace;font-size:22px;font-weight:600;color:var(--white);}
+.vs-r{font-size:9px;color:var(--white3);margin-top:2px;font-family:'Barlow Condensed',sans-serif;}
+.vs-live{display:flex;align-items:center;gap:4px;font-size:8px;color:var(--purple-bright);margin-top:5px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase;}
+.vs-dot{width:4px;height:4px;border-radius:50%;background:var(--purple-bright);animation:blink 1.5s infinite;}
+.fs{background:var(--cell);border:1px solid var(--cell-border);border-radius:2px;padding:16px;margin-bottom:12px;}
+.fs-title{font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.fs-sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--white3);margin-bottom:13px;font-family:'Barlow Condensed',sans-serif;}
+.fg{display:grid;gap:10px;margin-bottom:10px;}
+.fg2{grid-template-columns:1fr 1fr;}.fg3{grid-template-columns:1fr 1fr 1fr;}
+.field{display:flex;flex-direction:column;gap:4px;}
+.field label{font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.field input,.field select,.field textarea{background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:8px 10px;font-family:'Rajdhani',sans-serif;font-size:13px;color:var(--white);outline:none;transition:border-color .12s;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--purple);}
+.field select option{background:var(--panel2);}
+.field textarea{resize:vertical;min-height:70px;line-height:1.5;}
+.voice-bar{display:flex;align-items:center;gap:12px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:12px 16px;margin-bottom:12px;}
+.vbtn{width:36px;height:36px;border-radius:50%;background:var(--purple);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;transition:all .15s;box-shadow:0 0 12px rgba(156,39,176,.4);}
+.vbtn:hover{background:#7B1FA2;transform:scale(1.06);}
+.vbtn.rec{background:var(--red);animation:vp .8s infinite;}
+@keyframes vp{0%,100%{box-shadow:0 0 0 rgba(255,61,0,.4)}50%{box-shadow:0 0 20px rgba(255,61,0,.8)}}
+.vinfo{flex:1;}.vinfo-t{font-size:12px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;}.vinfo-s{font-size:10px;color:var(--white3);margin-top:1px;}
+.vout{flex:2;background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:7px 10px;font-size:10px;color:var(--white3);font-style:italic;min-height:34px;font-family:'JetBrains Mono',monospace;}
+.wish-card{display:flex;align-items:center;gap:12px;background:var(--cell);border:1px solid var(--cell-border);border-left:3px solid var(--cell-border);border-radius:2px;padding:12px 16px;margin-bottom:7px;transition:all .12s;}
+.wish-card:hover{border-left-color:var(--purple);}
+.wav{width:32px;height:32px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--purple-bright);flex-shrink:0;font-family:'Barlow Condensed',sans-serif;}
+.winfo{flex:1;}.wname{font-size:13px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}.wwatch{font-size:10px;color:var(--white3);margin-top:2px;}.wref{font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);}
+.wbudget{font-family:'JetBrains Mono',monospace;font-size:15px;font-weight:600;color:var(--white);text-align:right;}
+.wblabel{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.wish-actions{display:flex;gap:5px;margin-left:8px;}
+.match-alert{display:flex;align-items:center;gap:9px;background:rgba(0,200,83,.06);border:1px solid rgba(0,200,83,.25);border-left:3px solid var(--green);border-radius:2px;padding:10px 14px;margin-bottom:9px;animation:sd .25s ease;}
+@keyframes sd{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+.madot{width:6px;height:6px;border-radius:50%;background:var(--green);flex-shrink:0;box-shadow:0 0 6px var(--green);}
+.matext{font-size:11px;color:var(--green);line-height:1.5;font-family:'Barlow Condensed',sans-serif;}
+.client-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px;padding:16px 20px;}
+.ccrd{background:var(--cell);border:1px solid var(--cell-border);border-top:2px solid var(--cell-border);border-radius:2px;padding:14px;transition:all .12s;cursor:pointer;}
+.ccrd:hover{border-top-color:var(--purple);}
+.ccrd.vip-ring{border-top-color:var(--gold);box-shadow:0 0 0 1px var(--gold),0 0 14px rgba(201,168,76,.1);}
+.cc-top{display:flex;align-items:center;gap:9px;margin-bottom:12px;}
+.ccav{width:34px;height:34px;border-radius:2px;background:var(--panel3);border:1px solid var(--cell-border);display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:700;color:var(--purple-bright);}
+.ccname{font-size:13px;font-weight:700;color:var(--white);font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;}.ccphone{font-size:9px;color:var(--white3);font-family:'JetBrains Mono',monospace;}
+.cc-stats{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.ccstat{background:var(--panel2);border-radius:2px;padding:7px 9px;border:1px solid var(--cell-border);}
+.ccsl{font-size:8px;letter-spacing:.13em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;}
+.ccsv{font-size:12px;font-weight:600;color:var(--white);margin-top:1px;font-family:'JetBrains Mono',monospace;}
+.stage-sel{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
+.sopt{padding:4px 8px;font-size:8px;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+.sopt:last-child{border-right:none;}.sopt.active{background:var(--purple);color:var(--white);}
+.sopt:hover:not(.active){background:var(--panel2);color:var(--white);}
+.trade-steps{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;margin-bottom:14px;}
+.ts{flex:1;padding:8px 12px;text-align:center;font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+.ts:last-child{border-right:none;}.ts.active{background:var(--purple);color:var(--white);}
+.photo-drop{border:1px dashed var(--purple);border-radius:2px;padding:24px;text-align:center;cursor:pointer;transition:all .12s;background:rgba(156,39,176,.02);}
+.photo-drop:hover{background:rgba(156,39,176,.06);}
+.pd-icon{font-size:24px;margin-bottom:8px;opacity:.4;}
+.pd-text{font-size:11px;color:var(--white3);line-height:1.6;font-family:'Barlow Condensed',sans-serif;}
+.photo-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px;}
+.pthumb{aspect-ratio:1;border-radius:2px;overflow:hidden;border:1px solid var(--cell-border);background:var(--panel2);}
+.pthumb img{width:100%;height:100%;object-fit:cover;}
+.link-box{background:var(--panel2);border:1px solid var(--purple);border-radius:2px;padding:9px 13px;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--purple-bright);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.88);backdrop-filter:blur(2px);z-index:500;display:none;align-items:center;justify-content:center;}
+.overlay.open{display:flex;}
+.modal{background:var(--panel);border:1px solid var(--cell-border);border-top:2px solid var(--purple);border-radius:2px;padding:22px;width:520px;max-width:92vw;max-height:90vh;overflow-y:auto;animation:mi .15s ease;}
+@keyframes mi{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:scale(1)}}
+.modal-title{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:700;color:var(--white);letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px;}
+.modal-sub{font-size:9px;letter-spacing:.16em;text-transform:uppercase;color:var(--white3);margin-bottom:16px;font-family:'Barlow Condensed',sans-serif;}
+.modal-ft{display:flex;gap:9px;justify-content:flex-end;margin-top:14px;}
+.notif{position:fixed;bottom:16px;right:16px;background:var(--panel2);border:1px solid var(--cell-border);border-left:3px solid var(--purple);border-radius:2px;padding:11px 14px;display:flex;align-items:flex-start;gap:9px;z-index:999;transform:translateY(60px);opacity:0;transition:all .25s ease;max-width:280px;box-shadow:0 4px 20px rgba(0,0,0,.6);}
+.notif.show{transform:translateY(0);opacity:1;}
+.ni{font-size:14px;flex-shrink:0;margin-top:1px;}
+.nb{flex:1;}.nt{font-size:11px;font-weight:700;color:var(--white);margin-bottom:2px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;text-transform:uppercase;}.nm{font-size:10px;color:var(--white3);line-height:1.4;}
+.act-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--cell-border);}
+.ai-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.ai-dot.g{background:var(--green);box-shadow:0 0 6px var(--green);}
+.ai-dot.pu{background:var(--purple-bright);box-shadow:0 0 6px var(--purple);}
+.ai-dot.b{background:var(--blue);}
+.ai-text{flex:1;font-size:12px;color:var(--white2);}
+.ai-text strong{color:var(--white);font-weight:700;}
+.ai-time{font-size:10px;color:var(--white3);white-space:nowrap;font-family:'JetBrains Mono',monospace;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="tb-left">
+    <div class="tb-logo-wrap"><div class="tb-logo">G</div></div>
+    <div class="tb-brand">
+      <div class="tb-name">GhostlyIT</div>
+      <div class="tb-tag">Dealer Intelligence Platform</div>
+    </div>
+  </div>
+  <div class="tb-right">
+    <div class="tb-clock" id="clock"></div>
+    <div class="status-pill"><div class="sdot"></div>System Live</div>
+  </div>
+</div>
+
+<div class="app">
+  <div class="sidebar">
+    <div class="ngroup">
+      <div class="nlabel">Overview</div>
+      <div class="nitem active" onclick="nav('dashboard',this)"><span class="nico">⬡</span><span class="ntext">Dashboard</span></div>
+    </div>
+    <div class="ngroup">
+      <div class="nlabel">Inventory</div>
+      <div class="nitem" onclick="nav('stock',this)"><span class="nico">◈</span><span class="ntext">Stock</span><span class="nbadge" id="nb-stock">6</span></div>
+      <div class="nitem" onclick="nav('addstock',this)"><span class="nico">＋</span><span class="ntext">Add Stock</span></div>
+      <div class="nitem" onclick="nav('margin',this)"><span class="nico">◫</span><span class="ntext">Margin Sheet</span></div>
+    </div>
+    <div class="ndiv"></div>
+    <div class="ngroup">
+      <div class="nlabel">Clients</div>
+      <div class="nitem" onclick="nav('wishlist',this)"><span class="nico">◎</span><span class="ntext">Wishlist</span><span class="nbadge" id="nb-wish">4</span></div>
+      <div class="nitem" onclick="nav('clients',this)"><span class="nico">◉</span><span class="ntext">Clients</span></div>
+      <div class="nitem" onclick="nav('leads',this)"><span class="nico">◌</span><span class="ntext">Live Leads</span><span class="nbadge" id="nb-leads">3</span></div>
+    </div>
+    <div class="ndiv"></div>
+    <div class="ngroup">
+      <div class="nlabel">Valuation</div>
+      <div class="nitem" onclick="nav('valuation',this)"><span class="nico">◑</span><span class="ntext">Market Value</span></div>
+      <div class="nitem" onclick="nav('tradein',this)"><span class="nico">⟳</span><span class="ntext">Trade In</span></div>
+    </div>
+  </div>
+
+  <div class="main">
+
+    <!-- DASHBOARD -->
+    <div class="panel active" id="panel-dashboard">
+      <div class="ph">
+        <div><div class="ph-title" id="greeting">Good Evening</div><div class="ph-sub" id="dealer-date">DEALER NAME</div></div>
+      </div>
+      <div class="kpi-strip">
+        <div class="kpi hl"><div class="kpi-l">Stock Value</div><div class="kpi-v">£312k</div><div class="kpi-n">6 watches</div></div>
+        <div class="kpi" style="border-top:2px solid var(--green)"><div class="kpi-l">Deals This Month</div><div class="kpi-v" style="color:var(--green)">4</div><div class="kpi-n up">↑ £94k closed</div></div>
+        <div class="kpi"><div class="kpi-l">Avg Margin</div><div class="kpi-v">24%</div><div class="kpi-n up">↑ Above target</div></div>
+        <div class="kpi" style="border-top:2px solid var(--amber)"><div class="kpi-l">Wishlists</div><div class="kpi-v" style="color:var(--amber)">4</div><div class="kpi-n">Buyers waiting</div></div>
+        <div class="kpi hl"><div class="kpi-l">New Leads</div><div class="kpi-v">3</div><div class="kpi-n up">Today</div></div>
+      </div>
+      <div class="sh"><div class="sh-t">Recent Activity</div></div>
+      <div class="sw" style="padding-top:14px">
+        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text"><strong>Connor MacLeod</strong> enquired — Rolex Daytona 126500LN · Budget £16k</div><div class="ai-time">12m ago</div></div>
+        <div class="act-item"><div class="ai-dot pu"></div><div class="ai-text">Wishlist match — <strong>Angus Fraser</strong> matched to AP Royal Oak 15500ST · SMS sent</div><div class="ai-time">1h ago</div></div>
+        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text">Deal closed — <strong>Robert MacPherson</strong> · Patek Nautilus 5711 · £34,000</div><div class="ai-time">3h ago</div></div>
+        <div class="act-item"><div class="ai-dot b"></div><div class="ai-text"><strong>Duncan Stewart</strong> submitted trade-in — Rolex GMT Master II 126710BLRO</div><div class="ai-time">Yesterday</div></div>
+        <div class="act-item"><div class="ai-dot pu"></div><div class="ai-text">Google review — 5 stars from <strong>James Wilson</strong> · "Exceptional service and knowledge"</div><div class="ai-time">Yesterday</div></div>
+        <div class="act-item"><div class="ai-dot g"></div><div class="ai-text">Deal closed — <strong>Fiona Campbell</strong> · Tudor Black Bay 58 · £3,200</div><div class="ai-time">2d ago</div></div>
+      </div>
+    </div>
+
+    <!-- STOCK -->
+    <div class="panel" id="panel-stock">
+      <div class="ph">
+        <div><div class="ph-title">Stock Inventory</div><div class="ph-sub">Live · <span id="sc-label">6</span> Watches</div></div>
+        <div class="ph-acts">
+          <div class="vtoggle"><button class="vt active" onclick="stockView('table',this)">Table</button><button class="vt" onclick="stockView('cards',this)">Cards</button></div>
+          <button class="btn btn-gold" onclick="nav('addstock',null)">+ Add Stock</button>
+        </div>
+      </div>
+      <div id="sv-table"><div class="tbl-wrap sw" style="padding-top:14px"><table class="tbl"><thead><tr><th>Reference</th><th>Brand / Model</th><th>Condition</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Asking</th><th style="text-align:right">Profit</th><th style="text-align:right">Margin</th><th>Days</th><th>Status</th><th></th></tr></thead><tbody id="stock-tbody"></tbody></table></div></div>
+      <div id="sv-cards" style="display:none"><div class="cards-grid" id="stock-cards"></div></div>
+    </div>
+
+    <!-- ADD STOCK -->
+    <div class="panel" id="panel-addstock">
+      <div class="ph"><div><div class="ph-title">Add to Stock</div><div class="ph-sub">Manual Entry or Voice Input</div></div></div>
+      <div class="sw" style="padding-top:14px">
+        <div class="voice-bar">
+          <button class="vbtn" id="vbtn" onclick="toggleVoice()">🎙</button>
+          <div class="vinfo"><div class="vinfo-t">Voice Entry</div><div class="vinfo-s">Say: "Rolex Daytona, ref 126500LN, bought fourteen thousand, asking eighteen, full set unworn"</div></div>
+          <div class="vout" id="vtrans">Tap mic to begin...</div>
+        </div>
+        <div class="fs">
+          <div class="fs-title">Watch Details</div><div class="fs-sub">Complete for accurate wishlist matching</div>
+          <div class="fg fg3">
+            <div class="field"><label>Brand</label><select id="a-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
+            <div class="field"><label>Model</label><input type="text" id="a-model" placeholder="Daytona"></div>
+            <div class="field"><label>Reference</label><input type="text" id="a-ref" placeholder="126500LN"></div>
+          </div>
+          <div class="fg fg3">
+            <div class="field"><label>Purchase Price (£)</label><input type="number" id="a-bought" placeholder="14000" oninput="calcAdd()"></div>
+            <div class="field"><label>Recon Cost (£)</label><input type="number" id="a-recon" placeholder="0" oninput="calcAdd()"></div>
+            <div class="field"><label>Asking Price (£)</label><input type="number" id="a-asking" placeholder="18000" oninput="calcAdd()"></div>
+          </div>
+          <div class="fg fg3">
+            <div class="field"><label>Condition</label><select id="a-cond"><option value="">Select</option><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Card Only · Worn</option><option>Watch Only</option></select></div>
+            <div class="field"><label>Status</label><select id="a-status"><option value="Available">Available</option><option value="Reserved">Reserved</option><option value="Sold">Sold</option></select></div>
+            <div class="field"><label>Notes</label><input type="text" id="a-notes" placeholder="Details..."></div>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+            <div class="fs" style="margin:0;border-left:3px solid var(--purple)"><div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Net Profit</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-profit">—</div></div>
+            <div class="fs" style="margin:0"><div style="font-size:8px;letter-spacing:.2em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px">Margin</div><div style="font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--white)" id="add-margin">—</div></div>
+          </div>
+          <div style="display:flex;gap:9px"><button class="btn btn-gold" onclick="addStock()">Add to Inventory</button><button class="btn btn-ghost" onclick="clearAdd()">Clear</button></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MARGIN SHEET -->
+    <div class="panel" id="panel-margin">
+      <div class="ph"><div><div class="ph-title">Margin Sheet</div><div class="ph-sub">Live Profit Analysis · Click Any Number to Edit</div></div></div>
+      <div class="sw" style="padding-top:14px">
+        <div class="tbl-wrap">
+          <table class="tbl">
+            <thead><tr><th>Ref</th><th>Watch</th><th>Days</th><th style="text-align:right">Bought</th><th style="text-align:right">Recon</th><th style="text-align:right">Fees</th><th style="text-align:right">Total Cost</th><th style="text-align:right">Asking</th><th style="text-align:right">Net Profit</th><th style="text-align:right">Margin</th><th>Flag</th></tr></thead>
+            <tbody id="margin-tbody"></tbody>
+            <tfoot><tr style="border-top:2px solid var(--purple)">
+              <td colspan="3" style="padding:10px 12px;font-size:8px;letter-spacing:.18em;text-transform:uppercase;color:var(--white3);font-family:'Barlow Condensed',sans-serif;background:var(--cell)">Portfolio Totals</td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-b"></td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-r"></td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-f"></td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white2);background:var(--cell)" id="tot-c"></td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--white);background:var(--cell)" id="tot-a"></td>
+              <td style="text-align:right;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--purple-bright);background:var(--cell)" id="tot-p"></td>
+              <td colspan="2" style="background:var(--cell)"></td>
+            </tr></tfoot>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- WISHLIST -->
+    <div class="panel" id="panel-wishlist">
+      <div class="ph">
+        <div><div class="ph-title">Buyer Wishlist</div><div class="ph-sub">Auto-Match Active · SMS Fires on Stock Match</div></div>
+        <div class="ph-acts"><button class="btn btn-purple" onclick="openM('wish-modal')">+ Add Client</button></div>
+      </div>
+      <div class="sw" style="padding-top:14px"><div id="match-alerts"></div><div id="wish-list"></div></div>
+    </div>
+
+    <!-- CLIENTS -->
+    <div class="panel" id="panel-clients">
+      <div class="ph">
+        <div><div class="ph-title">Client Portfolio</div><div class="ph-sub">Sorted by Total Spend</div></div>
+        <div class="ph-acts">
+          <div class="search-bar"><span class="search-icon">⌕</span><input type="text" id="client-search" placeholder="Search clients..." oninput="filterClients(this.value)"></div>
+        </div>
+      </div>
+      <div class="client-grid" id="client-grid"></div>
+    </div>
+
+    <!-- LIVE LEADS -->
+    <div class="panel" id="panel-leads">
+      <div class="ph"><div><div class="ph-title">Live Leads</div><div class="ph-sub">From GHL · Move Stage to Update Pipeline</div></div></div>
+      <div class="sw" style="padding-top:14px">
+        <table class="tbl"><thead><tr><th>Name</th><th>Watch</th><th>Ref</th><th>Budget</th><th>Condition</th><th>Phone</th><th>Stage</th><th>Received</th></tr></thead>
+        <tbody>
+          <tr><td class="bold">Connor MacLeod</td><td style="color:var(--white2)">Rolex Daytona</td><td class="mono">126500LN</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£16,000</td><td style="font-size:11px;color:var(--white2)">Full Set</td><td class="mono">07700 900 111</td>
+          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
+          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">12m ago</td></tr>
+          <tr><td class="bold">Fiona Campbell</td><td style="color:var(--white2)">Patek Philippe Aquanaut</td><td class="mono">5168G-010</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£22,000</td><td style="font-size:11px;color:var(--white2)">Full Set</td><td class="mono">07700 900 222</td>
+          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
+          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">45m ago</td></tr>
+          <tr><td class="bold">Hamish Drummond</td><td style="color:var(--white2)">Tudor Black Bay 58</td><td class="mono">M79030N</td><td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">£3,500</td><td style="font-size:11px;color:var(--white2)">Any</td><td class="mono">07700 900 333</td>
+          <td><div class="stage-sel"><div class="sopt active">New</div><div class="sopt" onclick="mvStage(this)">Contacted</div><div class="sopt" onclick="mvStage(this)">Interested</div><div class="sopt" onclick="mvStage(this)">Offer</div><div class="sopt" onclick="mvStage(this)">Won</div></div></td>
+          <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">2h ago</td></tr>
+        </tbody></table>
+      </div>
+    </div>
+
+    <!-- MARKET VALUATION -->
+    <div class="panel" id="panel-valuation">
+      <div class="ph"><div><div class="ph-title">Market Valuation</div><div class="ph-sub">Real Time · Chrono24 · WatchCharts · Grey Market</div></div></div>
+      <div class="sw" style="padding-top:14px">
+        <div class="fs">
+          <div class="fs-title">Search Reference</div><div class="fs-sub">Pull live market data across all sources</div>
+          <div class="fg fg3">
+            <div class="field"><label>Brand</label><select id="v-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
+            <div class="field"><label>Model</label><input type="text" id="v-model" placeholder="Daytona"></div>
+            <div class="field"><label>Reference</label><input type="text" id="v-ref" placeholder="126500LN"></div>
+          </div>
+          <div class="fg fg2">
+            <div class="field"><label>Condition</label><select id="v-cond"><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Watch Only</option></select></div>
+            <div class="field"><label>Approx Year</label><input type="number" id="v-year" placeholder="2022"></div>
+          </div>
+          <button class="btn btn-gold" onclick="runVal()">Get Market Value</button>
+        </div>
+        <div id="val-results" style="display:none">
+          <div class="val-blended"><div class="vb-l">Blended Market Value</div><div class="vb-p" id="vb-price">—</div><div class="vb-r" id="vb-range">—</div></div>
+          <div class="val-sources" id="val-srcs"></div>
+          <div class="fs" style="margin-top:0"><div class="fs-title">Dealer Recommendations</div><div class="fs-sub">Based on current blended market data</div><div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px" id="val-recs"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRADE IN -->
+    <div class="panel" id="panel-tradein">
+      <div class="ph">
+        <div><div class="ph-title">Trade In Valuation</div><div class="ph-sub">Guided Submission · Send Link to Seller</div></div>
+        <div class="ph-acts"><button class="btn btn-outline" onclick="genLink()">⟳ Seller Link</button><button class="btn btn-gold" onclick="runTrade()">Get Valuation</button></div>
+      </div>
+      <div class="sw" style="padding-top:14px">
+        <div id="slink-box" style="display:none;margin-bottom:12px">
+          <div class="link-box"><span id="slink-url">ghostlydesk.netlify.app/tradein/WRW-0000</span><button class="btn btn-ghost btn-sm" onclick="copyLink()">Copy</button></div>
+          <div style="font-size:9px;color:var(--white3);margin-top:5px;letter-spacing:.06em;font-family:'Barlow Condensed',sans-serif">Send via WhatsApp — seller fills in on their phone. You get an instant alert when submitted.</div>
+        </div>
+        <div class="trade-steps"><div class="ts active">1 · Watch Details</div><div class="ts">2 · Condition</div><div class="ts">3 · Photos</div><div class="ts">4 · Valuation</div></div>
+        <div class="fs">
+          <div class="fs-title">Watch Details</div><div class="fs-sub">What is the seller bringing in?</div>
+          <div class="fg fg3">
+            <div class="field"><label>Brand</label><select id="t-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
+            <div class="field"><label>Model</label><input type="text" id="t-model" placeholder="GMT Master II"></div>
+            <div class="field"><label>Reference</label><input type="text" id="t-ref" placeholder="126710BLRO"></div>
+          </div>
+          <div class="fg fg3">
+            <div class="field"><label>Approx Year</label><input type="number" id="t-year" placeholder="2020"></div>
+            <div class="field"><label>Serial (optional)</label><input type="text" id="t-serial" placeholder="Optional"></div>
+            <div class="field"><label>Seller Asking (£)</label><input type="number" id="t-sprice" placeholder="What they want"></div>
+          </div>
+        </div>
+        <div class="fs">
+          <div class="fs-title">Condition Assessment</div><div class="fs-sub">Precise condition affects valuation significantly</div>
+          <div class="fg fg2">
+            <div class="field"><label>Overall Condition</label><select id="t-cond"><option value="">Select</option><option>Mint — No visible wear</option><option>Excellent — Minor wear only</option><option>Good — Normal wear</option><option>Fair — Noticeable wear</option><option>Poor — Heavy wear or damage</option></select></div>
+            <div class="field"><label>Provenance</label><select id="t-prov"><option value="">Select</option><option>Full Set — Box and Papers</option><option>Box Only — No Papers</option><option>Papers Only — No Box</option><option>Watch Only</option></select></div>
+          </div>
+          <div class="fg fg2">
+            <div class="field"><label>Case Finish</label><select id="t-case"><option value="">Select</option><option>Unpolished — Original finish</option><option>Lightly polished</option><option>Heavily polished</option><option>Damaged</option></select></div>
+            <div class="field"><label>Service History</label><select id="t-svc"><option value="">Select</option><option>Full manufacturer history</option><option>Partial history</option><option>No history</option><option>Recently serviced — no records</option></select></div>
+          </div>
+          <div class="field"><label>Additional Notes</label><textarea id="t-notes" placeholder="Scratches, modifications, damage, anything relevant..."></textarea></div>
+        </div>
+        <div class="fs">
+          <div class="fs-title">Photos</div><div class="fs-sub">Dial · Caseback · Crown · Bracelet · Papers · Box</div>
+          <div class="photo-drop" onclick="document.getElementById('p-input').click()">
+            <input type="file" id="p-input" multiple accept="image/*" style="display:none" onchange="handlePhotos(this)">
+            <div class="pd-icon">📸</div>
+            <div class="pd-text">Tap to upload photos<br><span style="font-size:9px;opacity:.4">Minimum 4 recommended</span></div>
+          </div>
+          <div class="photo-grid" id="pgrid"></div>
+        </div>
+        <div id="trade-result" style="display:none">
+          <div class="fs" style="border-left:3px solid var(--gold)">
+            <div class="fs-title">Valuation Result</div><div class="fs-sub">Based on live market data and condition assessment</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px" id="trade-grid"></div>
+            <div style="background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;padding:12px 14px;font-size:11px;color:var(--white2);line-height:1.8" id="trade-notes"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- WISHLIST MODAL -->
+<div class="overlay" id="wish-modal">
+  <div class="modal">
+    <div class="modal-title">Add to Wishlist</div><div class="modal-sub">Client watch request — manual entry</div>
+    <div class="fg fg2" style="margin-bottom:10px">
+      <div class="field"><label>Client Name</label><input type="text" id="w-name" placeholder="Connor MacLeod"></div>
+      <div class="field"><label>Phone</label><input type="text" id="w-phone" placeholder="07700 900 000"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:10px">
+      <div class="field"><label>Brand</label><select id="w-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
+      <div class="field"><label>Model</label><input type="text" id="w-model" placeholder="Daytona"></div>
+      <div class="field"><label>Reference</label><input type="text" id="w-ref" placeholder="126500LN"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Budget (£)</label><input type="number" id="w-budget" placeholder="16000"></div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('wish-modal')">Cancel</button><button class="btn btn-purple" onclick="addWish()">Add to Wishlist</button></div>
+  </div>
+</div>
+
+<!-- EDIT STOCK MODAL -->
+<div class="overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Stock</div><div class="modal-sub">Update watch details</div>
+    <input type="hidden" id="edit-idx">
+    <div class="fg fg3" style="margin-bottom:10px">
+      <div class="field"><label>Brand</label><select id="edit-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option><option>Other</option></select></div>
+      <div class="field"><label>Model</label><input type="text" id="edit-model"></div>
+      <div class="field"><label>Reference</label><input type="text" id="edit-ref"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:10px">
+      <div class="field"><label>Bought (£)</label><input type="number" id="edit-bought"></div>
+      <div class="field"><label>Recon (£)</label><input type="number" id="edit-recon"></div>
+      <div class="field"><label>Asking (£)</label><input type="number" id="edit-asking"></div>
+    </div>
+    <div class="fg fg2" style="margin-bottom:10px">
+      <div class="field"><label>Condition</label><select id="edit-cond"><option>Full Set · Unworn</option><option>Full Set · Worn</option><option>Box Only · Worn</option><option>Card Only · Worn</option><option>Watch Only</option></select></div>
+      <div class="field"><label>Status</label><select id="edit-status"><option value="Available">Available</option><option value="Reserved">Reserved</option><option value="Sold">Sold</option></select></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-modal')">Cancel</button><button class="btn btn-gold" onclick="saveEdit()">Save Changes</button></div>
+  </div>
+</div>
+
+<!-- EDIT WISHLIST MODAL -->
+<div class="overlay" id="edit-wish-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Wishlist Entry</div><div class="modal-sub">Update client details</div>
+    <input type="hidden" id="edit-wish-idx">
+    <div class="fg fg2" style="margin-bottom:10px">
+      <div class="field"><label>Client Name</label><input type="text" id="ew-name"></div>
+      <div class="field"><label>Phone</label><input type="text" id="ew-phone"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:10px">
+      <div class="field"><label>Brand</label><select id="ew-brand"><option value="">Select</option><option>Rolex</option><option>Patek Philippe</option><option>Audemars Piguet</option><option>Richard Mille</option><option>Tudor</option><option>Omega</option><option>IWC</option></select></div>
+      <div class="field"><label>Model</label><input type="text" id="ew-model"></div>
+      <div class="field"><label>Reference</label><input type="text" id="ew-ref"></div>
+    </div>
+    <div class="field" style="margin-bottom:10px"><label>Budget (£)</label><input type="number" id="ew-budget"></div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-wish-modal')">Cancel</button><button class="btn btn-gold" onclick="saveWishEdit()">Save Changes</button></div>
+  </div>
+</div>
+
+<div class="notif" id="notif"><div class="ni" id="ni">🔔</div><div class="nb"><div class="nt" id="nt"></div><div class="nm" id="nm"></div></div></div>
+
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let stock = [];
+let wishlist = [];
+let allClients = [];
+
+const fmt = n => '£' + Math.round(n).toLocaleString('en-GB');
+const pct = (p, c) => c > 0 ? Math.round((p / c) * 100) : 0;
+const ini = n => n.split(' ').map(x => x[0]).join('').toUpperCase();
+
+// ── Clock & greeting ─────────────────────────────────────────────────────────
+function tick() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
+setInterval(tick, 1000); tick();
+
+(function () {
+  const h = new Date().getHours();
+  document.getElementById('greeting').textContent = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
+  const now = new Date();
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  document.getElementById('dealer-date').textContent = `GHOSTLYDESK · ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+})();
+
+// ── Notifications & modals ───────────────────────────────────────────────────
+function notify(icon, title, msg, bc) {
+  document.getElementById('ni').textContent = icon;
+  document.getElementById('nt').textContent = title;
+  document.getElementById('nm').textContent = msg;
+  const n = document.getElementById('notif');
+  n.style.borderLeftColor = bc || 'var(--purple)';
+  n.classList.add('show');
+  setTimeout(() => n.classList.remove('show'), 4500);
+}
+function openM(id) { document.getElementById(id).classList.add('open'); }
+function closeM(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+function nav(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(n => n.classList.remove('active'));
+  document.getElementById('panel-' + id).classList.add('active');
+  if (el) el.classList.add('active');
+  if (id === 'stock') renderStock();
+  if (id === 'margin') renderMargin();
+  if (id === 'wishlist') renderWishlist();
+  if (id === 'clients') renderClients(allClients);
+}
+
+function stockView(v, btn) {
+  document.querySelectorAll('.vt').forEach(b => b.classList.remove('active')); btn.classList.add('active');
+  document.getElementById('sv-table').style.display = v === 'table' ? 'block' : 'none';
+  document.getElementById('sv-cards').style.display = v === 'cards' ? 'block' : 'none';
+  if (v === 'cards') renderCards();
+}
+
+// ── API helpers ──────────────────────────────────────────────────────────────
+async function api(method, path, body) {
+  const opts = { method, headers: { 'Content-Type': 'application/json' } };
+  if (body) opts.body = JSON.stringify(body);
+  const res = await fetch(path, opts);
+  if (!res.ok) throw new Error(method + ' ' + path + ' to ' + res.status);
+  return res.json();
+}
+
+// ── Bootstrap ────────────────────────────────────────────────────────────────
+async function loadInventory() {
+  try {
+    stock = await api('GET', '/api/inventory');
+    renderStock(); renderMargin(); renderCards();
+  } catch (e) { console.error('Failed to load inventory:', e); }
+}
+
+async function loadWishlist() {
+  try {
+    wishlist = await api('GET', '/api/wishlist');
+    renderWishlist();
+    document.getElementById('nb-wish').textContent = wishlist.length;
+  } catch (e) { console.error('Failed to load wishlist:', e); }
+}
+
+async function loadContacts() {
+  try {
+    const data = await api('GET', '/api/contacts');
+    const contacts = data.contacts || [];
+    if (contacts.length > 0) {
+      allClients = contacts.map(c => ({
+        name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim(),
+        phone: c.phone || '',
+        spend: 0, purchases: 0, last: 'GHL', wl: 0, tag: 'new'
+      }));
+    } else {
+      allClients = [
+        { name: 'Robert MacPherson', phone: '07700 900 456', spend: 156000, purchases: 5, last: 'Today', wl: 1, tag: 'vip' },
+        { name: 'Angus Fraser', phone: '07700 900 444', spend: 89000, purchases: 3, last: 'Yesterday', wl: 1, tag: 'vip' },
+        { name: 'Connor MacLeod', phone: '07700 900 111', spend: 34000, purchases: 2, last: '2 days ago', wl: 1, tag: 'active' },
+        { name: 'Fiona Campbell', phone: '07700 900 222', spend: 18500, purchases: 2, last: '1 week ago', wl: 0, tag: 'active' },
+        { name: 'Duncan Stewart', phone: '07700 900 555', spend: 12000, purchases: 1, last: '2 weeks ago', wl: 1, tag: 'new' },
+        { name: 'Hamish Drummond', phone: '07700 900 333', spend: 3200, purchases: 1, last: '3 weeks ago', wl: 0, tag: 'new' }
+      ];
+    }
+    renderClients(allClients);
+  } catch (e) { console.error('Failed to load contacts:', e); }
+}
+
+// ── Inventory render ──────────────────────────────────────────────────────────
+function renderStock() {
+  document.getElementById('stock-tbody').innerHTML = stock.map((w, i) => {
+    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
+    const mc = m >= 20 ? 'g' : m >= 10 ? 'o' : 'r';
+    const bc = w.status === 'Available' ? 'b-av' : w.status === 'Reserved' ? 'b-res' : 'b-sold';
+    return `<tr>
+      <td class="mono">${w.ref}</td>
+      <td class="bold">${w.brand} ${w.model}</td>
+      <td style="font-size:10px;color:var(--white3)">${w.cond}</td>
+      <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
+      <td style="text-align:right"><input class="editable" value="${w.recon}" onchange="upStock(${i},'recon',this.value)"></td>
+      <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
+      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${profit > 0 ? 'var(--green)' : 'var(--red)'}">${fmt(profit)}</td>
+      <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
+      <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
+      <td><span class="badge ${bc}">${w.status}</span></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button></td>
+    </tr>`;
+  }).join('');
+  document.getElementById('sc-label').textContent = stock.length;
+  document.getElementById('nb-stock').textContent = stock.length;
+}
+
+async function upStock(i, f, v) {
+  stock[i][f] = parseFloat(v) || 0;
+  renderStock(); renderMargin();
+  try { await api('PUT', '/api/inventory/' + stock[i].id, { [f]: stock[i][f] }); }
+  catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
+}
+
+function openEdit(i) {
+  const w = stock[i];
+  document.getElementById('edit-idx').value = i;
+  document.getElementById('edit-brand').value = w.brand;
+  document.getElementById('edit-model').value = w.model;
+  document.getElementById('edit-ref').value = w.ref;
+  document.getElementById('edit-bought').value = w.bought;
+  document.getElementById('edit-recon').value = w.recon;
+  document.getElementById('edit-asking').value = w.asking;
+  document.getElementById('edit-cond').value = w.cond;
+  document.getElementById('edit-status').value = w.status;
+  openM('edit-modal');
+}
+
+async function saveEdit() {
+  const i = parseInt(document.getElementById('edit-idx').value);
+  const updated = {
+    brand: document.getElementById('edit-brand').value,
+    model: document.getElementById('edit-model').value,
+    ref: document.getElementById('edit-ref').value,
+    bought: parseFloat(document.getElementById('edit-bought').value) || 0,
+    recon: parseFloat(document.getElementById('edit-recon').value) || 0,
+    asking: parseFloat(document.getElementById('edit-asking').value) || 0,
+    cond: document.getElementById('edit-cond').value,
+    status: document.getElementById('edit-status').value
+  };
+  try {
+    const saved = await api('PUT', '/api/inventory/' + stock[i].id, updated);
+    stock[i] = Object.assign({}, stock[i], saved);
+    closeM('edit-modal'); renderStock(); renderMargin(); renderCards();
+    notify('\u2713', 'Stock Updated', 'Changes saved successfully');
+  } catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
+}
+
+function renderCards() {
+  document.getElementById('stock-cards').innerHTML = stock.map((w, i) => {
+    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
+    const bc = w.status === 'Available' ? 'b-av' : w.status === 'Reserved' ? 'b-res' : 'b-sold';
+    return `<div class="wcard">
+      <div class="wc-ref">${w.ref}</div>
+      <div class="wc-name">${w.brand} ${w.model}</div>
+      <div class="wc-row"><span class="wc-l">Condition</span><span style="font-size:10px;color:var(--white3)">${w.cond}</span></div>
+      <div class="wc-row"><span class="wc-l">Bought</span><span class="wc-v">${fmt(w.bought)}</span></div>
+      <div class="wc-row"><span class="wc-l">Asking</span><span class="wc-v">${fmt(w.asking)}</span></div>
+      <div class="wc-row"><span class="wc-l">Net Profit</span><div class="wc-p">${fmt(profit)}</div></div>
+      <div class="wc-ft"><span class="badge ${bc}">${w.status}</span><span class="mpill ${m >= 20 ? 'g' : m >= 10 ? 'o' : 'r'}">${m}% margin</span></div>
+      <div class="wc-actions"><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})" style="flex:1">Edit</button></div>
+    </div>`;
+  }).join('');
+}
+
+function renderMargin() {
+  let tb = 0, tr = 0, tf = 0, tc = 0, ta = 0, tp = 0;
+  document.getElementById('margin-tbody').innerHTML = stock.map((w, i) => {
+    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
+    const mc = m >= 20 ? 'g' : m >= 10 ? 'o' : 'r';
+    const flag = w.days > 30 ? '<span style="color:var(--red);font-size:9px">\u26A0 Slow</span>' : w.days > 14 ? '<span style="color:var(--amber);font-size:9px">\u2193 Monitor</span>' : '<span style="color:var(--white3);font-size:9px;font-family:\'JetBrains Mono\',monospace">' + w.days + 'd</span>';
+    tb += w.bought; tr += w.recon; tf += w.fees; tc += cost; ta += w.asking; tp += profit;
+    return `<tr>
+      <td class="mono">${w.ref}</td><td class="bold">${w.brand} ${w.model}</td>
+      <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
+      <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
+      <td style="text-align:right"><input class="editable" value="${w.recon}" onchange="upStock(${i},'recon',this.value)"></td>
+      <td style="text-align:right"><input class="editable" value="${w.fees}" onchange="upStock(${i},'fees',this.value)"></td>
+      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--white2)">${fmt(cost)}</td>
+      <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
+      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:${profit > 0 ? 'var(--green)' : 'var(--red)'}">${fmt(profit)}</td>
+      <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
+      <td>${flag}</td>
+    </tr>`;
+  }).join('');
+  document.getElementById('tot-b').textContent = fmt(tb);
+  document.getElementById('tot-r').textContent = fmt(tr);
+  document.getElementById('tot-f').textContent = fmt(tf);
+  document.getElementById('tot-c').textContent = fmt(tc);
+  document.getElementById('tot-a').textContent = fmt(ta);
+  document.getElementById('tot-p').textContent = fmt(tp);
+}
+
+// ── Add stock ─────────────────────────────────────────────────────────────────
+function calcAdd() {
+  const b = parseFloat(document.getElementById('a-bought').value) || 0;
+  const r = parseFloat(document.getElementById('a-recon').value) || 0;
+  const a = parseFloat(document.getElementById('a-asking').value) || 0;
+  const cost = b + r, profit = a - cost, m = cost > 0 ? pct(profit, cost) : 0;
+  const pp = document.getElementById('add-profit');
+  pp.textContent = cost > 0 ? fmt(profit) : '\u2014'; pp.style.color = profit > 0 ? 'var(--green)' : 'var(--red)';
+  document.getElementById('add-margin').textContent = cost > 0 ? m + '%' : '\u2014';
+}
+
+async function addStock() {
+  const brand = document.getElementById('a-brand').value;
+  const model = document.getElementById('a-model').value;
+  const ref = document.getElementById('a-ref').value;
+  if (!brand || !model || !ref) { notify('\u26A0', 'Missing Details', 'Brand, model and reference required', 'var(--red)'); return; }
+  const entry = {
+    ref, brand, model,
+    cond: document.getElementById('a-cond').value || 'Unknown',
+    bought: parseFloat(document.getElementById('a-bought').value) || 0,
+    recon: parseFloat(document.getElementById('a-recon').value) || 0,
+    fees: 0,
+    asking: parseFloat(document.getElementById('a-asking').value) || 0,
+    status: document.getElementById('a-status').value,
+    notes: document.getElementById('a-notes').value
+  };
+  try {
+    const result = await api('POST', '/api/inventory', entry);
+    stock.push(result.item);
+    document.getElementById('nb-stock').textContent = stock.length;
+    const matches = result.matches || [];
+    if (matches.length > 0) {
+      matches.forEach(m => {
+        const a = document.createElement('div'); a.className = 'match-alert';
+        a.innerHTML = '<div class="madot"></div><div class="matext"><strong>' + m.name + '</strong> is waiting for this exact reference \u2014 SMS sent automatically via GHL.</div>';
+        document.getElementById('match-alerts').prepend(a);
+      });
+      notify('\uD83C\uDFAF', 'Wishlist Match', matches[0].name + ' waiting for ' + ref + ' \u2014 SMS sent', 'var(--green)');
+    } else {
+      notify('\u2713', 'Stock Added', brand + ' ' + model + ' added to inventory');
+    }
+    clearAdd();
+  } catch (e) { notify('\u26A0', 'Error', 'Could not add stock to server', 'var(--red)'); }
+}
+
+function clearAdd() {
+  ['a-brand', 'a-model', 'a-ref', 'a-bought', 'a-recon', 'a-asking', 'a-cond', 'a-notes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  document.getElementById('a-status').value = 'Available';
+  document.getElementById('add-profit').textContent = '\u2014';
+  document.getElementById('add-margin').textContent = '\u2014';
+}
+
+// ── Wishlist ──────────────────────────────────────────────────────────────────
+function renderWishlist() {
+  document.getElementById('wish-list').innerHTML = wishlist.map((w, i) => `
+    <div class="wish-card">
+      <div class="wav">${ini(w.name)}</div>
+      <div class="winfo">
+        <div class="wname">${w.name}</div>
+        <div class="wwatch">${w.brand} ${w.model} \u00B7 <span class="wref">${w.ref || 'Any'}</span></div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--white3);margin-top:2px">${w.phone}</div>
+      </div>
+      <div style="text-align:right"><div class="wbudget">${fmt(w.budget)}</div><div class="wblabel">Budget</div></div>
+      <div class="wish-actions">
+        <button class="btn btn-ghost btn-sm" onclick="openWishEdit(${i})">Edit</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteWish(${i})">\u2715</button>
+      </div>
+    </div>`).join('');
+}
+
+function openWishEdit(i) {
+  const w = wishlist[i];
+  document.getElementById('edit-wish-idx').value = i;
+  document.getElementById('ew-name').value = w.name;
+  document.getElementById('ew-phone').value = w.phone;
+  document.getElementById('ew-brand').value = w.brand;
+  document.getElementById('ew-model').value = w.model;
+  document.getElementById('ew-ref').value = w.ref;
+  document.getElementById('ew-budget').value = w.budget;
+  openM('edit-wish-modal');
+}
+
+async function saveWishEdit() {
+  const i = parseInt(document.getElementById('edit-wish-idx').value);
+  const updated = {
+    name: document.getElementById('ew-name').value,
+    phone: document.getElementById('ew-phone').value,
+    brand: document.getElementById('ew-brand').value,
+    model: document.getElementById('ew-model').value,
+    ref: document.getElementById('ew-ref').value,
+    budget: parseFloat(document.getElementById('ew-budget').value) || 0
+  };
+  try {
+    const saved = await api('PUT', '/api/wishlist/' + wishlist[i].id, updated);
+    wishlist[i] = Object.assign({}, wishlist[i], saved);
+    closeM('edit-wish-modal'); renderWishlist();
+    notify('\u2713', 'Wishlist Updated', 'Changes saved');
+  } catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
+}
+
+async function deleteWish(i) {
+  try {
+    await api('DELETE', '/api/wishlist/' + wishlist[i].id);
+    wishlist.splice(i, 1);
+    document.getElementById('nb-wish').textContent = wishlist.length;
+    renderWishlist();
+    notify('\u2713', 'Removed', 'Client removed from wishlist');
+  } catch (e) { notify('\u26A0', 'Error', 'Could not remove from server', 'var(--red)'); }
+}
+
+async function addWish() {
+  const name = document.getElementById('w-name').value;
+  const brand = document.getElementById('w-brand').value;
+  if (!name || !brand) { notify('\u26A0', 'Missing Details', 'Name and brand required', 'var(--red)'); return; }
+  const entry = {
+    name, phone: document.getElementById('w-phone').value, brand,
+    model: document.getElementById('w-model').value,
+    ref: document.getElementById('w-ref').value,
+    budget: parseFloat(document.getElementById('w-budget').value) || 0
+  };
+  try {
+    const saved = await api('POST', '/api/wishlist', entry);
+    wishlist.push(saved);
+    document.getElementById('nb-wish').textContent = wishlist.length;
+    closeM('wish-modal'); renderWishlist();
+    ['w-name', 'w-phone', 'w-brand', 'w-model', 'w-ref', 'w-budget'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+    notify('\u25CE', 'Added to Wishlist', name + ' will be alerted on match');
+  } catch (e) { notify('\u26A0', 'Error', 'Could not save to server', 'var(--red)'); }
+}
+
+// ── Clients ───────────────────────────────────────────────────────────────────
+function renderClients(list) {
+  document.getElementById('client-grid').innerHTML = list.map(c => {
+    const tag = c.tag === 'vip' ? '<span class="badge b-vip" style="margin-left:auto">VIP</span>' : c.tag === 'active' ? '<span class="badge b-new" style="margin-left:auto">Active</span>' : '<span class="badge b-wait" style="margin-left:auto">New</span>';
+    const ring = c.tag === 'vip' ? 'vip-ring' : '';
+    const nameStr = (c.name || 'N A').trim();
+    return `<div class="ccrd ${ring}">
+      <div class="cc-top"><div class="ccav">${ini(nameStr || 'N A')}</div><div><div class="ccname">${c.name}</div><div class="ccphone">${c.phone}</div></div>${tag}</div>
+      <div class="cc-stats">
+        <div class="ccstat"><div class="ccsl">Total Spend</div><div class="ccsv">${fmt(c.spend || 0)}</div></div>
+        <div class="ccstat"><div class="ccsl">Purchases</div><div class="ccsv">${c.purchases || 0}</div></div>
+        <div class="ccstat"><div class="ccsl">Last Contact</div><div class="ccsv" style="font-size:10px">${c.last || '\u2014'}</div></div>
+        <div class="ccstat"><div class="ccsl">Wishlist</div><div class="ccsv">${c.wl || 0}</div></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterClients(q) {
+  const filtered = allClients.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || (c.phone || '').includes(q));
+  renderClients(filtered);
+}
+
+// ── Leads ────────────────────────────────────────────────────────────────────
+function mvStage(el) {
+  el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o => o.classList.remove('active')); el.classList.add('active');
+  notify('\u25C8', 'Stage Updated', 'Lead moved to ' + el.textContent + ' \u2014 GHL pipeline syncing');
+}
+
+// ── Valuation ─────────────────────────────────────────────────────────────────
+function runVal() {
+  const brand = document.getElementById('v-brand').value, ref = document.getElementById('v-ref').value;
+  if (!brand && !ref) { notify('\u26A0', 'Missing Details', 'Enter brand and reference', 'var(--red)'); return; }
+  const base = ref === '126500LN' ? 15800 : ref === '5711/1A-011' ? 86000 : ref === '15500ST.OO.1220ST' ? 28000 : ref === '126710BLRO' ? 13200 : ref === 'M79030N-0001' ? 3100 : 15000;
+  const srcs = [
+    { name: 'Chrono24', price: Math.round(base * 1.02), range: fmt(base * .94) + ' \u2014 ' + fmt(base * 1.1), count: Math.floor(Math.random() * 30 + 22) },
+    { name: 'WatchCharts', price: Math.round(base * .99), range: fmt(base * .93) + ' \u2014 ' + fmt(base * 1.06), count: Math.floor(Math.random() * 20 + 14) },
+    { name: 'Grey Market', price: Math.round(base * .95), range: fmt(base * .88) + ' \u2014 ' + fmt(base * 1.02), count: Math.floor(Math.random() * 15 + 8) }
+  ];
+  const blended = Math.round(srcs.reduce((a, s) => a + s.price, 0) / srcs.length);
+  document.getElementById('vb-price').textContent = fmt(blended);
+  document.getElementById('vb-range').textContent = 'Range: ' + fmt(blended * .91) + ' \u2014 ' + fmt(blended * 1.09) + ' \u00B7 Based on ' + srcs.reduce((a, s) => a + s.count, 0) + ' recent sales';
+  document.getElementById('val-srcs').innerHTML = srcs.map((s, i) => '<div class="vsrc ' + (i === 0 ? 'best' : '') + '"><div class="vs-n">' + s.name + '</div><div class="vs-p">' + fmt(s.price) + '</div><div class="vs-r">' + s.range + '</div><div class="vs-live"><div class="vs-dot"></div>Live \u00B7 ' + s.count + ' sales</div></div>').join('');
+  document.getElementById('val-recs').innerHTML =
+    '<div class="vsrc best-red"><div class="vs-n">Trade In Floor</div><div class="vs-p" style="color:var(--red)">' + fmt(blended * .82) + '</div><div class="vs-r">Walk away point</div></div>' +
+    '<div class="vsrc best"><div class="vs-n">Target Buy Price</div><div class="vs-p" style="color:var(--gold-bright)">' + fmt(blended * .88) + '</div><div class="vs-r">Recommended offer</div></div>' +
+    '<div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">' + fmt(blended * 1.07) + '</div><div class="vs-r">7% premium \u00B7 Fast sale</div></div>';
+  document.getElementById('val-results').style.display = 'block';
+}
+
+// ── Trade In ──────────────────────────────────────────────────────────────────
+function runTrade() {
+  const brand = document.getElementById('t-brand').value;
+  if (!brand) { notify('\u26A0', 'Missing Details', 'Enter watch brand', 'var(--red)'); return; }
+  const ref = document.getElementById('t-ref').value;
+  const base = ref === '126710BLRO' ? 13200 : ref === '126500LN' ? 15800 : ref === '5711/1A-011' ? 86000 : 15000;
+  const cm = { 'Mint \u2014 No visible wear': 1.0, 'Excellent \u2014 Minor wear only': .95, 'Good \u2014 Normal wear': .88, 'Fair \u2014 Noticeable wear': .78, 'Poor \u2014 Heavy wear or damage': .65 };
+  const pm = { 'Full Set \u2014 Box and Papers': 1.0, 'Box Only \u2014 No Papers': .93, 'Papers Only \u2014 No Box': .91, 'Watch Only': .85 };
+  const cond = document.getElementById('t-cond').value, prov = document.getElementById('t-prov').value;
+  const c = cm[cond] || .9, p = pm[prov] || .9, adj = Math.round(base * c * p);
+  const sp = parseFloat(document.getElementById('t-sprice').value) || 0;
+  document.getElementById('trade-grid').innerHTML =
+    '<div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">' + fmt(adj * .84) + '</div><div class="vs-r">Walk away point</div></div>' +
+    '<div class="vsrc best"><div class="vs-n">Fair Trade Price</div><div class="vs-p" style="color:var(--gold-bright)">' + fmt(adj * .91) + '</div><div class="vs-r">Recommended offer</div></div>' +
+    '<div class="vsrc best-green"><div class="vs-n">Market Value</div><div class="vs-p" style="color:var(--green)">' + fmt(adj) + '</div><div class="vs-r">If selling retail</div></div>';
+  const unpolished = (document.getElementById('t-case').value || '').includes('Unpolished');
+  const condLabel = cond || 'Not specified', provLabel = prov || 'Not specified';
+  let notes = 'Condition: <strong style="color:var(--white)">' + condLabel + '</strong> \u2192 ' + Math.round(c * 100) + '% of base value<br>Provenance: <strong style="color:var(--white)">' + provLabel + '</strong> \u2192 ' + Math.round(p * 100) + '% adjustment<br>Case: ' + (unpolished ? '<strong style="color:var(--green)">Unpolished \u2014 original finish adds value</strong>' : 'Standard finish');
+  if (sp) notes += '<br>Seller asking ' + fmt(sp) + ' \u2014 ' + (sp > adj ? '<strong style="color:var(--red)">Above market \u2014 negotiate down</strong>' : '<strong style="color:var(--green)">Reasonable \u2014 proceed with offer</strong>');
+  document.getElementById('trade-notes').innerHTML = notes;
+  document.getElementById('trade-result').style.display = 'block';
+  notify('\u25D1', 'Valuation Complete', brand + ' \u2014 trade price ' + fmt(adj * .91), 'var(--gold)');
+}
+
+function genLink() {
+  const id = 'WRW-' + Math.floor(Math.random() * 9000 + 1000);
+  document.getElementById('slink-url').textContent = window.location.host + '/tradein/' + id;
+  document.getElementById('slink-box').style.display = 'block';
+  notify('\u27F3', 'Seller Link Ready', 'Send via WhatsApp \u2014 alert fires on submission');
+}
+function copyLink() { navigator.clipboard.writeText(document.getElementById('slink-url').textContent).then(() => notify('\u2713', 'Copied', 'Link copied to clipboard')); }
+
+// ── Photos ────────────────────────────────────────────────────────────────────
+function handlePhotos(input) {
+  const grid = document.getElementById('pgrid');
+  Array.from(input.files).forEach(f => { const r = new FileReader(); r.onload = e => { const d = document.createElement('div'); d.className = 'pthumb'; d.innerHTML = '<img src="' + e.target.result + '">'; grid.appendChild(d); }; r.readAsDataURL(f); });
+}
+
+// ── Voice ─────────────────────────────────────────────────────────────────────
+let rec = null, isRec = false;
+function toggleVoice() {
+  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { notify('\u26A0', 'Not Supported', 'Use Chrome or Safari', 'var(--red)'); return; }
+  if (isRec) { rec.stop(); return; }
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  rec = new SR(); rec.continuous = false; rec.interimResults = true; rec.lang = 'en-GB';
+  rec.onstart = () => { isRec = true; document.getElementById('vbtn').classList.add('rec'); document.getElementById('vtrans').textContent = 'Listening...'; };
+  rec.onresult = e => { const t = Array.from(e.results).map(r => r[0].transcript).join(''); document.getElementById('vtrans').textContent = t; if (e.results[0].isFinal) parseVoice(t); };
+  rec.onend = () => { isRec = false; document.getElementById('vbtn').classList.remove('rec'); };
+  rec.start();
+}
+
+function parseVoice(t) {
+  const tl = t.toLowerCase();
+  ['rolex', 'patek philippe', 'audemars piguet', 'richard mille', 'tudor', 'omega', 'iwc'].forEach(b => { if (tl.includes(b)) { const s = document.getElementById('a-brand'); for (let o of s.options) if (o.value.toLowerCase() === b) { s.value = o.value; break; } } });
+  const rm = tl.match(/ref(?:erence)?\s+([a-z0-9\/\-\.]+)/i);
+  if (rm) document.getElementById('a-ref').value = rm[1].toUpperCase();
+  const nums = t.match(/\d[\d,]*/g);
+  if (nums) { let v = parseInt(nums[0].replace(/,/g, '')); if (tl.includes('thousand')) v *= 1000; document.getElementById('a-bought').value = v; if (nums[1]) { let v2 = parseInt(nums[1].replace(/,/g, '')); if (tl.includes('thousand')) v2 *= 1000; document.getElementById('a-asking').value = v2; } }
+  if (tl.includes('full set')) document.getElementById('a-cond').value = tl.includes('unworn') ? 'Full Set \u00B7 Unworn' : 'Full Set \u00B7 Worn';
+  else if (tl.includes('box only')) document.getElementById('a-cond').value = 'Box Only \u00B7 Worn';
+  calcAdd(); notify('\uD83C\uDF99', 'Voice Captured', 'Review and adjust if needed');
+}
+
+// ── Boot ──────────────────────────────────────────────────────────────────────
+loadInventory();
+loadWishlist();
+loadContacts();
+</script>
+</body>
+</html>
