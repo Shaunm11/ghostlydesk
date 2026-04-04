@@ -963,6 +963,11 @@ function doLogin(){
   const dealer=DEALERS.find(d=>d.email.toLowerCase()===email&&d.password===pass);
   if(!dealer){document.getElementById('login-err').style.display='block';return;}
   currentDealer=dealer;
+  localStorage.setItem('gd_session',JSON.stringify({email:dealer.email,password:dealer.password}));
+  showApp(dealer);
+}
+
+function showApp(dealer){
   document.getElementById('login-screen').classList.add('hidden');
   document.getElementById('topbar').style.display='flex';
   document.getElementById('ticker-wrap').style.display='flex';
@@ -971,11 +976,24 @@ function doLogin(){
   buildTicker();
   init();
 }
+
+// Auto login from saved session
+(function(){
+  const saved=localStorage.getItem('gd_session');
+  if(saved){
+    try{
+      const s=JSON.parse(saved);
+      const dealer=DEALERS.find(d=>d.email.toLowerCase()===s.email.toLowerCase()&&d.password===s.password);
+      if(dealer){currentDealer=dealer;showApp(dealer);return;}
+    }catch(e){}
+  }
+})();
 document.getElementById('login-email').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('login-pass').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
 
 function doLogout(){
   currentDealer=null;
+  localStorage.removeItem('gd_session');
   document.getElementById('login-screen').classList.remove('hidden');
   document.getElementById('topbar').style.display='none';
   document.getElementById('ticker-wrap').style.display='none';
@@ -1112,24 +1130,41 @@ async function loadContacts(){
     const r=await fetch(API+'/api/contacts');
     const data=await r.json();
     if(data.contacts&&data.contacts.length>0){
-      leads=data.contacts.map(c=>({
-        id:c.id,
-        name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
-        watch:c.customFields?.find(f=>f.key?.includes('watch_brand'))?.value||'—',
-        ref:c.customFields?.find(f=>f.key?.includes('reference'))?.value||'—',
-        budget:c.customFields?.find(f=>f.key?.includes('budget'))?.value||'—',
-        condition:c.customFields?.find(f=>f.key?.includes('condition'))?.value||'—',
-        phone:c.phone||'—',
-        email:c.email||'—',
-        stage:'New',
-        time:c.dateAdded?new Date(c.dateAdded).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'—',
-        opportunityId:null
-      }));
+      leads=data.contacts.map(c=>{
+        // GHL returns custom fields as array - try multiple field name formats
+        const cf=c.customFields||c.customField||[];
+        const getField=(key)=>{
+          const f=cf.find(x=>(x.key||x.id||'').toLowerCase().includes(key.toLowerCase()));
+          return f?.value||f?.fieldValue||'—';
+        };
+        // Also check top level contact fields directly
+        const watch=c.watch_brand||getField('watch_brand')||'—';
+        const model=c.watch_model||getField('watch_model')||'';
+        const ref=c.reference||getField('reference')||'—';
+        const budget=c.budget||getField('budget')||'—';
+        const condition=c.condition||getField('condition')||'—';
+        const enquiry=c.enquiry_type||getField('enquiry_type')||'—';
+        return {
+          id:c.id,
+          name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
+          watch:watch+(model&&model!=='—'?' '+model:''),
+          ref,budget,condition,enquiry,
+          phone:c.phone||'—',
+          email:c.email||'—',
+          stage:'New',
+          time:c.dateAdded?new Date(c.dateAdded).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'—',
+          opportunityId:null,
+          lastMsg:c.lastMessageBody||'No messages yet',
+          lastMsgTime:c.lastMessageDate?new Date(c.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''
+        };
+      });
       document.getElementById('nb-leads').textContent=leads.length;
       clients=data.contacts.map(c=>({
         name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
         phone:c.phone||'—',email:c.email||'—',
-        spend:0,purchases:0,last:'—',wl:0,tag:'new',id:c.id
+        spend:0,purchases:0,last:'—',wl:0,tag:'new',id:c.id,
+        lastMsg:c.lastMessageBody||'No conversation yet',
+        lastMsgTime:c.lastMessageDate?new Date(c.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''
       }));
       allClients=[...clients];
       updateDashboard();
@@ -1575,10 +1610,29 @@ function filterClients(q){
   renderClients(filtered);
 }
 
-function viewConvo(id,name){
+async function viewConvo(id,name){
   document.getElementById('convo-modal-name').textContent=name+' — Conversation';
-  document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Connect GHL to view conversation history</div>';
+  document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Loading...</div>';
   openM('convo-modal');
+  try{
+    const r=await fetch(API+'/api/conversations?contactId='+id);
+    const data=await r.json();
+    const convos=data.conversations||[];
+    if(convos.length===0){
+      document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">No conversation history found</div>';
+      return;
+    }
+    const last=convos[0];
+    document.getElementById('convo-messages').innerHTML=`
+      <div style="margin-bottom:10px">
+        <div style="display:inline-block;background:var(--panel3);border:1px solid var(--cell-border);border-radius:2px;padding:10px 14px;max-width:80%">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--white2);line-height:1.5">${last.lastMessageBody||'No messages'}</div>
+          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'JetBrains Mono',monospace">${last.lastMessageDate?new Date(last.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+        </div>
+      </div>`;
+  }catch(e){
+    document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Unable to load conversation</div>';
+  }
 }
 
 async function addClient(){
