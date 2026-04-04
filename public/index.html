@@ -524,116 +524,79 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 <div class="notif" id="notif"><div class="ni" id="ni">🔔</div><div class="nb"><div class="nt" id="nt"></div><div class="nm" id="nm"></div></div></div>
 
 <script>
-// ── State ────────────────────────────────────────────────────────────────────
-let stock = [];
-let wishlist = [];
-let allClients = [];
+let stock=[
+  {ref:'126500LN',brand:'Rolex',model:'Daytona',cond:'Full Set · Unworn',bought:14200,recon:0,fees:500,asking:18500,status:'Available',days:2},
+  {ref:'5711/1A-011',brand:'Patek Philippe',model:'Nautilus',cond:'Full Set · Mint',bought:28000,recon:200,fees:800,asking:34000,status:'Reserved',days:8},
+  {ref:'15500ST.OO.1220ST',brand:'Audemars Piguet',model:'Royal Oak',cond:'Full Set · Unworn',bought:24000,recon:0,fees:700,asking:29500,status:'Available',days:5},
+  {ref:'CAL-8880-I',brand:'Richard Mille',model:'RM 011',cond:'Full Set · Unworn',bought:95000,recon:0,fees:2000,asking:118000,status:'Reserved',days:1},
+  {ref:'126710BLRO',brand:'Rolex',model:'GMT Master II Pepsi',cond:'Full Set · Worn',bought:11800,recon:350,fees:400,asking:14200,status:'Available',days:14},
+  {ref:'M79030N-0001',brand:'Tudor',model:'Black Bay 58',cond:'Box Only · Worn',bought:2800,recon:150,fees:100,asking:3400,status:'Available',days:22}
+];
 
-const fmt = n => '£' + Math.round(n).toLocaleString('en-GB');
-const pct = (p, c) => c > 0 ? Math.round((p / c) * 100) : 0;
-const ini = n => n.split(' ').map(x => x[0]).join('').toUpperCase();
+let wishlist=[
+  {name:'Angus Fraser',phone:'07700 900 444',brand:'Audemars Piguet',model:'Royal Oak',ref:'15500ST.OO.1220ST',budget:30000},
+  {name:'Robert MacPherson',phone:'07700 900 456',brand:'Patek Philippe',model:'Nautilus',ref:'5711/1A-011',budget:35000},
+  {name:'Connor MacLeod',phone:'07700 900 111',brand:'Rolex',model:'Daytona',ref:'126500LN',budget:18000},
+  {name:'Duncan Stewart',phone:'07700 900 555',brand:'Rolex',model:'GMT Master II',ref:'126710BLRO',budget:15000}
+];
 
-// ── Clock & greeting ─────────────────────────────────────────────────────────
-function tick() { document.getElementById('clock').textContent = new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' }); }
-setInterval(tick, 1000); tick();
+let clients=[
+  {name:'Robert MacPherson',phone:'07700 900 456',spend:156000,purchases:5,last:'Today',wl:1,tag:'vip'},
+  {name:'Angus Fraser',phone:'07700 900 444',spend:89000,purchases:3,last:'Yesterday',wl:1,tag:'vip'},
+  {name:'Connor MacLeod',phone:'07700 900 111',spend:34000,purchases:2,last:'2 days ago',wl:1,tag:'active'},
+  {name:'Fiona Campbell',phone:'07700 900 222',spend:18500,purchases:2,last:'1 week ago',wl:0,tag:'active'},
+  {name:'Duncan Stewart',phone:'07700 900 555',spend:12000,purchases:1,last:'2 weeks ago',wl:1,tag:'new'},
+  {name:'Hamish Drummond',phone:'07700 900 333',spend:3200,purchases:1,last:'3 weeks ago',wl:0,tag:'new'}
+];
 
-(function () {
-  const h = new Date().getHours();
-  document.getElementById('greeting').textContent = h < 12 ? 'Good Morning' : h < 17 ? 'Good Afternoon' : 'Good Evening';
-  const now = new Date();
-  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
-  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  document.getElementById('dealer-date').textContent = `GHOSTLYDESK · ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+let allClients=[...clients];
+
+const fmt=n=>'£'+Math.round(n).toLocaleString('en-GB');
+const pct=(p,c)=>c>0?Math.round((p/c)*100):0;
+const ini=n=>n.split(' ').map(x=>x[0]).join('').toUpperCase();
+
+function tick(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+setInterval(tick,1000);tick();
+
+(function(){
+  const h=new Date().getHours();
+  document.getElementById('greeting').textContent=h<12?'Good Morning':h<17?'Good Afternoon':'Good Evening';
+  const now=new Date();
+  const days=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('dealer-date').textContent=`DEALER NAME · ${days[now.getDay()]} ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
 })();
 
-// ── Notifications & modals ───────────────────────────────────────────────────
-function notify(icon, title, msg, bc) {
-  document.getElementById('ni').textContent = icon;
-  document.getElementById('nt').textContent = title;
-  document.getElementById('nm').textContent = msg;
-  const n = document.getElementById('notif');
-  n.style.borderLeftColor = bc || 'var(--purple)';
-  n.classList.add('show');
-  setTimeout(() => n.classList.remove('show'), 4500);
+function notify(icon,title,msg,bc){
+  document.getElementById('ni').textContent=icon;document.getElementById('nt').textContent=title;document.getElementById('nm').textContent=msg;
+  const n=document.getElementById('notif');n.style.borderLeftColor=bc||'var(--purple)';n.classList.add('show');
+  setTimeout(()=>n.classList.remove('show'),4500);
 }
-function openM(id) { document.getElementById(id).classList.add('open'); }
-function closeM(id) { document.getElementById(id).classList.remove('open'); }
-document.querySelectorAll('.overlay').forEach(o => o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); }));
+function openM(id){document.getElementById(id).classList.add('open');}
+function closeM(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 
-// ── Navigation ───────────────────────────────────────────────────────────────
-function nav(id, el) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nitem').forEach(n => n.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  if (el) el.classList.add('active');
-  if (id === 'stock') renderStock();
-  if (id === 'margin') renderMargin();
-  if (id === 'wishlist') renderWishlist();
-  if (id === 'clients') renderClients(allClients);
+function nav(id,el){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nitem').forEach(n=>n.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+  if(el)el.classList.add('active');
+  if(id==='stock')renderStock();if(id==='margin')renderMargin();
+  if(id==='wishlist')renderWishlist();if(id==='clients')renderClients(allClients);
 }
 
-function stockView(v, btn) {
-  document.querySelectorAll('.vt').forEach(b => b.classList.remove('active')); btn.classList.add('active');
-  document.getElementById('sv-table').style.display = v === 'table' ? 'block' : 'none';
-  document.getElementById('sv-cards').style.display = v === 'cards' ? 'block' : 'none';
-  if (v === 'cards') renderCards();
+function stockView(v,btn){
+  document.querySelectorAll('.vt').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
+  document.getElementById('sv-table').style.display=v==='table'?'block':'none';
+  document.getElementById('sv-cards').style.display=v==='cards'?'block':'none';
+  if(v==='cards')renderCards();
 }
 
-// ── API helpers ──────────────────────────────────────────────────────────────
-async function api(method, path, body) {
-  const opts = { method, headers: { 'Content-Type': 'application/json' } };
-  if (body) opts.body = JSON.stringify(body);
-  const res = await fetch(path, opts);
-  if (!res.ok) throw new Error(method + ' ' + path + ' to ' + res.status);
-  return res.json();
-}
-
-// ── Bootstrap ────────────────────────────────────────────────────────────────
-async function loadInventory() {
-  try {
-    stock = await api('GET', '/api/inventory');
-    renderStock(); renderMargin(); renderCards();
-  } catch (e) { console.error('Failed to load inventory:', e); }
-}
-
-async function loadWishlist() {
-  try {
-    wishlist = await api('GET', '/api/wishlist');
-    renderWishlist();
-    document.getElementById('nb-wish').textContent = wishlist.length;
-  } catch (e) { console.error('Failed to load wishlist:', e); }
-}
-
-async function loadContacts() {
-  try {
-    const data = await api('GET', '/api/contacts');
-    const contacts = data.contacts || [];
-    if (contacts.length > 0) {
-      allClients = contacts.map(c => ({
-        name: ((c.firstName || '') + ' ' + (c.lastName || '')).trim(),
-        phone: c.phone || '',
-        spend: 0, purchases: 0, last: 'GHL', wl: 0, tag: 'new'
-      }));
-    } else {
-      allClients = [
-        { name: 'Robert MacPherson', phone: '07700 900 456', spend: 156000, purchases: 5, last: 'Today', wl: 1, tag: 'vip' },
-        { name: 'Angus Fraser', phone: '07700 900 444', spend: 89000, purchases: 3, last: 'Yesterday', wl: 1, tag: 'vip' },
-        { name: 'Connor MacLeod', phone: '07700 900 111', spend: 34000, purchases: 2, last: '2 days ago', wl: 1, tag: 'active' },
-        { name: 'Fiona Campbell', phone: '07700 900 222', spend: 18500, purchases: 2, last: '1 week ago', wl: 0, tag: 'active' },
-        { name: 'Duncan Stewart', phone: '07700 900 555', spend: 12000, purchases: 1, last: '2 weeks ago', wl: 1, tag: 'new' },
-        { name: 'Hamish Drummond', phone: '07700 900 333', spend: 3200, purchases: 1, last: '3 weeks ago', wl: 0, tag: 'new' }
-      ];
-    }
-    renderClients(allClients);
-  } catch (e) { console.error('Failed to load contacts:', e); }
-}
-
-// ── Inventory render ──────────────────────────────────────────────────────────
-function renderStock() {
-  document.getElementById('stock-tbody').innerHTML = stock.map((w, i) => {
-    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
-    const mc = m >= 20 ? 'g' : m >= 10 ? 'o' : 'r';
-    const bc = w.status === 'Available' ? 'b-av' : w.status === 'Reserved' ? 'b-res' : 'b-sold';
+function renderStock(){
+  document.getElementById('stock-tbody').innerHTML=stock.map((w,i)=>{
+    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
+    const mc=m>=20?'g':m>=10?'o':'r';
+    const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
     return `<tr>
       <td class="mono">${w.ref}</td>
       <td class="bold">${w.brand} ${w.model}</td>
@@ -641,62 +604,51 @@ function renderStock() {
       <td style="text-align:right"><input class="editable" value="${w.bought}" onchange="upStock(${i},'bought',this.value)"></td>
       <td style="text-align:right"><input class="editable" value="${w.recon}" onchange="upStock(${i},'recon',this.value)"></td>
       <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${profit > 0 ? 'var(--green)' : 'var(--red)'}">${fmt(profit)}</td>
+      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
       <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
       <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
       <td><span class="badge ${bc}">${w.status}</span></td>
       <td><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button></td>
     </tr>`;
   }).join('');
-  document.getElementById('sc-label').textContent = stock.length;
-  document.getElementById('nb-stock').textContent = stock.length;
+  document.getElementById('sc-label').textContent=stock.length;
+  document.getElementById('nb-stock').textContent=stock.length;
 }
 
-async function upStock(i, f, v) {
-  stock[i][f] = parseFloat(v) || 0;
-  renderStock(); renderMargin();
-  try { await api('PUT', '/api/inventory/' + stock[i].id, { [f]: stock[i][f] }); }
-  catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
-}
+function upStock(i,f,v){stock[i][f]=parseFloat(v)||0;renderStock();renderMargin();}
 
-function openEdit(i) {
-  const w = stock[i];
-  document.getElementById('edit-idx').value = i;
-  document.getElementById('edit-brand').value = w.brand;
-  document.getElementById('edit-model').value = w.model;
-  document.getElementById('edit-ref').value = w.ref;
-  document.getElementById('edit-bought').value = w.bought;
-  document.getElementById('edit-recon').value = w.recon;
-  document.getElementById('edit-asking').value = w.asking;
-  document.getElementById('edit-cond').value = w.cond;
-  document.getElementById('edit-status').value = w.status;
+function openEdit(i){
+  const w=stock[i];
+  document.getElementById('edit-idx').value=i;
+  document.getElementById('edit-brand').value=w.brand;
+  document.getElementById('edit-model').value=w.model;
+  document.getElementById('edit-ref').value=w.ref;
+  document.getElementById('edit-bought').value=w.bought;
+  document.getElementById('edit-recon').value=w.recon;
+  document.getElementById('edit-asking').value=w.asking;
+  document.getElementById('edit-cond').value=w.cond;
+  document.getElementById('edit-status').value=w.status;
   openM('edit-modal');
 }
 
-async function saveEdit() {
-  const i = parseInt(document.getElementById('edit-idx').value);
-  const updated = {
-    brand: document.getElementById('edit-brand').value,
-    model: document.getElementById('edit-model').value,
-    ref: document.getElementById('edit-ref').value,
-    bought: parseFloat(document.getElementById('edit-bought').value) || 0,
-    recon: parseFloat(document.getElementById('edit-recon').value) || 0,
-    asking: parseFloat(document.getElementById('edit-asking').value) || 0,
-    cond: document.getElementById('edit-cond').value,
-    status: document.getElementById('edit-status').value
-  };
-  try {
-    const saved = await api('PUT', '/api/inventory/' + stock[i].id, updated);
-    stock[i] = Object.assign({}, stock[i], saved);
-    closeM('edit-modal'); renderStock(); renderMargin(); renderCards();
-    notify('\u2713', 'Stock Updated', 'Changes saved successfully');
-  } catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
+function saveEdit(){
+  const i=parseInt(document.getElementById('edit-idx').value);
+  stock[i].brand=document.getElementById('edit-brand').value;
+  stock[i].model=document.getElementById('edit-model').value;
+  stock[i].ref=document.getElementById('edit-ref').value;
+  stock[i].bought=parseFloat(document.getElementById('edit-bought').value)||0;
+  stock[i].recon=parseFloat(document.getElementById('edit-recon').value)||0;
+  stock[i].asking=parseFloat(document.getElementById('edit-asking').value)||0;
+  stock[i].cond=document.getElementById('edit-cond').value;
+  stock[i].status=document.getElementById('edit-status').value;
+  closeM('edit-modal');renderStock();renderMargin();renderCards();
+  notify('✓','Stock Updated','Changes saved successfully');
 }
 
-function renderCards() {
-  document.getElementById('stock-cards').innerHTML = stock.map((w, i) => {
-    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
-    const bc = w.status === 'Available' ? 'b-av' : w.status === 'Reserved' ? 'b-res' : 'b-sold';
+function renderCards(){
+  document.getElementById('stock-cards').innerHTML=stock.map((w,i)=>{
+    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
+    const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
     return `<div class="wcard">
       <div class="wc-ref">${w.ref}</div>
       <div class="wc-name">${w.brand} ${w.model}</div>
@@ -704,19 +656,19 @@ function renderCards() {
       <div class="wc-row"><span class="wc-l">Bought</span><span class="wc-v">${fmt(w.bought)}</span></div>
       <div class="wc-row"><span class="wc-l">Asking</span><span class="wc-v">${fmt(w.asking)}</span></div>
       <div class="wc-row"><span class="wc-l">Net Profit</span><div class="wc-p">${fmt(profit)}</div></div>
-      <div class="wc-ft"><span class="badge ${bc}">${w.status}</span><span class="mpill ${m >= 20 ? 'g' : m >= 10 ? 'o' : 'r'}">${m}% margin</span></div>
+      <div class="wc-ft"><span class="badge ${bc}">${w.status}</span><span class="mpill ${m>=20?'g':m>=10?'o':'r'}">${m}% margin</span></div>
       <div class="wc-actions"><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})" style="flex:1">Edit</button></div>
     </div>`;
   }).join('');
 }
 
-function renderMargin() {
-  let tb = 0, tr = 0, tf = 0, tc = 0, ta = 0, tp = 0;
-  document.getElementById('margin-tbody').innerHTML = stock.map((w, i) => {
-    const cost = w.bought + w.recon + w.fees, profit = w.asking - cost, m = pct(profit, cost);
-    const mc = m >= 20 ? 'g' : m >= 10 ? 'o' : 'r';
-    const flag = w.days > 30 ? '<span style="color:var(--red);font-size:9px">\u26A0 Slow</span>' : w.days > 14 ? '<span style="color:var(--amber);font-size:9px">\u2193 Monitor</span>' : '<span style="color:var(--white3);font-size:9px;font-family:\'JetBrains Mono\',monospace">' + w.days + 'd</span>';
-    tb += w.bought; tr += w.recon; tf += w.fees; tc += cost; ta += w.asking; tp += profit;
+function renderMargin(){
+  let tb=0,tr=0,tf=0,tc=0,ta=0,tp=0;
+  document.getElementById('margin-tbody').innerHTML=stock.map((w,i)=>{
+    const cost=w.bought+w.recon+w.fees,profit=w.asking-cost,m=pct(profit,cost);
+    const mc=m>=20?'g':m>=10?'o':'r';
+    const flag=w.days>30?`<span style="color:var(--red);font-size:9px">⚠ Slow</span>`:w.days>14?`<span style="color:var(--amber);font-size:9px">↓ Monitor</span>`:`<span style="color:var(--white3);font-size:9px;font-family:'JetBrains Mono',monospace">${w.days}d</span>`;
+    tb+=w.bought;tr+=w.recon;tf+=w.fees;tc+=cost;ta+=w.asking;tp+=profit;
     return `<tr>
       <td class="mono">${w.ref}</td><td class="bold">${w.brand} ${w.model}</td>
       <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
@@ -725,266 +677,205 @@ function renderMargin() {
       <td style="text-align:right"><input class="editable" value="${w.fees}" onchange="upStock(${i},'fees',this.value)"></td>
       <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--white2)">${fmt(cost)}</td>
       <td style="text-align:right"><input class="editable" value="${w.asking}" onchange="upStock(${i},'asking',this.value)"></td>
-      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:${profit > 0 ? 'var(--green)' : 'var(--red)'}">${fmt(profit)}</td>
+      <td style="text-align:right;font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:600;color:${profit>0?'var(--green)':'var(--red)'}">${fmt(profit)}</td>
       <td style="text-align:right"><span class="mpill ${mc}">${m}%</span></td>
       <td>${flag}</td>
     </tr>`;
   }).join('');
-  document.getElementById('tot-b').textContent = fmt(tb);
-  document.getElementById('tot-r').textContent = fmt(tr);
-  document.getElementById('tot-f').textContent = fmt(tf);
-  document.getElementById('tot-c').textContent = fmt(tc);
-  document.getElementById('tot-a').textContent = fmt(ta);
-  document.getElementById('tot-p').textContent = fmt(tp);
+  document.getElementById('tot-b').textContent=fmt(tb);document.getElementById('tot-r').textContent=fmt(tr);
+  document.getElementById('tot-f').textContent=fmt(tf);document.getElementById('tot-c').textContent=fmt(tc);
+  document.getElementById('tot-a').textContent=fmt(ta);document.getElementById('tot-p').textContent=fmt(tp);
 }
 
-// ── Add stock ─────────────────────────────────────────────────────────────────
-function calcAdd() {
-  const b = parseFloat(document.getElementById('a-bought').value) || 0;
-  const r = parseFloat(document.getElementById('a-recon').value) || 0;
-  const a = parseFloat(document.getElementById('a-asking').value) || 0;
-  const cost = b + r, profit = a - cost, m = cost > 0 ? pct(profit, cost) : 0;
-  const pp = document.getElementById('add-profit');
-  pp.textContent = cost > 0 ? fmt(profit) : '\u2014'; pp.style.color = profit > 0 ? 'var(--green)' : 'var(--red)';
-  document.getElementById('add-margin').textContent = cost > 0 ? m + '%' : '\u2014';
+function calcAdd(){
+  const b=parseFloat(document.getElementById('a-bought').value)||0;
+  const r=parseFloat(document.getElementById('a-recon').value)||0;
+  const a=parseFloat(document.getElementById('a-asking').value)||0;
+  const cost=b+r,profit=a-cost,m=cost>0?pct(profit,cost):0;
+  const pp=document.getElementById('add-profit');
+  pp.textContent=cost>0?fmt(profit):'—';pp.style.color=profit>0?'var(--green)':'var(--red)';
+  document.getElementById('add-margin').textContent=cost>0?m+'%':'—';
 }
 
-async function addStock() {
-  const brand = document.getElementById('a-brand').value;
-  const model = document.getElementById('a-model').value;
-  const ref = document.getElementById('a-ref').value;
-  if (!brand || !model || !ref) { notify('\u26A0', 'Missing Details', 'Brand, model and reference required', 'var(--red)'); return; }
-  const entry = {
-    ref, brand, model,
-    cond: document.getElementById('a-cond').value || 'Unknown',
-    bought: parseFloat(document.getElementById('a-bought').value) || 0,
-    recon: parseFloat(document.getElementById('a-recon').value) || 0,
-    fees: 0,
-    asking: parseFloat(document.getElementById('a-asking').value) || 0,
-    status: document.getElementById('a-status').value,
-    notes: document.getElementById('a-notes').value
-  };
-  try {
-    const result = await api('POST', '/api/inventory', entry);
-    stock.push(result.item);
-    document.getElementById('nb-stock').textContent = stock.length;
-    const matches = result.matches || [];
-    if (matches.length > 0) {
-      matches.forEach(m => {
-        const a = document.createElement('div'); a.className = 'match-alert';
-        a.innerHTML = '<div class="madot"></div><div class="matext"><strong>' + m.name + '</strong> is waiting for this exact reference \u2014 SMS sent automatically via GHL.</div>';
-        document.getElementById('match-alerts').prepend(a);
-      });
-      notify('\uD83C\uDFAF', 'Wishlist Match', matches[0].name + ' waiting for ' + ref + ' \u2014 SMS sent', 'var(--green)');
-    } else {
-      notify('\u2713', 'Stock Added', brand + ' ' + model + ' added to inventory');
-    }
-    clearAdd();
-  } catch (e) { notify('\u26A0', 'Error', 'Could not add stock to server', 'var(--red)'); }
+function addStock(){
+  const brand=document.getElementById('a-brand').value,model=document.getElementById('a-model').value,ref=document.getElementById('a-ref').value;
+  if(!brand||!model||!ref){notify('⚠','Missing Details','Brand, model and reference required','var(--red)');return;}
+  const entry={ref,brand,model,cond:document.getElementById('a-cond').value||'Unknown',bought:parseFloat(document.getElementById('a-bought').value)||0,recon:parseFloat(document.getElementById('a-recon').value)||0,fees:0,asking:parseFloat(document.getElementById('a-asking').value)||0,status:document.getElementById('a-status').value,days:0};
+  stock.push(entry);document.getElementById('nb-stock').textContent=stock.length;
+  const matches=wishlist.filter(w=>w.ref.toLowerCase()===ref.toLowerCase()||(w.brand===brand&&w.model===model));
+  if(matches.length>0){
+    matches.forEach(m=>{
+      const a=document.createElement('div');a.className='match-alert';
+      a.innerHTML=`<div class="madot"></div><div class="matext"><strong>${m.name}</strong> is waiting for this exact reference — SMS sent automatically via GHL.</div>`;
+      document.getElementById('match-alerts').prepend(a);
+    });
+    notify('🎯','Wishlist Match',`${matches[0].name} waiting for ${ref} — SMS sent`,'var(--green)');
+  } else {notify('✓','Stock Added',`${brand} ${model} added to inventory`);}
+  clearAdd();
 }
 
-function clearAdd() {
-  ['a-brand', 'a-model', 'a-ref', 'a-bought', 'a-recon', 'a-asking', 'a-cond', 'a-notes'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-  document.getElementById('a-status').value = 'Available';
-  document.getElementById('add-profit').textContent = '\u2014';
-  document.getElementById('add-margin').textContent = '\u2014';
-}
+function clearAdd(){['a-brand','a-model','a-ref','a-bought','a-recon','a-asking','a-cond','a-notes'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});document.getElementById('a-status').value='Available';document.getElementById('add-profit').textContent='—';document.getElementById('add-margin').textContent='—';}
 
-// ── Wishlist ──────────────────────────────────────────────────────────────────
-function renderWishlist() {
-  document.getElementById('wish-list').innerHTML = wishlist.map((w, i) => `
+function renderWishlist(){
+  document.getElementById('wish-list').innerHTML=wishlist.map((w,i)=>`
     <div class="wish-card">
       <div class="wav">${ini(w.name)}</div>
       <div class="winfo">
         <div class="wname">${w.name}</div>
-        <div class="wwatch">${w.brand} ${w.model} \u00B7 <span class="wref">${w.ref || 'Any'}</span></div>
+        <div class="wwatch">${w.brand} ${w.model} · <span class="wref">${w.ref||'Any'}</span></div>
         <div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:var(--white3);margin-top:2px">${w.phone}</div>
       </div>
       <div style="text-align:right"><div class="wbudget">${fmt(w.budget)}</div><div class="wblabel">Budget</div></div>
       <div class="wish-actions">
         <button class="btn btn-ghost btn-sm" onclick="openWishEdit(${i})">Edit</button>
-        <button class="btn btn-danger btn-sm" onclick="deleteWish(${i})">\u2715</button>
+        <button class="btn btn-danger btn-sm" onclick="deleteWish(${i})">✕</button>
       </div>
     </div>`).join('');
 }
 
-function openWishEdit(i) {
-  const w = wishlist[i];
-  document.getElementById('edit-wish-idx').value = i;
-  document.getElementById('ew-name').value = w.name;
-  document.getElementById('ew-phone').value = w.phone;
-  document.getElementById('ew-brand').value = w.brand;
-  document.getElementById('ew-model').value = w.model;
-  document.getElementById('ew-ref').value = w.ref;
-  document.getElementById('ew-budget').value = w.budget;
+function openWishEdit(i){
+  const w=wishlist[i];
+  document.getElementById('edit-wish-idx').value=i;
+  document.getElementById('ew-name').value=w.name;
+  document.getElementById('ew-phone').value=w.phone;
+  document.getElementById('ew-brand').value=w.brand;
+  document.getElementById('ew-model').value=w.model;
+  document.getElementById('ew-ref').value=w.ref;
+  document.getElementById('ew-budget').value=w.budget;
   openM('edit-wish-modal');
 }
 
-async function saveWishEdit() {
-  const i = parseInt(document.getElementById('edit-wish-idx').value);
-  const updated = {
-    name: document.getElementById('ew-name').value,
-    phone: document.getElementById('ew-phone').value,
-    brand: document.getElementById('ew-brand').value,
-    model: document.getElementById('ew-model').value,
-    ref: document.getElementById('ew-ref').value,
-    budget: parseFloat(document.getElementById('ew-budget').value) || 0
-  };
-  try {
-    const saved = await api('PUT', '/api/wishlist/' + wishlist[i].id, updated);
-    wishlist[i] = Object.assign({}, wishlist[i], saved);
-    closeM('edit-wish-modal'); renderWishlist();
-    notify('\u2713', 'Wishlist Updated', 'Changes saved');
-  } catch (e) { notify('\u26A0', 'Save Failed', 'Could not save to server', 'var(--red)'); }
+function saveWishEdit(){
+  const i=parseInt(document.getElementById('edit-wish-idx').value);
+  wishlist[i].name=document.getElementById('ew-name').value;
+  wishlist[i].phone=document.getElementById('ew-phone').value;
+  wishlist[i].brand=document.getElementById('ew-brand').value;
+  wishlist[i].model=document.getElementById('ew-model').value;
+  wishlist[i].ref=document.getElementById('ew-ref').value;
+  wishlist[i].budget=parseFloat(document.getElementById('ew-budget').value)||0;
+  closeM('edit-wish-modal');renderWishlist();
+  notify('✓','Wishlist Updated','Changes saved');
 }
 
-async function deleteWish(i) {
-  try {
-    await api('DELETE', '/api/wishlist/' + wishlist[i].id);
-    wishlist.splice(i, 1);
-    document.getElementById('nb-wish').textContent = wishlist.length;
-    renderWishlist();
-    notify('\u2713', 'Removed', 'Client removed from wishlist');
-  } catch (e) { notify('\u26A0', 'Error', 'Could not remove from server', 'var(--red)'); }
+function deleteWish(i){
+  wishlist.splice(i,1);
+  document.getElementById('nb-wish').textContent=wishlist.length;
+  renderWishlist();notify('✓','Removed','Client removed from wishlist');
 }
 
-async function addWish() {
-  const name = document.getElementById('w-name').value;
-  const brand = document.getElementById('w-brand').value;
-  if (!name || !brand) { notify('\u26A0', 'Missing Details', 'Name and brand required', 'var(--red)'); return; }
-  const entry = {
-    name, phone: document.getElementById('w-phone').value, brand,
-    model: document.getElementById('w-model').value,
-    ref: document.getElementById('w-ref').value,
-    budget: parseFloat(document.getElementById('w-budget').value) || 0
-  };
-  try {
-    const saved = await api('POST', '/api/wishlist', entry);
-    wishlist.push(saved);
-    document.getElementById('nb-wish').textContent = wishlist.length;
-    closeM('wish-modal'); renderWishlist();
-    ['w-name', 'w-phone', 'w-brand', 'w-model', 'w-ref', 'w-budget'].forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
-    notify('\u25CE', 'Added to Wishlist', name + ' will be alerted on match');
-  } catch (e) { notify('\u26A0', 'Error', 'Could not save to server', 'var(--red)'); }
+function addWish(){
+  const name=document.getElementById('w-name').value,brand=document.getElementById('w-brand').value;
+  if(!name||!brand){notify('⚠','Missing Details','Name and brand required','var(--red)');return;}
+  wishlist.push({name,phone:document.getElementById('w-phone').value,brand,model:document.getElementById('w-model').value,ref:document.getElementById('w-ref').value,budget:parseFloat(document.getElementById('w-budget').value)||0});
+  document.getElementById('nb-wish').textContent=wishlist.length;
+  closeM('wish-modal');renderWishlist();
+  notify('◎','Added to Wishlist',`${name} will be alerted on match`);
 }
 
-// ── Clients ───────────────────────────────────────────────────────────────────
-function renderClients(list) {
-  document.getElementById('client-grid').innerHTML = list.map(c => {
-    const tag = c.tag === 'vip' ? '<span class="badge b-vip" style="margin-left:auto">VIP</span>' : c.tag === 'active' ? '<span class="badge b-new" style="margin-left:auto">Active</span>' : '<span class="badge b-wait" style="margin-left:auto">New</span>';
-    const ring = c.tag === 'vip' ? 'vip-ring' : '';
-    const nameStr = (c.name || 'N A').trim();
+function renderClients(list){
+  document.getElementById('client-grid').innerHTML=list.map(c=>{
+    const tag=c.tag==='vip'?'<span class="badge b-vip" style="margin-left:auto">VIP</span>':c.tag==='active'?'<span class="badge b-new" style="margin-left:auto">Active</span>':'<span class="badge b-wait" style="margin-left:auto">New</span>';
+    const ring=c.tag==='vip'?'vip-ring':'';
     return `<div class="ccrd ${ring}">
-      <div class="cc-top"><div class="ccav">${ini(nameStr || 'N A')}</div><div><div class="ccname">${c.name}</div><div class="ccphone">${c.phone}</div></div>${tag}</div>
+      <div class="cc-top"><div class="ccav">${ini(c.name)}</div><div><div class="ccname">${c.name}</div><div class="ccphone">${c.phone}</div></div>${tag}</div>
       <div class="cc-stats">
-        <div class="ccstat"><div class="ccsl">Total Spend</div><div class="ccsv">${fmt(c.spend || 0)}</div></div>
-        <div class="ccstat"><div class="ccsl">Purchases</div><div class="ccsv">${c.purchases || 0}</div></div>
-        <div class="ccstat"><div class="ccsl">Last Contact</div><div class="ccsv" style="font-size:10px">${c.last || '\u2014'}</div></div>
-        <div class="ccstat"><div class="ccsl">Wishlist</div><div class="ccsv">${c.wl || 0}</div></div>
+        <div class="ccstat"><div class="ccsl">Total Spend</div><div class="ccsv">${fmt(c.spend)}</div></div>
+        <div class="ccstat"><div class="ccsl">Purchases</div><div class="ccsv">${c.purchases}</div></div>
+        <div class="ccstat"><div class="ccsl">Last Contact</div><div class="ccsv" style="font-size:10px">${c.last}</div></div>
+        <div class="ccstat"><div class="ccsl">Wishlist</div><div class="ccsv">${c.wl}</div></div>
       </div>
     </div>`;
   }).join('');
 }
 
-function filterClients(q) {
-  const filtered = allClients.filter(c => c.name.toLowerCase().includes(q.toLowerCase()) || (c.phone || '').includes(q));
+function filterClients(q){
+  const filtered=allClients.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())||c.phone.includes(q));
   renderClients(filtered);
 }
 
-// ── Leads ────────────────────────────────────────────────────────────────────
-function mvStage(el) {
-  el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o => o.classList.remove('active')); el.classList.add('active');
-  notify('\u25C8', 'Stage Updated', 'Lead moved to ' + el.textContent + ' \u2014 GHL pipeline syncing');
+function mvStage(el){
+  el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o=>o.classList.remove('active'));el.classList.add('active');
+  notify('◈','Stage Updated',`Lead moved to ${el.textContent} — GHL pipeline syncing`);
 }
 
-// ── Valuation ─────────────────────────────────────────────────────────────────
-function runVal() {
-  const brand = document.getElementById('v-brand').value, ref = document.getElementById('v-ref').value;
-  if (!brand && !ref) { notify('\u26A0', 'Missing Details', 'Enter brand and reference', 'var(--red)'); return; }
-  const base = ref === '126500LN' ? 15800 : ref === '5711/1A-011' ? 86000 : ref === '15500ST.OO.1220ST' ? 28000 : ref === '126710BLRO' ? 13200 : ref === 'M79030N-0001' ? 3100 : 15000;
-  const srcs = [
-    { name: 'Chrono24', price: Math.round(base * 1.02), range: fmt(base * .94) + ' \u2014 ' + fmt(base * 1.1), count: Math.floor(Math.random() * 30 + 22) },
-    { name: 'WatchCharts', price: Math.round(base * .99), range: fmt(base * .93) + ' \u2014 ' + fmt(base * 1.06), count: Math.floor(Math.random() * 20 + 14) },
-    { name: 'Grey Market', price: Math.round(base * .95), range: fmt(base * .88) + ' \u2014 ' + fmt(base * 1.02), count: Math.floor(Math.random() * 15 + 8) }
+function runVal(){
+  const brand=document.getElementById('v-brand').value,ref=document.getElementById('v-ref').value;
+  if(!brand&&!ref){notify('⚠','Missing Details','Enter brand and reference','var(--red)');return;}
+  const base=ref==='126500LN'?15800:ref==='5711/1A-011'?86000:ref==='15500ST.OO.1220ST'?28000:ref==='126710BLRO'?13200:ref==='M79030N-0001'?3100:15000;
+  const srcs=[
+    {name:'Chrono24',price:Math.round(base*1.02),range:`${fmt(base*.94)} — ${fmt(base*1.1)}`,count:Math.floor(Math.random()*30+22)},
+    {name:'WatchCharts',price:Math.round(base*.99),range:`${fmt(base*.93)} — ${fmt(base*1.06)}`,count:Math.floor(Math.random()*20+14)},
+    {name:'Grey Market',price:Math.round(base*.95),range:`${fmt(base*.88)} — ${fmt(base*1.02)}`,count:Math.floor(Math.random()*15+8)}
   ];
-  const blended = Math.round(srcs.reduce((a, s) => a + s.price, 0) / srcs.length);
-  document.getElementById('vb-price').textContent = fmt(blended);
-  document.getElementById('vb-range').textContent = 'Range: ' + fmt(blended * .91) + ' \u2014 ' + fmt(blended * 1.09) + ' \u00B7 Based on ' + srcs.reduce((a, s) => a + s.count, 0) + ' recent sales';
-  document.getElementById('val-srcs').innerHTML = srcs.map((s, i) => '<div class="vsrc ' + (i === 0 ? 'best' : '') + '"><div class="vs-n">' + s.name + '</div><div class="vs-p">' + fmt(s.price) + '</div><div class="vs-r">' + s.range + '</div><div class="vs-live"><div class="vs-dot"></div>Live \u00B7 ' + s.count + ' sales</div></div>').join('');
-  document.getElementById('val-recs').innerHTML =
-    '<div class="vsrc best-red"><div class="vs-n">Trade In Floor</div><div class="vs-p" style="color:var(--red)">' + fmt(blended * .82) + '</div><div class="vs-r">Walk away point</div></div>' +
-    '<div class="vsrc best"><div class="vs-n">Target Buy Price</div><div class="vs-p" style="color:var(--gold-bright)">' + fmt(blended * .88) + '</div><div class="vs-r">Recommended offer</div></div>' +
-    '<div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">' + fmt(blended * 1.07) + '</div><div class="vs-r">7% premium \u00B7 Fast sale</div></div>';
-  document.getElementById('val-results').style.display = 'block';
+  const blended=Math.round(srcs.reduce((a,s)=>a+s.price,0)/srcs.length);
+  document.getElementById('vb-price').textContent=fmt(blended);
+  document.getElementById('vb-range').textContent=`Range: ${fmt(blended*.91)} — ${fmt(blended*1.09)} · Based on ${srcs.reduce((a,s)=>a+s.count,0)} recent sales`;
+  document.getElementById('val-srcs').innerHTML=srcs.map((s,i)=>`<div class="vsrc ${i===0?'best':''}"><div class="vs-n">${s.name}</div><div class="vs-p">${fmt(s.price)}</div><div class="vs-r">${s.range}</div><div class="vs-live"><div class="vs-dot"></div>Live · ${s.count} sales</div></div>`).join('');
+  document.getElementById('val-recs').innerHTML=`
+    <div class="vsrc best-red"><div class="vs-n">Trade In Floor</div><div class="vs-p" style="color:var(--red)">${fmt(blended*.82)}</div><div class="vs-r">Walk away point</div></div>
+    <div class="vsrc best"><div class="vs-n">Target Buy Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(blended*.88)}</div><div class="vs-r">Recommended offer</div></div>
+    <div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">${fmt(blended*1.07)}</div><div class="vs-r">7% premium · Fast sale</div></div>`;
+  document.getElementById('val-results').style.display='block';
 }
 
-// ── Trade In ──────────────────────────────────────────────────────────────────
-function runTrade() {
-  const brand = document.getElementById('t-brand').value;
-  if (!brand) { notify('\u26A0', 'Missing Details', 'Enter watch brand', 'var(--red)'); return; }
-  const ref = document.getElementById('t-ref').value;
-  const base = ref === '126710BLRO' ? 13200 : ref === '126500LN' ? 15800 : ref === '5711/1A-011' ? 86000 : 15000;
-  const cm = { 'Mint \u2014 No visible wear': 1.0, 'Excellent \u2014 Minor wear only': .95, 'Good \u2014 Normal wear': .88, 'Fair \u2014 Noticeable wear': .78, 'Poor \u2014 Heavy wear or damage': .65 };
-  const pm = { 'Full Set \u2014 Box and Papers': 1.0, 'Box Only \u2014 No Papers': .93, 'Papers Only \u2014 No Box': .91, 'Watch Only': .85 };
-  const cond = document.getElementById('t-cond').value, prov = document.getElementById('t-prov').value;
-  const c = cm[cond] || .9, p = pm[prov] || .9, adj = Math.round(base * c * p);
-  const sp = parseFloat(document.getElementById('t-sprice').value) || 0;
-  document.getElementById('trade-grid').innerHTML =
-    '<div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">' + fmt(adj * .84) + '</div><div class="vs-r">Walk away point</div></div>' +
-    '<div class="vsrc best"><div class="vs-n">Fair Trade Price</div><div class="vs-p" style="color:var(--gold-bright)">' + fmt(adj * .91) + '</div><div class="vs-r">Recommended offer</div></div>' +
-    '<div class="vsrc best-green"><div class="vs-n">Market Value</div><div class="vs-p" style="color:var(--green)">' + fmt(adj) + '</div><div class="vs-r">If selling retail</div></div>';
-  const unpolished = (document.getElementById('t-case').value || '').includes('Unpolished');
-  const condLabel = cond || 'Not specified', provLabel = prov || 'Not specified';
-  let notes = 'Condition: <strong style="color:var(--white)">' + condLabel + '</strong> \u2192 ' + Math.round(c * 100) + '% of base value<br>Provenance: <strong style="color:var(--white)">' + provLabel + '</strong> \u2192 ' + Math.round(p * 100) + '% adjustment<br>Case: ' + (unpolished ? '<strong style="color:var(--green)">Unpolished \u2014 original finish adds value</strong>' : 'Standard finish');
-  if (sp) notes += '<br>Seller asking ' + fmt(sp) + ' \u2014 ' + (sp > adj ? '<strong style="color:var(--red)">Above market \u2014 negotiate down</strong>' : '<strong style="color:var(--green)">Reasonable \u2014 proceed with offer</strong>');
-  document.getElementById('trade-notes').innerHTML = notes;
-  document.getElementById('trade-result').style.display = 'block';
-  notify('\u25D1', 'Valuation Complete', brand + ' \u2014 trade price ' + fmt(adj * .91), 'var(--gold)');
+function runTrade(){
+  const brand=document.getElementById('t-brand').value;
+  if(!brand){notify('⚠','Missing Details','Enter watch brand','var(--red)');return;}
+  const ref=document.getElementById('t-ref').value;
+  const base=ref==='126710BLRO'?13200:ref==='126500LN'?15800:ref==='5711/1A-011'?86000:15000;
+  const cm={'Mint — No visible wear':1.0,'Excellent — Minor wear only':.95,'Good — Normal wear':.88,'Fair — Noticeable wear':.78,'Poor — Heavy wear or damage':.65};
+  const pm={'Full Set — Box and Papers':1.0,'Box Only — No Papers':.93,'Papers Only — No Box':.91,'Watch Only':.85};
+  const cond=document.getElementById('t-cond').value,prov=document.getElementById('t-prov').value;
+  const c=cm[cond]||.9,p=pm[prov]||.9,adj=Math.round(base*c*p);
+  const sp=parseFloat(document.getElementById('t-sprice').value)||0;
+  document.getElementById('trade-grid').innerHTML=`
+    <div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">${fmt(adj*.84)}</div><div class="vs-r">Walk away point</div></div>
+    <div class="vsrc best"><div class="vs-n">Fair Trade Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(adj*.91)}</div><div class="vs-r">Recommended offer</div></div>
+    <div class="vsrc best-green"><div class="vs-n">Market Value</div><div class="vs-p" style="color:var(--green)">${fmt(adj)}</div><div class="vs-r">If selling retail</div></div>`;
+  const unpolished=document.getElementById('t-case').value?.includes('Unpolished');
+  document.getElementById('trade-notes').innerHTML=`Condition: <strong style="color:var(--white)">${cond||'Not specified'}</strong> → ${Math.round(c*100)}% of base value<br>Provenance: <strong style="color:var(--white)">${prov||'Not specified'}</strong> → ${Math.round(p*100)}% adjustment<br>Case: ${unpolished?'<strong style="color:var(--green)">Unpolished — original finish adds value</strong>':'Standard finish'}<br>${sp?`Seller asking ${fmt(sp)} — ${sp>adj?'<strong style="color:var(--red)">Above market — negotiate down</strong>':'<strong style="color:var(--green)">Reasonable — proceed with offer</strong>'}`:''}`  ;
+  document.getElementById('trade-result').style.display='block';
+  notify('◑','Valuation Complete',`${brand} — trade price ${fmt(adj*.91)}`,'var(--gold)');
 }
 
-function genLink() {
-  const id = 'WRW-' + Math.floor(Math.random() * 9000 + 1000);
-  document.getElementById('slink-url').textContent = window.location.host + '/tradein/' + id;
-  document.getElementById('slink-box').style.display = 'block';
-  notify('\u27F3', 'Seller Link Ready', 'Send via WhatsApp \u2014 alert fires on submission');
+function genLink(){
+  const id='WRW-'+Math.floor(Math.random()*9000+1000);
+  document.getElementById('slink-url').textContent=`ghostlydesk.netlify.app/tradein/${id}`;
+  document.getElementById('slink-box').style.display='block';
+  notify('⟳','Seller Link Ready','Send via WhatsApp — alert fires on submission');
 }
-function copyLink() { navigator.clipboard.writeText(document.getElementById('slink-url').textContent).then(() => notify('\u2713', 'Copied', 'Link copied to clipboard')); }
+function copyLink(){navigator.clipboard.writeText(document.getElementById('slink-url').textContent).then(()=>notify('✓','Copied','Link copied to clipboard'));}
 
-// ── Photos ────────────────────────────────────────────────────────────────────
-function handlePhotos(input) {
-  const grid = document.getElementById('pgrid');
-  Array.from(input.files).forEach(f => { const r = new FileReader(); r.onload = e => { const d = document.createElement('div'); d.className = 'pthumb'; d.innerHTML = '<img src="' + e.target.result + '">'; grid.appendChild(d); }; r.readAsDataURL(f); });
+function handlePhotos(input){
+  const grid=document.getElementById('pgrid');
+  Array.from(input.files).forEach(f=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='pthumb';d.innerHTML=`<img src="${e.target.result}">`;grid.appendChild(d);};r.readAsDataURL(f);});
 }
 
-// ── Voice ─────────────────────────────────────────────────────────────────────
-let rec = null, isRec = false;
-function toggleVoice() {
-  if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) { notify('\u26A0', 'Not Supported', 'Use Chrome or Safari', 'var(--red)'); return; }
-  if (isRec) { rec.stop(); return; }
-  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-  rec = new SR(); rec.continuous = false; rec.interimResults = true; rec.lang = 'en-GB';
-  rec.onstart = () => { isRec = true; document.getElementById('vbtn').classList.add('rec'); document.getElementById('vtrans').textContent = 'Listening...'; };
-  rec.onresult = e => { const t = Array.from(e.results).map(r => r[0].transcript).join(''); document.getElementById('vtrans').textContent = t; if (e.results[0].isFinal) parseVoice(t); };
-  rec.onend = () => { isRec = false; document.getElementById('vbtn').classList.remove('rec'); };
+let rec=null,isRec=false;
+function toggleVoice(){
+  if(!('webkitSpeechRecognition'in window)&&!('SpeechRecognition'in window)){notify('⚠','Not Supported','Use Chrome or Safari','var(--red)');return;}
+  if(isRec){rec.stop();return;}
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  rec=new SR();rec.continuous=false;rec.interimResults=true;rec.lang='en-GB';
+  rec.onstart=()=>{isRec=true;document.getElementById('vbtn').classList.add('rec');document.getElementById('vtrans').textContent='Listening...';};
+  rec.onresult=e=>{const t=Array.from(e.results).map(r=>r[0].transcript).join('');document.getElementById('vtrans').textContent=t;if(e.results[0].isFinal)parseVoice(t);};
+  rec.onend=()=>{isRec=false;document.getElementById('vbtn').classList.remove('rec');};
   rec.start();
 }
 
-function parseVoice(t) {
-  const tl = t.toLowerCase();
-  ['rolex', 'patek philippe', 'audemars piguet', 'richard mille', 'tudor', 'omega', 'iwc'].forEach(b => { if (tl.includes(b)) { const s = document.getElementById('a-brand'); for (let o of s.options) if (o.value.toLowerCase() === b) { s.value = o.value; break; } } });
-  const rm = tl.match(/ref(?:erence)?\s+([a-z0-9\/\-\.]+)/i);
-  if (rm) document.getElementById('a-ref').value = rm[1].toUpperCase();
-  const nums = t.match(/\d[\d,]*/g);
-  if (nums) { let v = parseInt(nums[0].replace(/,/g, '')); if (tl.includes('thousand')) v *= 1000; document.getElementById('a-bought').value = v; if (nums[1]) { let v2 = parseInt(nums[1].replace(/,/g, '')); if (tl.includes('thousand')) v2 *= 1000; document.getElementById('a-asking').value = v2; } }
-  if (tl.includes('full set')) document.getElementById('a-cond').value = tl.includes('unworn') ? 'Full Set \u00B7 Unworn' : 'Full Set \u00B7 Worn';
-  else if (tl.includes('box only')) document.getElementById('a-cond').value = 'Box Only \u00B7 Worn';
-  calcAdd(); notify('\uD83C\uDF99', 'Voice Captured', 'Review and adjust if needed');
+function parseVoice(t){
+  const tl=t.toLowerCase();
+  ['rolex','patek philippe','audemars piguet','richard mille','tudor','omega','iwc'].forEach(b=>{if(tl.includes(b)){const s=document.getElementById('a-brand');for(let o of s.options)if(o.value.toLowerCase()===b){s.value=o.value;break;}}});
+  const rm=tl.match(/ref(?:erence)?\s+([a-z0-9\/\-\.]+)/i);
+  if(rm)document.getElementById('a-ref').value=rm[1].toUpperCase();
+  const nums=t.match(/\d[\d,]*/g);
+  if(nums){let v=parseInt(nums[0].replace(/,/g,''));if(tl.includes('thousand'))v*=1000;document.getElementById('a-bought').value=v;if(nums[1]){let v2=parseInt(nums[1].replace(/,/g,''));if(tl.includes('thousand'))v2*=1000;document.getElementById('a-asking').value=v2;}}
+  if(tl.includes('full set'))document.getElementById('a-cond').value=tl.includes('unworn')?'Full Set · Unworn':'Full Set · Worn';
+  else if(tl.includes('box only'))document.getElementById('a-cond').value='Box Only · Worn';
+  calcAdd();notify('🎙','Voice Captured','Review and adjust if needed');
 }
 
-// ── Boot ──────────────────────────────────────────────────────────────────────
-loadInventory();
-loadWishlist();
-loadContacts();
+renderWishlist();renderClients(allClients);
 </script>
 </body>
 </html>
