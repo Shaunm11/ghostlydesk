@@ -86,3 +86,14 @@ app.delete("/api/wishlist/:id", (req, res) => {
 });
 
 app.listen(3000, () => console.log("GhostlyDesk running on http://localhost:3000"));
+
+// Update opportunity stage in GHL
+app.put("/api/opportunities/:id/stage", async (req, res) => {
+  try {
+    const { stageId } = req.body;
+    const r = await axios.put(GHL_BASE + "/opportunities/" + req.params.id, {
+      stageId: stageId
+    }, { headers: ghlHeaders() });
+    res.json(r.data);
+  } catch(e) { res.json({ success: false, error: e.message }); }
+});
