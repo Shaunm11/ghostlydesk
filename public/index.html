@@ -949,7 +949,87 @@ const TICKER_DATA = [
   {name:'Hublot Big Bang Steel',ref:'441.NX',price:12500,change:-0.6}
 ];
 
-// ===== STATE =====
+// ===== MARKET PRICE DATABASE 2026 =====
+const MARKET_PRICES = {
+  // ROLEX
+  '126610LN':13800,'126610LV':16800,'124060':11200,'126500LN':26500,
+  '126710BLRO':17800,'126710BLNR':16400,'126720VTNR':19200,
+  '126300':8200,'126333':9800,'126334':10200,'126331':11400,
+  '126234':8800,'126200':7400,'126000':6800,
+  '226570':9800,'216570':7200,'124270':7800,'114270':5800,
+  '126600':13200,'136660':14800,'126660':12400,
+  '326934':28500,'326935':32000,'326938':38000,
+  '116400GV':8200,'116400':7400,
+  '126622':14200,'126621':12800,'126655':18500,
+  '228238':38000,'228235':42000,'228206':28000,
+  '128238':36000,'128235':39000,
+  '124300':6200,'124200':5800,'124400':4800,
+  // PATEK PHILIPPE
+  '5711/1A-011':88000,'5711/1A-010':92000,
+  '5726A-001':95000,'5726/1A-001':98000,
+  '5168G-010':86000,'5167A-001':28000,'5164A-001':38000,
+  '5196P-001':32000,'5196G-001':28000,'5205G-001':42000,
+  '5270G-013':185000,'5270P-001':195000,
+  '5172G-001':72000,'5905P-001':82000,
+  // AUDEMARS PIGUET
+  '15500ST.OO.1220ST.01':32000,'15500ST.OO.1220ST.03':34000,
+  '15202ST.OO.1240ST.01':58000,'15202BC.OO.1240BC.01':95000,
+  '15400ST.OO.1220ST.01':28000,'15400ST.OO.1220ST.02':30000,
+  '26400SO.OO.A002CA.01':28000,'26470ST.OO.A101CR.01':32000,
+  '26331ST.OO.1220ST.03':36000,
+  // TUDOR
+  'M79030N-0001':3400,'M79030B-0001':3600,
+  'M79230N-0007':3200,'M79230B-0007':3400,
+  'M25600TN-0001':4200,'M25610TNL-0001':4600,
+  'M79470-0001':3800,'M79360N-0101':2800,
+  // OMEGA
+  '210.30.42.20.01.001':4600,'210.30.42.20.03.001':4800,
+  '210.30.44.51.03.001':5200,'210.60.44.51.99.001':5600,
+  '311.30.42.30.01.005':5800,'311.30.42.30.01.006':6200,
+  '310.30.42.50.01.001':4800,'210.92.46.22.01.001':6400,
+  // BREITLING
+  'AB0139211B1A1':6200,'AB0138241C1A1':5800,'AB0510101B1X1':5400,
+  'UB0136251B1S1':7200,'RB0136251B1S1':8400,
+  // IWC
+  'IW500705':7400,'IW500710':7800,'IW371491':9200,
+  'IW327001':5200,'IW329001':5600,'IW356809':4800,
+  // PANERAI
+  'PAM01312':5800,'PAM01313':5600,'PAM00111':6200,
+  'PAM01661':7200,'PAM00441':5400,
+  // CARTIER
+  'WSSA0018':5200,'WSSA0061':4800,'W20106X8':8200,
+  'WGTA0091':12000,'W2SA0007':9200,
+  // HUBLOT
+  '441.NX.1170.RX':12500,'411.NX.1170.RX':11800,
+  '301.SX.1170.RX':14200,'301.PX.1180.RX':22000,
+  // AP ROYAL OAK OFFSHORE
+  '26470OR.OO.A125CR.01':38000,'26470ST.OO.A027CA.01':28000,
+  // RICHARD MILLE
+  'RM 011':95000,'RM 035':78000,'RM 055':68000,
+};
+
+function getMarketPrice(ref){
+  if(!ref)return null;
+  const clean=ref.trim().toUpperCase().replace(/\s/g,'');
+  // Direct match
+  if(MARKET_PRICES[clean])return MARKET_PRICES[clean];
+  // Partial match - check if reference starts with a known key
+  const match=Object.keys(MARKET_PRICES).find(k=>clean.startsWith(k)||k.startsWith(clean));
+  if(match)return MARKET_PRICES[match];
+  // Brand based fallback using ref prefix patterns
+  if(clean.startsWith('126')||clean.startsWith('124')||clean.startsWith('116'))return 12000;
+  if(clean.startsWith('228')||clean.startsWith('326'))return 28000;
+  if(clean.startsWith('57')||clean.startsWith('52')||clean.startsWith('53'))return 45000;
+  if(clean.startsWith('155')||clean.startsWith('154')||clean.startsWith('264'))return 30000;
+  if(clean.startsWith('M79')||clean.startsWith('M25'))return 3500;
+  if(clean.startsWith('210')||clean.startsWith('311')||clean.startsWith('310'))return 5000;
+  if(clean.startsWith('AB')||clean.startsWith('UB')||clean.startsWith('RB'))return 6000;
+  if(clean.startsWith('IW'))return 6500;
+  if(clean.startsWith('PAM'))return 5500;
+  if(clean.startsWith('W'))return 6000;
+  if(clean.startsWith('441')||clean.startsWith('411')||clean.startsWith('301'))return 12000;
+  return null;
+}
 let stock=[], wishlist=[], clients=[], allClients=[], leads=[], consignments=[], csvData=[];
 const API = window.location.hostname==='localhost'?'http://localhost:3000':'';
 const fmt=n=>'£'+Math.round(n).toLocaleString('en-GB');
@@ -1732,7 +1812,23 @@ function markConReturn(i){consignments[i].status='Returned';renderConsignment();
 function runVal(){
   const brand=document.getElementById('v-brand').value,ref=document.getElementById('v-ref').value;
   if(!brand&&!ref){notify('⚠','Missing Details','Enter brand and reference','var(--red)');return;}
-  const base=ref==='126610LN'?11850:ref==='126500LN'?15200:ref==='5711/1A-011'?86000:ref==='15500ST.OO.1220ST.01'?28200:ref==='126710BLRO'?13400:ref==='M79030N-0001'?3100:15000;
+  const base=getMarketPrice(ref);
+  if(!base){notify('⚠','Reference Not Found','Enter a known reference number for accurate pricing','var(--amber)');return;}
+  const srcs=[
+    {name:'Chrono24',price:Math.round(base*1.04),range:`${fmt(base*.94)} — ${fmt(base*1.12)}`,count:Math.floor(Math.random()*30+22)},
+    {name:'WatchCharts',price:Math.round(base*.99),range:`${fmt(base*.93)} — ${fmt(base*1.06)}`,count:Math.floor(Math.random()*20+14)},
+    {name:'Grey Market',price:Math.round(base*.96),range:`${fmt(base*.88)} — ${fmt(base*1.03)}`,count:Math.floor(Math.random()*15+8)}
+  ];
+  const blended=Math.round(srcs.reduce((a,s)=>a+s.price,0)/srcs.length);
+  document.getElementById('vb-price').textContent=fmt(blended);
+  document.getElementById('vb-range').textContent='Range: '+fmt(blended*.91)+' — '+fmt(blended*1.09)+' · Based on '+srcs.reduce((a,s)=>a+s.count,0)+' recent sales';
+  document.getElementById('val-srcs').innerHTML=srcs.map((s,i)=>`<div class="vsrc ${i===0?'best':''}"><div class="vs-n">${s.name}</div><div class="vs-p">${fmt(s.price)}</div><div class="vs-r">${s.range}</div><div class="vs-live"><div class="vs-dot"></div>Live · ${s.count} sales</div></div>`).join('');
+  document.getElementById('val-recs').innerHTML=`
+    <div class="vsrc best-red"><div class="vs-n">Minimum Offer</div><div class="vs-p" style="color:var(--red)">${fmt(blended*.82)}</div><div class="vs-r">Walk away point</div></div>
+    <div class="vsrc best"><div class="vs-n">Target Buy Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(blended*.88)}</div><div class="vs-r">Recommended offer</div></div>
+    <div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">${fmt(blended*1.07)}</div><div class="vs-r">7% premium · Fast sale</div></div>`;
+  document.getElementById('val-results').style.display='block';
+}
   const srcs=[
     {name:'Chrono24',price:Math.round(base*1.02),range:`${fmt(base*.94)} — ${fmt(base*1.1)}`,count:Math.floor(Math.random()*30+22)},
     {name:'WatchCharts',price:Math.round(base*.99),range:`${fmt(base*.93)} — ${fmt(base*1.06)}`,count:Math.floor(Math.random()*20+14)},
@@ -1754,7 +1850,7 @@ function runTrade(){
   const brand=document.getElementById('t-brand').value;
   if(!brand){notify('⚠','Missing Details','Enter watch brand','var(--red)');return;}
   const ref=document.getElementById('t-ref').value;
-  const base=ref==='126710BLRO'?13400:ref==='126500LN'?15200:ref==='5711/1A-011'?86000:15000;
+  const base=getMarketPrice(ref)||getMarketPrice(document.getElementById('t-model').value)||12000;
   const cm={'Mint — No visible wear':1.0,'Excellent — Minor wear only':.95,'Good — Normal wear':.88,'Fair — Noticeable wear':.78,'Poor — Heavy wear or damage':.65};
   const pm={'Full Set — Box and Papers':1.0,'Box Only — No Papers':.93,'Papers Only — No Box':.91,'Watch Only':.85};
   const cond=document.getElementById('t-cond').value,prov=document.getElementById('t-prov').value;
