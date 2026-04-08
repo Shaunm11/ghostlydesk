@@ -952,74 +952,117 @@ const TICKER_DATA = [
 
 // ===== MARKET PRICE DATABASE 2026 =====
 const MARKET_PRICES = {
-  // ROLEX
-  '126610LN':13800,'126610LV':16800,'124060':11200,'126500LN':26500,
-  '126710BLRO':17800,'126710BLNR':16400,'126720VTNR':19200,
-  '126300':8200,'126333':9800,'126334':10200,'126331':11400,
-  '126234':8800,'126200':7400,'126000':6800,
-  '226570':9800,'216570':7200,'124270':7800,'114270':5800,
-  '126600':13200,'136660':14800,'126660':12400,
-  '326934':28500,'326935':32000,'326938':38000,
-  '116400GV':8200,'116400':7400,
-  '126622':14200,'126621':12800,'126655':18500,
-  '228238':38000,'228235':42000,'228206':28000,
-  '128238':36000,'128235':39000,
-  '124300':6200,'124200':5800,'124400':4800,
-  // PATEK PHILIPPE
-  '5711/1A-011':88000,'5711/1A-010':92000,
-  '5726A-001':95000,'5726/1A-001':98000,
-  '5168G-010':86000,'5167A-001':28000,'5164A-001':38000,
-  '5196P-001':32000,'5196G-001':28000,'5205G-001':42000,
-  '5270G-013':185000,'5270P-001':195000,
-  '5172G-001':72000,'5905P-001':82000,
-  // AUDEMARS PIGUET
-  '15500ST.OO.1220ST.01':32000,'15500ST.OO.1220ST.03':34000,
-  '15202ST.OO.1240ST.01':58000,'15202BC.OO.1240BC.01':95000,
-  '15400ST.OO.1220ST.01':28000,'15400ST.OO.1220ST.02':30000,
-  '26400SO.OO.A002CA.01':28000,'26470ST.OO.A101CR.01':32000,
-  '26331ST.OO.1220ST.03':36000,
-  // TUDOR
-  'M79030N-0001':3400,'M79030B-0001':3600,
-  'M79230N-0007':3200,'M79230B-0007':3400,
-  'M25600TN-0001':4200,'M25610TNL-0001':4600,
-  'M79470-0001':3800,'M79360N-0101':2800,
-  // OMEGA
-  '210.30.42.20.01.001':4600,'210.30.42.20.03.001':4800,
-  '210.30.44.51.03.001':5200,'210.60.44.51.99.001':5600,
-  '311.30.42.30.01.005':5800,'311.30.42.30.01.006':6200,
-  '310.30.42.50.01.001':4800,'210.92.46.22.01.001':6400,
-  // BREITLING
-  'AB0139211B1A1':6200,'AB0138241C1A1':5800,'AB0510101B1X1':5400,
-  'UB0136251B1S1':7200,'RB0136251B1S1':8400,
-  // IWC
-  'IW500705':7400,'IW500710':7800,'IW371491':9200,
-  'IW327001':5200,'IW329001':5600,'IW356809':4800,
-  // PANERAI
-  'PAM01312':5800,'PAM01313':5600,'PAM00111':6200,
-  'PAM01661':7200,'PAM00441':5400,
-  // CARTIER
-  'WSSA0018':5200,'WSSA0061':4800,'W20106X8':8200,
-  'WGTA0091':12000,'W2SA0007':9200,
-  // HUBLOT
-  '441.NX.1170.RX':12500,'411.NX.1170.RX':11800,
-  '301.SX.1170.RX':14200,'301.PX.1180.RX':22000,
-  // AP ROYAL OAK OFFSHORE
-  '26470OR.OO.A125CR.01':38000,'26470ST.OO.A027CA.01':28000,
-  // RICHARD MILLE
+  // ===== ROLEX - Most Traded =====
+  '126610LN':13800,   // Submariner Date Black
+  '126610LV':16800,   // Submariner Date Green Kermit
+  '124060':11200,     // Submariner No Date
+  '126500LN':26500,   // Daytona Steel Black
+  '126710BLRO':17800, // GMT Master II Pepsi
+  '126710BLNR':16400, // GMT Master II Batman
+  '126720VTNR':19200, // GMT Master II Sprite
+  '226570':9800,      // Explorer II White
+  '124270':7800,      // Explorer 36mm
+  '126600':13200,     // Sea-Dweller
+  '136660':14800,     // Deepsea
+  '326934':28500,     // Sky-Dweller Steel
+  '126300':8200,      // Datejust 41 Steel
+  '126334':10200,     // Datejust 41 Rolesor
+  '126200':7400,      // Datejust 36 Steel
+  '228238':38000,     // Day-Date 40 Yellow Gold
+  '128235':39000,     // Day-Date 36 Rose Gold
+  '126622':14200,     // Yacht-Master 40 Rolesor
+  '116400GV':8200,    // Milgauss Green
+  '126900':7200,      // Air-King
+  '124300':6200,      // Oyster Perpetual 41
+  // Rolex Vintage
+  '116610LN':10800,   // Submariner Date prev gen
+  '116500LN':22000,   // Daytona prev gen
+  '116710BLNR':10200, // GMT Batman prev gen
+
+  // ===== PATEK PHILIPPE - Most Traded =====
+  '5711/1A-011':88000,  // Nautilus Steel Blue
+  '5711/1R-001':187000, // Nautilus Rose Gold
+  '5711/1G-001':165000, // Nautilus White Gold
+  '5726A-001':95000,    // Nautilus Annual Calendar
+  '5712/1A-001':98000,  // Nautilus Moon Phase
+  '5168G-010':86000,    // Aquanaut White Gold Green
+  '5167A-001':28000,    // Aquanaut Steel
+  '5172G-001':72000,    // Chronograph White Gold
+  '5270G-013':185000,   // Perpetual Calendar Chron
+
+  // ===== AUDEMARS PIGUET - Most Traded =====
+  '15500ST.OO.1220ST.01':32000, // Royal Oak 41 Steel Blue
+  '15500ST.OO.1220ST.03':34000, // Royal Oak 41 Steel Grey
+  '15202ST.OO.1240ST.01':58000, // Royal Oak 39 Jumbo
+  '15400ST.OO.1220ST.01':28000, // Royal Oak 41 prev gen
+  '26331ST.OO.1220ST.03':36000, // Royal Oak Chronograph
+  '26470ST.OO.A101CR.01':32000, // Royal Oak Offshore Steel
+  '26470OR.OO.A125CR.01':38000, // Royal Oak Offshore Rose Gold
+
+  // ===== TUDOR - Most Traded =====
+  'M79030N-0001':3400,    // Black Bay 58 Steel
+  'M79230N-0007':3200,    // Black Bay 41 Steel
+  'M79830RB-0001':4200,   // Black Bay GMT
+  'M25600TN-0001':4200,   // Pelagos
+  'M79470-0001':3800,     // Black Bay Pro
+  'M79360N-0101':2800,    // Black Bay 36
+
+  // ===== OMEGA - Most Traded =====
+  '210.30.42.20.01.001':4600,  // Seamaster 300M Steel
+  '210.30.42.20.03.001':4800,  // Seamaster 300M Blue
+  '311.30.42.30.01.005':5800,  // Speedmaster Moonwatch
+  '310.30.42.50.01.001':4800,  // Speedmaster Racing
+  '220.10.38.20.03.001':3800,  // Seamaster Aqua Terra
+  '215.30.44.21.01.001':5600,  // Planet Ocean
+
+  // ===== BREITLING - Most Traded =====
+  'AB0139211B1A1':6200,  // Navitimer B01 43
+  'UB0136251B1S1':7200,  // Superocean Heritage
+  'AB0134101G1A1':7800,  // Chronomat B01 42
+
+  // ===== IWC - Most Traded =====
+  'IW500705':7400,  // Portugieser Auto 42
+  'IW371491':9200,  // Portugieser Chronograph
+  'IW327001':5200,  // Pilot Mark XVIII
+  'IW501001':7200,  // Big Pilot
+
+  // ===== PANERAI - Most Traded =====
+  'PAM01312':5800,  // Luminor Base Logo 44
+  'PAM01661':7200,  // Submersible 42
+  'PAM00111':6200,  // Luminor Marina 44
+
+  // ===== CARTIER - Most Traded =====
+  'WSSA0018':5200,  // Santos Steel Large
+  'W69010Z4':4200,  // Ballon Bleu 36
+  'W6920046':6800,  // Ballon Bleu 42 Steel
+
+  // ===== HUBLOT - Most Traded =====
+  '441.NX.1170.RX':12500,  // Big Bang Unico Steel 44
+  '511.NX.1171.RX':8200,   // Classic Fusion Steel 45
+
+  // ===== RICHARD MILLE - Most Traded =====
   'RM 011':95000,'RM 035':78000,'RM 055':68000,
+  'RM 027':285000,'RM 056':320000,
 };
+
 
 function getMarketPrice(ref){
   if(!ref)return null;
   const clean=ref.trim().toUpperCase().replace(/\s/g,'');
-  // Direct match
+  // Direct match first
   if(MARKET_PRICES[clean])return MARKET_PRICES[clean];
-  // Partial match - check if reference starts with a known key
-  const match=Object.keys(MARKET_PRICES).find(k=>clean.startsWith(k)||k.startsWith(clean));
-  if(match)return MARKET_PRICES[match];
+  // Exact prefix match - only match if key is same length or longer
+  const exactMatch=Object.keys(MARKET_PRICES).find(k=>k===clean||clean===k);
+  if(exactMatch)return MARKET_PRICES[exactMatch];
+  // Partial match - reference starts with key (for truncated refs)
+  const partialMatch=Object.keys(MARKET_PRICES).find(k=>k.length>=6&&clean.startsWith(k));
+  if(partialMatch)return MARKET_PRICES[partialMatch];
   // Brand based fallback using ref prefix patterns
   if(clean.startsWith('126')||clean.startsWith('124')||clean.startsWith('116'))return 12000;
   if(clean.startsWith('228')||clean.startsWith('326'))return 28000;
+  if(clean.startsWith('5711'))return 88000;
+  if(clean.startsWith('5726'))return 95000;
+  if(clean.startsWith('5168')||clean.startsWith('5167'))return 35000;
   if(clean.startsWith('57')||clean.startsWith('52')||clean.startsWith('53'))return 45000;
   if(clean.startsWith('155')||clean.startsWith('154')||clean.startsWith('264'))return 30000;
   if(clean.startsWith('M79')||clean.startsWith('M25'))return 3500;
