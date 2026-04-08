@@ -859,6 +859,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 
 <div class="notif" id="notif"><div class="ni" id="ni">🔔</div><div class="nb"><div class="nt" id="nt"></div><div class="nm" id="nm"></div></div></div>
 
+
 <script>
 // ===== DEALERS DATABASE (simple auth) =====
 const DEALERS = [
@@ -1058,7 +1059,7 @@ function showApp(dealer){
 }
 
 // Auto login from saved session
-(function(){
+document.addEventListener('DOMContentLoaded', function(){
   const saved=localStorage.getItem('gd_session');
   if(saved){
     try{
@@ -1067,7 +1068,7 @@ function showApp(dealer){
       if(dealer){currentDealer=dealer;showApp(dealer);return;}
     }catch(e){}
   }
-})();
+});
 document.getElementById('login-email').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
 document.getElementById('login-pass').addEventListener('keypress',e=>{if(e.key==='Enter')doLogin();});
 
