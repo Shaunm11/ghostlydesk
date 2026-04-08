@@ -1830,21 +1830,6 @@ function runVal(){
     <div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">${fmt(blended*1.07)}</div><div class="vs-r">7% premium · Fast sale</div></div>`;
   document.getElementById('val-results').style.display='block';
 }
-  const srcs=[
-    {name:'Chrono24',price:Math.round(base*1.02),range:`${fmt(base*.94)} — ${fmt(base*1.1)}`,count:Math.floor(Math.random()*30+22)},
-    {name:'WatchCharts',price:Math.round(base*.99),range:`${fmt(base*.93)} — ${fmt(base*1.06)}`,count:Math.floor(Math.random()*20+14)},
-    {name:'Grey Market',price:Math.round(base*.95),range:`${fmt(base*.88)} — ${fmt(base*1.02)}`,count:Math.floor(Math.random()*15+8)}
-  ];
-  const blended=Math.round(srcs.reduce((a,s)=>a+s.price,0)/srcs.length);
-  document.getElementById('vb-price').textContent=fmt(blended);
-  document.getElementById('vb-range').textContent='Range: '+fmt(blended*.91)+' — '+fmt(blended*1.09)+' · Based on '+srcs.reduce((a,s)=>a+s.count,0)+' recent sales';
-  document.getElementById('val-srcs').innerHTML=srcs.map((s,i)=>`<div class="vsrc ${i===0?'best':''}"><div class="vs-n">${s.name}</div><div class="vs-p">${fmt(s.price)}</div><div class="vs-r">${s.range}</div><div class="vs-live"><div class="vs-dot"></div>Live · ${s.count} sales</div></div>`).join('');
-  document.getElementById('val-recs').innerHTML=`
-    <div class="vsrc best-red"><div class="vs-n">Trade In Floor</div><div class="vs-p" style="color:var(--red)">${fmt(blended*.82)}</div><div class="vs-r">Walk away point</div></div>
-    <div class="vsrc best"><div class="vs-n">Target Buy Price</div><div class="vs-p" style="color:var(--gold-bright)">${fmt(blended*.88)}</div><div class="vs-r">Recommended offer</div></div>
-    <div class="vsrc best-green"><div class="vs-n">Retail Asking</div><div class="vs-p" style="color:var(--green)">${fmt(blended*1.07)}</div><div class="vs-r">7% premium · Fast sale</div></div>`;
-  document.getElementById('val-results').style.display='block';
-}
 
 // ===== TRADE IN =====
 function runTrade(){
