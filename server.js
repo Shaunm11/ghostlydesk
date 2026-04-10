@@ -46,7 +46,9 @@ app.get("/api/conversations", async (req, res) => {
     if(convos.length === 0) return res.json({ conversations: [], messages: [] });
     const convId = convos[0].id;
     const m = await axios.get(GHL_BASE + "/conversations/" + convId + "/messages", { headers: ghlHeaders() });
-    res.json({ conversations: convos, messages: m.data.messages || [] });
+    const raw = m.data.messages;
+    const msgs = Array.isArray(raw) ? raw : (raw && Array.isArray(raw.messages) ? raw.messages : []);
+    res.json({ conversations: convos, messages: msgs });
   } catch(e) { res.json({ conversations: [], messages: [], error: e.message }); }
 });
 
