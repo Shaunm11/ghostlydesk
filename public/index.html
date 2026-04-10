@@ -1814,27 +1814,35 @@ function filterClients(q){
 }
 
 async function viewConvo(id,name){
-  document.getElementById('convo-modal-name').textContent=name+' — Conversation';
-  document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Loading...</div>';
   openM('convo-modal');
+  document.getElementById('convo-modal-name').textContent=(name||'Client')+' \u2014 Conversation';
+  const box=document.getElementById('convo-messages');
+  box.innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;padding:24px">Loading\u2026</div>';
+  if(!id){
+    box.innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;padding:24px">No contact ID \u2014 connect GHL to load conversations</div>';
+    return;
+  }
   try{
-    const r=await fetch(API+'/api/conversations?contactId='+id);
+    const r=await fetch('/api/conversations?contactId='+encodeURIComponent(id));
     const data=await r.json();
-    const convos=data.conversations||[];
-    if(convos.length===0){
-      document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">No conversation history found</div>';
+    const messages=data.messages||[];
+    if(messages.length===0){
+      box.innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;padding:24px">No messages yet</div>';
       return;
     }
-    const last=convos[0];
-    document.getElementById('convo-messages').innerHTML=`
-      <div style="margin-bottom:10px">
-        <div style="display:inline-block;background:var(--panel3);border:1px solid var(--cell-border);border-radius:2px;padding:10px 14px;max-width:80%">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--white2);line-height:1.5">${last.lastMessageBody||'No messages'}</div>
-          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'JetBrains Mono',monospace">${last.lastMessageDate?new Date(last.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
-        </div>
-      </div>`;
+    box.innerHTML=messages.map(m=>{
+      const inbound=m.direction==='inbound';
+      const time=m.dateAdded?new Date(m.dateAdded).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+      const body=(m.body||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+      return '<div style="display:flex;justify-content:'+(inbound?'flex-start':'flex-end')+';margin-bottom:10px">'
+        +'<div style="background:'+(inbound?'var(--panel3)':'rgba(156,39,176,0.15)')+';border:1px solid '+(inbound?'var(--cell-border)':'rgba(156,39,176,0.35)')+';border-radius:2px;padding:10px 14px;max-width:75%">'
+        +'<div style="font-family:\'Rajdhani\',sans-serif;font-size:13px;color:var(--white2);line-height:1.5">'+body+'</div>'
+        +'<div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:\'JetBrains Mono\',monospace;text-align:'+(inbound?'left':'right')+'">'+time+(inbound?' \u2022 Inbound':' \u2022 Outbound')+'</div>'
+        +'</div></div>';
+    }).join('');
+    box.scrollTop=box.scrollHeight;
   }catch(e){
-    document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Unable to load conversation</div>';
+    box.innerHTML='<div style="text-align:center;color:var(--red);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;padding:24px">Failed to load \u2014 '+e.message+'</div>';
   }
 }
 
