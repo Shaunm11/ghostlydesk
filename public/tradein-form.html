@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trade In Your Watch — GhostlyDesk</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{min-height:100%;background:#080808;color:#F2F2F2;font-family:'Barlow Condensed',sans-serif;}
+
+body{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:40px 16px 60px;}
+
+.logo-wrap{display:flex;align-items:center;gap:12px;margin-bottom:40px;}
+.logo-circle{width:42px;height:42px;border-radius:50%;background:#C9A84C;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#080808;letter-spacing:0;flex-shrink:0;}
+.logo-text{display:flex;flex-direction:column;}
+.logo-name{font-size:22px;font-weight:700;letter-spacing:.25em;text-transform:uppercase;color:#E8C96A;}
+.logo-tag{font-size:9px;letter-spacing:.3em;text-transform:uppercase;color:#707070;}
+
+.card{width:100%;max-width:540px;background:#101010;border:1px solid #2E2E2E;border-top:3px solid #C9A84C;border-radius:3px;padding:32px 28px;}
+
+.card-title{font-size:26px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#F2F2F2;margin-bottom:4px;}
+.card-sub{font-size:11px;letter-spacing:.22em;text-transform:uppercase;color:#707070;margin-bottom:28px;}
+
+.divider{height:1px;background:#2E2E2E;margin:24px 0;}
+.section-label{font-size:9px;letter-spacing:.25em;text-transform:uppercase;color:#707070;margin-bottom:16px;}
+
+.field-grid{display:grid;gap:14px;}
+.field-grid.two{grid-template-columns:1fr 1fr;}
+
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:#707070;}
+.field input,.field select,.field textarea{
+  background:#161616;
+  border:1px solid #2E2E2E;
+  border-radius:2px;
+  padding:11px 13px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;
+  color:#F2F2F2;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+  width:100%;
+  -webkit-appearance:none;
+}
+.field input::placeholder{color:#505050;}
+.field input:focus,.field select:focus{
+  border-color:#7C3AED;
+  box-shadow:0 0 0 2px rgba(124,58,237,0.15);
+}
+.field select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23707070' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 13px center;padding-right:36px;}
+.field select option{background:#161616;color:#F2F2F2;}
+
+.submit-btn{
+  width:100%;
+  margin-top:24px;
+  padding:14px;
+  background:#C9A84C;
+  border:none;
+  border-radius:2px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:15px;
+  font-weight:700;
+  letter-spacing:.2em;
+  text-transform:uppercase;
+  color:#080808;
+  cursor:pointer;
+  transition:background .15s,transform .1s;
+}
+.submit-btn:hover{background:#E8C96A;}
+.submit-btn:active{transform:scale(.99);}
+.submit-btn:disabled{background:#3E3E3E;color:#707070;cursor:not-allowed;}
+
+.note{font-size:10px;color:#505050;letter-spacing:.08em;margin-top:14px;text-align:center;line-height:1.6;}
+
+/* Thank you screen */
+.thankyou{display:none;flex-direction:column;align-items:center;text-align:center;padding:48px 28px;}
+.ty-icon{width:64px;height:64px;border-radius:50%;background:rgba(124,58,237,0.15);border:2px solid #7C3AED;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:24px;}
+.ty-title{font-size:28px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#F2F2F2;margin-bottom:8px;}
+.ty-sub{font-size:13px;color:#707070;letter-spacing:.08em;line-height:1.7;max-width:360px;}
+.ty-ref{font-family:'JetBrains Mono',monospace;font-size:11px;color:#7C3AED;margin-top:16px;background:#161616;border:1px solid #2E2E2E;padding:8px 16px;border-radius:2px;letter-spacing:.1em;}
+
+/* Error banner */
+.error-banner{display:none;background:rgba(255,61,0,.08);border:1px solid rgba(255,61,0,.3);border-left:3px solid #FF3D00;border-radius:2px;padding:11px 14px;margin-bottom:18px;font-size:12px;color:#FF3D00;letter-spacing:.05em;}
+
+@media(max-width:480px){
+  .card{padding:24px 18px;}
+  .field-grid.two{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <div class="logo-circle">G</div>
+  <div class="logo-text">
+    <div class="logo-name">GhostlyDesk</div>
+    <div class="logo-tag">Dealer Intelligence Platform</div>
+  </div>
+</div>
+
+<div class="card" id="form-card">
+
+  <div class="card-title">Trade In Your Watch</div>
+  <div class="card-sub">Get a valuation from our team · Usually within 2 hours</div>
+
+  <div class="error-banner" id="error-banner">Something went wrong — please try again.</div>
+
+  <form id="tradein-form" novalidate>
+
+    <div class="section-label">Watch Details</div>
+    <div class="field-grid two">
+      <div class="field">
+        <label>Watch Brand <span style="color:#FF3D00">*</span></label>
+        <input type="text" id="brand" name="brand" placeholder="e.g. Rolex" required autocomplete="off">
+      </div>
+      <div class="field">
+        <label>Watch Model <span style="color:#FF3D00">*</span></label>
+        <input type="text" id="model" name="model" placeholder="e.g. Daytona" required autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field-grid" style="margin-top:14px">
+      <div class="field">
+        <label>Reference Number</label>
+        <input type="text" id="reference" name="reference" placeholder="e.g. 126500LN" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="field-grid" style="margin-top:14px">
+      <div class="field">
+        <label>Condition <span style="color:#FF3D00">*</span></label>
+        <select id="condition" name="condition" required>
+          <option value="" disabled selected>Select condition</option>
+          <option value="Full Set Unworn">Full Set · Unworn</option>
+          <option value="Full Set Excellent">Full Set · Excellent</option>
+          <option value="Full Set Good">Full Set · Good</option>
+          <option value="Box Only Excellent">Box Only · Excellent</option>
+          <option value="Box Only Good">Box Only · Good</option>
+          <option value="Watch Only Excellent">Watch Only · Excellent</option>
+          <option value="Watch Only Good">Watch Only · Good</option>
+          <option value="Watch Only Fair">Watch Only · Fair</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Your Details</div>
+    <div class="field-grid two">
+      <div class="field">
+        <label>First Name <span style="color:#FF3D00">*</span></label>
+        <input type="text" id="first_name" name="first_name" placeholder="Connor" required autocomplete="given-name">
+      </div>
+      <div class="field">
+        <label>Phone Number <span style="color:#FF3D00">*</span></label>
+        <input type="tel" id="phone" name="phone" placeholder="07700 900 000" required autocomplete="tel">
+      </div>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submit-btn">Get My Valuation</button>
+
+    <div class="note">We'll be in touch within 2 hours with your valuation.<br>No obligation — purely advisory.</div>
+
+  </form>
+
+  <div class="thankyou" id="thankyou">
+    <div class="ty-icon">✓</div>
+    <div class="ty-title">Request Received</div>
+    <div class="ty-sub">Thanks — we'll review your watch and come back to you with a valuation, usually within 2 hours.</div>
+    <div class="ty-ref" id="ty-ref">REF-LOADING</div>
+  </div>
+
+</div>
+
+<script>
+const WEBHOOK = 'https://services.leadconnectorhq.com/hooks/yjaTPhDvE3g8QpglopaW/webhook-trigger/tradein';
+
+const form = document.getElementById('tradein-form');
+const btn  = document.getElementById('submit-btn');
+const err  = document.getElementById('error-banner');
+const ty   = document.getElementById('thankyou');
+
+function required(id){ return document.getElementById(id).value.trim(); }
+function showErr(msg){ err.textContent = msg; err.style.display = 'block'; }
+function hideErr(){ err.style.display = 'none'; }
+
+function refCode(){
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return 'TI-' + Array.from({length:6}, () => chars[Math.floor(Math.random()*chars.length)]).join('');
+}
+
+form.addEventListener('submit', async e => {
+  e.preventDefault();
+  hideErr();
+
+  const brand      = required('brand');
+  const model      = required('model');
+  const condition  = required('condition');
+  const first_name = required('first_name');
+  const phone      = required('phone');
+
+  if (!brand)      { showErr('Please enter the watch brand.'); document.getElementById('brand').focus(); return; }
+  if (!model)      { showErr('Please enter the watch model.'); document.getElementById('model').focus(); return; }
+  if (!condition)  { showErr('Please select the watch condition.'); document.getElementById('condition').focus(); return; }
+  if (!first_name) { showErr('Please enter your first name.'); document.getElementById('first_name').focus(); return; }
+  if (!phone)      { showErr('Please enter your phone number.'); document.getElementById('phone').focus(); return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending…';
+
+  const ref = refCode();
+  const payload = {
+    brand,
+    model,
+    reference:  document.getElementById('reference').value.trim(),
+    condition,
+    first_name,
+    phone,
+    ref,
+    submitted_at: new Date().toISOString()
+  };
+
+  try {
+    await fetch(WEBHOOK, {
+      method:  'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body:    JSON.stringify(payload)
+    });
+
+    form.style.display = 'none';
+    ty.style.display   = 'flex';
+    document.getElementById('ty-ref').textContent = ref;
+
+  } catch (ex) {
+    showErr('Network error — please check your connection and try again.');
+    btn.disabled    = false;
+    btn.textContent = 'Get My Valuation';
+  }
+});
+</script>
+</body>
+</html>
