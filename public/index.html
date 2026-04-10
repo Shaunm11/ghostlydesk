@@ -1373,7 +1373,7 @@ function renderLeads(){
         ${stages.map(s=>`<div class="sopt ${stageName===s?'active':''}" onclick="mvStage(this,${i},'${s}')">${stageShort[s]}</div>`).join('')}
       </div></td>
       <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${l.time}</td>
-      <td><button class="btn btn-ghost btn-sm" onclick="viewLeadConvo('${l.id}','${l.name}')">Convo</button></td>
+      <td><button class="btn btn-ghost btn-sm" onclick="viewLeadConvo('${l.id||''}',${i})">Convo</button></td>
     </tr>`;
   }).join('');
 }
@@ -1395,7 +1395,8 @@ async function mvStage(el,idx,stage){
   }
 }
 
-async function viewLeadConvo(id,name){
+async function viewLeadConvo(id,idx){
+  const name=leads[idx]?leads[idx].name:'Client';
   document.getElementById('convo-modal-name').textContent=name+' — Conversation';
   document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Loading...</div>';
   openM('convo-modal');
