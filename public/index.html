@@ -235,7 +235,18 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 .cc-convo-msg{font-size:10px;color:var(--white2);line-height:1.5;font-style:italic;}
 .cc-convo-time{font-size:9px;color:var(--white3);margin-top:3px;font-family:'JetBrains Mono',monospace;}
 
-/* STAGE */
+/* TAG BADGES */
+.tag-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:2px;font-size:8px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-right:3px;margin-bottom:2px;}
+.tag-vip{background:rgba(201,168,76,.15);color:var(--gold-bright);border:1px solid var(--gold);box-shadow:0 0 8px rgba(201,168,76,.3);animation:tagpulse-gold 2.5s infinite;}
+.tag-collector{background:rgba(0,176,255,.1);color:#00B0FF;border:1px solid rgba(0,176,255,.35);}
+.tag-enthusiast{background:rgba(192,192,192,.08);color:#C0C0C0;border:1px solid rgba(192,192,192,.25);}
+.tag-watch{background:rgba(156,39,176,.12);color:var(--purple-bright);border:1px solid rgba(156,39,176,.35);}
+.tag-trade{background:rgba(201,168,76,.08);color:var(--gold);border:1px solid rgba(201,168,76,.3);}
+.tag-appt{background:rgba(0,200,83,.08);color:#00C853;border:1px solid rgba(0,200,83,.3);animation:tagpulse-green 2s infinite;}
+.tag-returning{background:rgba(255,179,0,.08);color:var(--amber);border:1px solid rgba(255,179,0,.3);}
+.tag-crown{font-size:10px;line-height:1;}
+@keyframes tagpulse-gold{0%,100%{box-shadow:0 0 4px rgba(201,168,76,.2)}50%{box-shadow:0 0 12px rgba(201,168,76,.5)}}
+@keyframes tagpulse-green{0%,100%{box-shadow:0 0 2px rgba(0,200,83,.2)}50%{box-shadow:0 0 8px rgba(0,200,83,.4)}}
 .stage-sel{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
 .sopt{padding:3px 7px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
 .sopt:last-child{border-right:none;}.sopt.active{background:var(--purple);color:var(--white);}
@@ -354,20 +365,17 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     <div class="ngroup">
       <div class="nlabel">Overview</div>
       <div class="nitem active" onclick="nav('dashboard',this)"><span class="nico">⬡</span><span class="ntext">Dashboard</span></div>
+      <div class="nitem" onclick="nav('leads',this)"><span class="nico">◌</span><span class="ntext">Live Leads</span><span class="nbadge" id="nb-leads">0</span></div>
+      <div class="nitem" onclick="nav('clients',this)"><span class="nico">◉</span><span class="ntext">Clients</span></div>
+      <div class="nitem" onclick="nav('wishlist',this)"><span class="nico">◎</span><span class="ntext">Wishlist</span><span class="nbadge" id="nb-wish">0</span></div>
     </div>
+    <div class="ndiv"></div>
     <div class="ngroup">
       <div class="nlabel">Inventory</div>
       <div class="nitem" onclick="nav('stock',this)"><span class="nico">◈</span><span class="ntext">Stock</span><span class="nbadge" id="nb-stock">0</span></div>
       <div class="nitem" onclick="nav('addstock',this)"><span class="nico">＋</span><span class="ntext">Add Stock</span></div>
       <div class="nitem" onclick="nav('margin',this)"><span class="nico">◫</span><span class="ntext">Margin Sheet</span></div>
       <div class="nitem" onclick="nav('consignment',this)"><span class="nico">◐</span><span class="ntext">Consignment</span><span class="nbadge" id="nb-con">0</span></div>
-    </div>
-    <div class="ndiv"></div>
-    <div class="ngroup">
-      <div class="nlabel">Clients</div>
-      <div class="nitem" onclick="nav('wishlist',this)"><span class="nico">◎</span><span class="ntext">Wishlist</span><span class="nbadge" id="nb-wish">0</span></div>
-      <div class="nitem" onclick="nav('clients',this)"><span class="nico">◉</span><span class="ntext">Clients</span></div>
-      <div class="nitem" onclick="nav('leads',this)"><span class="nico">◌</span><span class="ntext">Live Leads</span><span class="nbadge" id="nb-leads">0</span></div>
     </div>
     <div class="ndiv"></div>
     <div class="ngroup">
@@ -604,8 +612,8 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     <div class="panel" id="panel-leads">
       <div class="ph"><div><div class="ph-title">Live Leads</div><div class="ph-sub">From GHL · Auto-refreshes every 60 seconds · Stage clicks update GHL pipeline</div></div></div>
       <div class="sw" style="padding-top:12px">
-        <table class="tbl"><thead><tr><th>Name</th><th>Watch</th><th>Ref</th><th>Budget</th><th>Condition</th><th>Phone</th><th>Stage</th><th>Received</th></tr></thead>
-        <tbody id="leads-tbody"><tr><td colspan="8" style="text-align:center;color:var(--white3);padding:24px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Loading leads from GHL...</td></tr></tbody></table>
+        <table class="tbl"><thead><tr><th>Name / Tags</th><th>Watch</th><th>Ref</th><th>Budget</th><th>Condition</th><th>Phone</th><th>Stage</th><th>Received</th><th></th></tr></thead>
+        <tbody id="leads-tbody"><tr><td colspan="9" style="text-align:center;color:var(--white3);padding:24px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;text-transform:uppercase">Loading leads from GHL...</td></tr></tbody></table>
       </div>
     </div>
 
@@ -1261,6 +1269,7 @@ async function loadContacts(){
           watch_model: 'OeFeAb5wT4zKxyHqrqYF',
           reference: 'qxO1qUYHg8tVFbJkn0Km',
           budget: 'fV2ngrVi9IjIzjzTztp8',
+          condition: 'tvDDiFuqmHtfzQ9hFILe',
         };
         const cf=c.customFields||c.customField||[];
         const getById=(id)=>cf.find(x=>x.id===id)?.value||null;
@@ -1272,16 +1281,17 @@ async function loadContacts(){
         const model=getById(FIELD_IDS.watch_model)||getByKey('watch_model')||c.watch_model||'';
         const ref=getById(FIELD_IDS.reference)||getByKey('reference')||c.reference||'—';
         const budget=getById(FIELD_IDS.budget)||getByKey('budget')||c.budget||'—';
-        const condition=getByKey('watch_condition')||getByKey('condition')||c.condition||'—';
+        const condition=getById(FIELD_IDS.condition)||getByKey('condition')||c.condition||'—';
         const enquiry=getByKey('enquiry_type')||c.enquiry_type||'—';
         return {
           id:c.id,
           name:((c.firstName||'')+' '+(c.lastName||'')).trim()||'Unknown',
           watch:watch+(model&&model!=='—'?' '+model:''),
           ref,budget,condition,enquiry,
+          tags:c.tags||[],
           phone:c.phone||'—',
           email:c.email||'—',
-          stage:'New',
+          stage:'New Enquiry',
           time:c.dateAdded?new Date(c.dateAdded).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}):'—',
           opportunityId:null,
           lastMsg:c.lastMessageBody||'No messages yet',
@@ -1321,39 +1331,93 @@ function updateDashboard(){
 }
 
 // ===== RENDER LEADS =====
+function getTagBadges(tags){
+  if(!tags||tags.length===0)return '';
+  const tagMap={
+    'VIP':'<span class="tag-badge tag-vip"><span class="tag-crown">♛</span> VIP</span>',
+    'collector':'<span class="tag-badge tag-collector">Collector</span>',
+    'enthusiast':'<span class="tag-badge tag-enthusiast">Enthusiast</span>',
+    'watch lead':'<span class="tag-badge tag-watch">Watch Lead</span>',
+    'trade lead':'<span class="tag-badge tag-trade">Trade Lead</span>',
+    'appointment booked':'<span class="tag-badge tag-appt">Appt Booked</span>',
+    'returning client':'<span class="tag-badge tag-returning">Returning</span>',
+    'watch_qualified':'<span class="tag-badge tag-watch">Qualified</span>',
+    'trade_qualified':'<span class="tag-badge tag-trade">Trade</span>',
+    'watch_appointment_booked':'<span class="tag-badge tag-appt">Booked</span>',
+  };
+  return tags.map(t=>tagMap[t]||'').filter(Boolean).join('');
+}
+
 function renderLeads(){
   const tbody=document.getElementById('leads-tbody');
   if(!tbody)return;
   if(leads.length===0){
-    tbody.innerHTML='<tr><td colspan="8" style="text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No live leads yet — leads appear here when buyers message on the website</td></tr>';
+    tbody.innerHTML='<tr><td colspan="9" style="text-align:center;color:var(--white3);padding:24px;font-family:\'Barlow Condensed\',sans-serif;letter-spacing:.1em;text-transform:uppercase">No live leads yet — leads appear here when buyers message on the website</td></tr>';
     return;
   }
-  tbody.innerHTML=leads.map((l,i)=>`
-    <tr>
-      <td class="bold">${l.name}</td>
+  tbody.innerHTML=leads.map((l,i)=>{
+    const stageName=l.stage||'New Enquiry';
+    const stages=['New Enquiry','Contacted','Offer Made','Payment Pending','Closed Won','Closed Lost'];
+    const stageShort={'New Enquiry':'New','Contacted':'Contacted','Offer Made':'Offer','Payment Pending':'Payment','Closed Won':'Won','Closed Lost':'Lost'};
+    return `<tr>
+      <td>
+        <div class="bold">${l.name}</div>
+        <div style="margin-top:3px">${getTagBadges(l.tags)}</div>
+      </td>
       <td style="color:var(--white2);font-size:11px">${l.watch}</td>
       <td class="mono">${l.ref}</td>
       <td style="font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--green)">${l.budget}</td>
       <td style="font-size:10px;color:var(--white2)">${l.condition}</td>
       <td class="mono">${l.phone}</td>
       <td><div class="stage-sel">
-        <div class="sopt active" onclick="mvStage(this,${i},'New')">New</div>
-        <div class="sopt" onclick="mvStage(this,${i},'Contacted')">Contacted</div>
-        <div class="sopt" onclick="mvStage(this,${i},'Interested')">Interested</div>
-        <div class="sopt" onclick="mvStage(this,${i},'Offer Made')">Offer</div>
-        <div class="sopt" onclick="mvStage(this,${i},'Closed Won')">Won</div>
-        <div class="sopt" onclick="mvStage(this,${i},'Closed Lost')">Lost</div>
+        ${stages.map(s=>`<div class="sopt ${stageName===s?'active':''}" onclick="mvStage(this,${i},'${s}')">${stageShort[s]}</div>`).join('')}
       </div></td>
       <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${l.time}</td>
-    </tr>`).join('');
+      <td><button class="btn btn-ghost btn-sm" onclick="viewLeadConvo('${l.id}','${l.name}')">Convo</button></td>
+    </tr>`;
+  }).join('');
 }
 
 async function mvStage(el,idx,stage){
   el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o=>o.classList.remove('active'));
   el.classList.add('active');
   leads[idx].stage=stage;
-  notify('◈','Stage Updated',leads[idx].name+' → '+stage+' — GHL syncing');
-  // GHL update would go here when opportunity ID is available
+  notify('◈','Stage Updated',leads[idx].name+' → '+stage);
+  // Update GHL opportunity if we have the ID
+  if(leads[idx].opportunityId){
+    try{
+      await fetch(API+'/api/opportunities/'+leads[idx].opportunityId+'/stage',{
+        method:'PUT',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({stage:stage})
+      });
+    }catch(e){console.log('Stage update error:',e);}
+  }
+}
+
+async function viewLeadConvo(id,name){
+  document.getElementById('convo-modal-name').textContent=name+' — Conversation';
+  document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Loading...</div>';
+  openM('convo-modal');
+  try{
+    const r=await fetch(API+'/api/conversations?contactId='+id);
+    const data=await r.json();
+    const convos=data.conversations||[];
+    if(convos.length===0){
+      document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">No conversation history found</div>';
+      return;
+    }
+    const last=convos[0];
+    document.getElementById('convo-messages').innerHTML=`
+      <div style="margin-bottom:10px">
+        <div style="display:inline-block;background:var(--panel3);border:1px solid var(--cell-border);border-radius:2px;padding:10px 14px;max-width:80%">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--white2);line-height:1.5">${last.lastMessageBody||'No messages'}</div>
+          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'JetBrains Mono',monospace">${last.lastMessageDate?new Date(last.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+        </div>
+      </div>`;
+  }catch(e){
+    document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Unable to load conversation</div>';
+  }
 }
 
 // ===== RENDER STOCK =====
