@@ -42,8 +42,12 @@ app.get("/api/conversations", async (req, res) => {
     const params = { locationId: GHL_LOC, limit: 50 };
     if(contactId) params.contactId = contactId;
     const r = await axios.get(GHL_BASE + "/conversations/search", { headers: ghlHeaders(), params });
-    res.json(r.data);
-  } catch(e) { res.json({ conversations: [], error: e.message }); }
+    const convos = r.data.conversations || [];
+    if(convos.length === 0) return res.json({ conversations: [], messages: [] });
+    const convId = convos[0].id;
+    const m = await axios.get(GHL_BASE + "/conversations/" + convId + "/messages", { headers: ghlHeaders() });
+    res.json({ conversations: convos, messages: m.data.messages || [] });
+  } catch(e) { res.json({ conversations: [], messages: [], error: e.message }); }
 });
 
 app.get("/api/inventory", (req, res) => {
