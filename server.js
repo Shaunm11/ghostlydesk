@@ -38,7 +38,10 @@ app.get("/api/opportunities", async (req, res) => {
 
 app.get("/api/conversations", async (req, res) => {
   try {
-    const r = await axios.get(GHL_BASE + "/conversations", { headers: ghlHeaders(), params: { locationId: GHL_LOC, limit: 50 } });
+    const contactId = req.query.contactId;
+    const params = { locationId: GHL_LOC, limit: 50 };
+    if(contactId) params.contactId = contactId;
+    const r = await axios.get(GHL_BASE + "/conversations/search", { headers: ghlHeaders(), params });
     res.json(r.data);
   } catch(e) { res.json({ conversations: [], error: e.message }); }
 });
