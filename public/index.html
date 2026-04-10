@@ -1402,19 +1402,24 @@ async function viewLeadConvo(id,name){
   try{
     const r=await fetch(API+'/api/conversations?contactId='+id);
     const data=await r.json();
-    const convos=data.conversations||[];
-    if(convos.length===0){
+    const messages=data.messages||[];
+    if(messages.length===0){
       document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">No conversation history found</div>';
       return;
     }
-    const last=convos[0];
-    document.getElementById('convo-messages').innerHTML=`
-      <div style="margin-bottom:10px">
-        <div style="display:inline-block;background:var(--panel3);border:1px solid var(--cell-border);border-radius:2px;padding:10px 14px;max-width:80%">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:15px;color:var(--white2);line-height:1.5">${last.lastMessageBody||'No messages'}</div>
-          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'JetBrains Mono',monospace">${last.lastMessageDate?new Date(last.lastMessageDate).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):''}</div>
+    document.getElementById('convo-messages').innerHTML=messages.map(m=>{
+      const isClient=m.direction==='inbound'||m.type===1;
+      const align=isClient?'left':'right';
+      const bg=isClient?'var(--panel3)':'rgba(124,58,237,0.15)';
+      const border=isClient?'1px solid var(--cell-border)':'1px solid rgba(124,58,237,0.3)';
+      const time=m.dateAdded?new Date(m.dateAdded).toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+      return `<div style="display:flex;justify-content:${align==='left'?'flex-start':'flex-end'};margin-bottom:10px">
+        <div style="background:${bg};border:${border};border-radius:2px;padding:10px 14px;max-width:75%">
+          <div style="font-family:'Cormorant Garamond',serif;font-size:14px;color:var(--white2);line-height:1.5">${m.body||m.message||''}</div>
+          <div style="font-size:9px;color:var(--white3);margin-top:4px;font-family:'JetBrains Mono',monospace">${time}</div>
         </div>
       </div>`;
+    }).join('');
   }catch(e){
     document.getElementById('convo-messages').innerHTML='<div style="text-align:center;color:var(--white3);font-size:11px;font-family:\'Barlow Condensed\',sans-serif;padding:20px">Unable to load conversation</div>';
   }
