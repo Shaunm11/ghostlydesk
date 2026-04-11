@@ -1504,7 +1504,7 @@ function renderStock(){
       const mc=m>=20?'g':m>=10?'o':'r';
       const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':w.status==='Sold'?'b-sold':'b-src';
       const tc=w.type==='Consignment'?'b-con':w.type==='Sourcing'?'b-src':w.type==='Part Exchange'?'b-res':'';
-      const thumb=w.photos&&w.photos.length>0?`<div style="width:36px;height:28px;overflow:hidden;border-radius:1px;flex-shrink:0"><img src="${w.photos[0]}" style="width:100%;height:100%;object-fit:cover;display:block"></div>`:`<div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3);flex-shrink:0">📷</div>`;
+      const thumb=w.photos&&w.photos.length>0?`<img src="${w.photos[0]}" style="width:36px;height:28px;object-fit:cover;border-radius:1px;display:block">`:`<div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3)">📷</div>`;
       return `<tr>
         <td style="width:40px;padding:4px 6px">${thumb}</td>
         <td class="mono">${w.ref||'—'}</td>
