@@ -810,6 +810,23 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
   </div>
 </div>
 
+<!-- EDIT CLIENT MODAL -->
+<div class="overlay" id="edit-client-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Client</div><div class="modal-sub">Update client details</div>
+    <input type="hidden" id="ec-idx">
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Name</label><input type="text" id="ec-name"></div>
+      <div class="field"><label>Phone</label><input type="text" id="ec-phone"></div>
+    </div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Email</label><input type="email" id="ec-email"></div>
+      <div class="field"><label>Tag</label><select id="ec-tag"><option value="new">New</option><option value="active">Active</option><option value="vip">VIP</option></select></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-client-modal')">Cancel</button><button class="btn btn-gold" onclick="saveClientEdit()">Save Changes</button></div>
+  </div>
+</div>
+
 <!-- CSV IMPORT MODAL -->
 <div class="overlay" id="csv-client-modal">
   <div class="modal">
@@ -851,6 +868,33 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
     </div>
     <div class="field" style="margin-bottom:8px"><label>Notes</label><textarea id="con-notes" placeholder="Any additional notes..." style="min-height:50px"></textarea></div>
     <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('con-modal')">Cancel</button><button class="btn btn-purple" onclick="addConsignment()">Add Consignment</button></div>
+  </div>
+</div>
+
+<!-- EDIT CONSIGNMENT MODAL -->
+<div class="overlay" id="edit-con-modal">
+  <div class="modal">
+    <div class="modal-title">Edit Consignment</div><div class="modal-sub">Update consignment details</div>
+    <input type="hidden" id="econ-idx">
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Owner Name</label><input type="text" id="econ-owner"></div>
+      <div class="field"><label>Owner Phone</label><input type="text" id="econ-phone"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Brand</label><input type="text" id="econ-brand"></div>
+      <div class="field"><label>Model</label><input type="text" id="econ-model"></div>
+      <div class="field"><label>Reference</label><input type="text" id="econ-ref"></div>
+    </div>
+    <div class="fg fg3" style="margin-bottom:8px">
+      <div class="field"><label>Owner Asking (£)</label><input type="number" id="econ-owner-price"></div>
+      <div class="field"><label>List Price (£)</label><input type="number" id="econ-list-price"></div>
+      <div class="field"><label>Commission %</label><input type="number" id="econ-rate"></div>
+    </div>
+    <div class="fg fg2" style="margin-bottom:8px">
+      <div class="field"><label>Status</label><select id="econ-status"><option value="Holding">Holding</option><option value="Listed">Listed</option><option value="Sold">Sold</option><option value="Returned">Returned</option></select></div>
+      <div class="field"><label>Notes</label><input type="text" id="econ-notes"></div>
+    </div>
+    <div class="modal-ft"><button class="btn btn-ghost" onclick="closeM('edit-con-modal')">Cancel</button><button class="btn btn-gold" onclick="saveConEdit()">Save Changes</button></div>
   </div>
 </div>
 
@@ -1412,7 +1456,7 @@ async function mvStage(el,idx,stage){
     }
     leads.splice(idx,1);
     document.getElementById('nb-leads').textContent=leads.length;
-    setTimeout(()=>{renderLeads();},300);
+    setTimeout(()=>{renderLeads();renderClients(allClients);},300);
     notify('✓','Closed Won',lead.name+' moved to Clients','var(--green)');
   }
 }
@@ -1736,7 +1780,7 @@ async function addStock(){
       if(af.firstChild&&af.firstChild.style&&af.firstChild.style.textAlign)af.innerHTML='';
       af.prepend(item);
     } else {notify('✓','Stock Added',brand+' '+(model||ref)+' saved to inventory');}
-    updateDashboard();clearAdd();
+    renderStock();renderCards();renderMargin();updateDashboard();clearAdd();
   }catch(e){notify('⚠','Save Failed','Check connection','var(--red)');}
 }
 
@@ -1839,7 +1883,10 @@ function renderClients(list){
           <div class="cc-convo-msg">${c.lastMsg||'No conversation yet'}</div>
           <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px">
             <div class="cc-convo-time">${c.lastMsgTime||''}</div>
-            <button class="btn btn-ghost btn-sm" onclick="viewConvo('${c.id||''}','${c.name}')">View Convo</button>
+            <div style="display:flex;gap:4px">
+              <button class="btn btn-ghost btn-sm" onclick="editClient(${allClients.indexOf(c)})">Edit</button>
+              <button class="btn btn-ghost btn-sm" onclick="viewConvo('${c.id||''}','${c.name}')">Convo</button>
+            </div>
           </div>
         </div>
       </div>`;
@@ -1893,6 +1940,27 @@ async function addClient(){
   closeM('add-client-modal');renderClients(allClients);
   notify('✓','Client Added',first+' '+last+' added — syncing to GHL');
   ['ac-first','ac-last','ac-phone','ac-email','ac-notes'].forEach(id=>{document.getElementById(id).value='';});
+}
+
+function editClient(idx){
+  document.getElementById('ec-idx').value=idx;
+  const c=allClients[idx];
+  document.getElementById('ec-name').value=c.name||'';
+  document.getElementById('ec-phone').value=c.phone||'';
+  document.getElementById('ec-email').value=c.email||'';
+  document.getElementById('ec-tag').value=c.tag||'new';
+  openM('edit-client-modal');
+}
+
+function saveClientEdit(){
+  const idx=parseInt(document.getElementById('ec-idx').value);
+  allClients[idx].name=document.getElementById('ec-name').value;
+  allClients[idx].phone=document.getElementById('ec-phone').value;
+  allClients[idx].email=document.getElementById('ec-email').value;
+  allClients[idx].tag=document.getElementById('ec-tag').value;
+  clients=[...allClients];
+  closeM('edit-client-modal');renderClients(allClients);
+  notify('✓','Client Updated','Changes saved');
 }
 
 // ===== CSV IMPORT =====
@@ -1961,6 +2029,8 @@ function renderConsignment(){
         <div style="display:flex;gap:6px">
           <button class="btn btn-ghost btn-sm" onclick="markConSold(${i})">Mark Sold</button>
           <button class="btn btn-ghost btn-sm" onclick="markConReturn(${i})">Return</button>
+          <button class="btn btn-ghost btn-sm" onclick="editConsignment(${i})">Edit</button>
+          <button class="btn btn-danger btn-sm" onclick="deleteConsignment(${i})">✕</button>
         </div>
       </div>`;
     }).join('');
@@ -1970,12 +2040,53 @@ function addConsignment(){
   const owner=document.getElementById('con-owner').value;
   if(!owner){notify('⚠','Missing Details','Owner name required','var(--red)');return;}
   const entry={owner,phone:document.getElementById('con-phone').value,brand:document.getElementById('con-brand').value,model:document.getElementById('con-model').value,ref:document.getElementById('con-ref').value,ownerPrice:parseFloat(document.getElementById('con-owner-price').value)||0,listPrice:parseFloat(document.getElementById('con-list-price').value)||0,rate:parseFloat(document.getElementById('con-rate').value)||10,cond:document.getElementById('con-cond').value,date:document.getElementById('con-date').value,notes:document.getElementById('con-notes').value,status:'Holding'};
-  consignments.push(entry);closeM('con-modal');renderConsignment();updateDashboard();
+  consignments.push(entry);saveConsignments();closeM('con-modal');renderConsignment();updateDashboard();
   notify('◐','Consignment Added',owner+' — '+entry.brand+' '+entry.ref);
 }
 
-function markConSold(i){consignments[i].status='Sold';renderConsignment();updateDashboard();notify('✓','Marked Sold','Consignment deal closed');}
-function markConReturn(i){consignments[i].status='Returned';renderConsignment();updateDashboard();notify('◐','Returned','Watch returned to owner');}
+function saveConsignments(){try{localStorage.setItem('gd_consignment',JSON.stringify(consignments));}catch(e){}}
+
+function markConSold(i){consignments[i].status='Sold';saveConsignments();renderConsignment();updateDashboard();notify('✓','Marked Sold','Consignment deal closed');}
+function markConReturn(i){consignments[i].status='Returned';saveConsignments();renderConsignment();updateDashboard();notify('◐','Returned','Watch returned to owner');}
+
+function deleteConsignment(idx){
+  if(!confirm('Remove '+consignments[idx].brand+' '+consignments[idx].model+' consignment?'))return;
+  consignments.splice(idx,1);
+  saveConsignments();renderConsignment();updateDashboard();
+  notify('✓','Removed','Consignment deleted');
+}
+
+function editConsignment(idx){
+  document.getElementById('econ-idx').value=idx;
+  const c=consignments[idx];
+  document.getElementById('econ-owner').value=c.owner||'';
+  document.getElementById('econ-phone').value=c.phone||'';
+  document.getElementById('econ-brand').value=c.brand||'';
+  document.getElementById('econ-model').value=c.model||'';
+  document.getElementById('econ-ref').value=c.ref||'';
+  document.getElementById('econ-owner-price').value=c.ownerPrice||0;
+  document.getElementById('econ-list-price').value=c.listPrice||0;
+  document.getElementById('econ-rate').value=c.rate||10;
+  document.getElementById('econ-status').value=c.status||'Holding';
+  document.getElementById('econ-notes').value=c.notes||'';
+  openM('edit-con-modal');
+}
+
+function saveConEdit(){
+  const idx=parseInt(document.getElementById('econ-idx').value);
+  consignments[idx].owner=document.getElementById('econ-owner').value;
+  consignments[idx].phone=document.getElementById('econ-phone').value;
+  consignments[idx].brand=document.getElementById('econ-brand').value;
+  consignments[idx].model=document.getElementById('econ-model').value;
+  consignments[idx].ref=document.getElementById('econ-ref').value;
+  consignments[idx].ownerPrice=parseFloat(document.getElementById('econ-owner-price').value)||0;
+  consignments[idx].listPrice=parseFloat(document.getElementById('econ-list-price').value)||0;
+  consignments[idx].rate=parseFloat(document.getElementById('econ-rate').value)||10;
+  consignments[idx].status=document.getElementById('econ-status').value;
+  consignments[idx].notes=document.getElementById('econ-notes').value;
+  saveConsignments();closeM('edit-con-modal');renderConsignment();updateDashboard();
+  notify('✓','Consignment Updated','Changes saved');
+}
 
 // ===== VALUATION =====
 function runVal(){
@@ -2145,6 +2256,7 @@ function parseVoice(t){
 
 // ===== INIT =====
 async function init(){
+  try{const sc=localStorage.getItem('gd_consignment');if(sc)consignments=JSON.parse(sc);}catch(e){}
   await Promise.all([loadInventory(),loadWishlist(),loadContacts()]);
   updateDashboard();
   renderLeads();
