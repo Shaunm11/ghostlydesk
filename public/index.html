@@ -1504,9 +1504,9 @@ function renderStock(){
       const mc=m>=20?'g':m>=10?'o':'r';
       const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':w.status==='Sold'?'b-sold':'b-src';
       const tc=w.type==='Consignment'?'b-con':w.type==='Sourcing'?'b-src':w.type==='Part Exchange'?'b-res':'';
-      const thumb=w.photos&&w.photos.length>0?`<img src="${w.photos[0]}" style="width:36px;height:28px;object-fit:cover;border-radius:1px;display:block">`:`<div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3)">📷</div>`;
+      const thumb=w.photos&&w.photos.length>0?`<img src="${w.photos[0]}" style="width:40px;height:40px;object-fit:cover;border-radius:2px;flex-shrink:0">`:`<div style="width:40px;height:40px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3);flex-shrink:0">📷</div>`;
       return `<tr>
-        <td style="width:40px;padding:4px 6px">${thumb}</td>
+        <td style="width:52px;padding:4px;overflow:hidden">${thumb}</td>
         <td class="mono">${w.ref||'—'}</td>
         <td class="bold">${w.brand||''} ${w.model||''}</td>
         <td style="font-size:10px;color:var(--white3)">${w.size||'—'}</td>
@@ -2144,31 +2144,17 @@ function copyLink(){navigator.clipboard.writeText(document.getElementById('slink
 
 // ===== PHOTOS =====
 let pendingPhotos=[];
-function compressToThumb(file,cb){
-  const reader=new FileReader();
-  reader.onload=e=>{
-    const img=new Image();
-    img.onload=()=>{
-      const scale=Math.min(120/img.width,90/img.height,1);
-      const canvas=document.createElement('canvas');
-      canvas.width=Math.round(img.width*scale);
-      canvas.height=Math.round(img.height*scale);
-      canvas.getContext('2d').drawImage(img,0,0,canvas.width,canvas.height);
-      cb(canvas.toDataURL('image/jpeg',0.85));
-    };
-    img.src=e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
 function handleStockPhotos(input){
   const grid=document.getElementById('stock-photo-grid');
   Array.from(input.files).forEach(f=>{
-    compressToThumb(f,thumb=>{
-      pendingPhotos.push(thumb);
+    const reader=new FileReader();
+    reader.onload=e=>{
+      pendingPhotos.push(e.target.result);
       const d=document.createElement('div');d.className='pthumb';
-      d.innerHTML='<img src="'+thumb+'">';
+      d.innerHTML='<img src="'+e.target.result+'">';
       grid.appendChild(d);
-    });
+    };
+    reader.readAsDataURL(f);
   });
 }
 function handlePhotos(input){
