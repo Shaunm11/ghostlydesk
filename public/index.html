@@ -248,7 +248,7 @@ body{font-family:'Rajdhani',sans-serif;background:var(--black);color:var(--white
 @keyframes tagpulse-gold{0%,100%{box-shadow:0 0 4px rgba(201,168,76,.2)}50%{box-shadow:0 0 12px rgba(201,168,76,.5)}}
 @keyframes tagpulse-green{0%,100%{box-shadow:0 0 2px rgba(0,200,83,.2)}50%{box-shadow:0 0 8px rgba(0,200,83,.4)}}
 .stage-sel{display:flex;border:1px solid var(--cell-border);border-radius:2px;overflow:hidden;}
-.sopt{padding:3px 7px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
+.sopt{flex:1;text-align:center;padding:3px 4px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;background:transparent;border:none;color:var(--white3);border-right:1px solid var(--cell-border);transition:all .12s;white-space:nowrap;font-family:'Barlow Condensed',sans-serif;font-weight:600;}
 .sopt:last-child{border-right:none;}.sopt.active{background:var(--purple);color:var(--white);}
 .sopt:hover:not(.active){background:var(--panel2);color:var(--white);}
 
@@ -1382,7 +1382,7 @@ async function mvStage(el,idx,stage){
   el.closest('.stage-sel').querySelectorAll('.sopt').forEach(o=>o.classList.remove('active'));
   el.classList.add('active');
   leads[idx].stage=stage;
-  notify('◈','Stage Updated',leads[idx].name+' → '+stage);
+  notify('◈','Stage Updated',leads[idx].name+' \u2192 '+stage);
   // Update GHL opportunity if we have the ID
   if(leads[idx].opportunityId){
     try{
@@ -1392,6 +1392,28 @@ async function mvStage(el,idx,stage){
         body:JSON.stringify({stage:stage})
       });
     }catch(e){console.log('Stage update error:',e);}
+  }
+  // Closed Won: promote to Clients, remove from Leads
+  if(stage==='Closed Won'){
+    const lead=leads[idx];
+    const newClient={
+      id:lead.id||null,
+      name:lead.name,
+      phone:lead.phone||'—',
+      email:lead.email||'—',
+      spend:0,purchases:1,last:'Today',wl:0,tag:'new',
+      lastMsg:lead.lastMsg||'',lastMsgTime:lead.lastMsgTime||''
+    };
+    // Avoid duplicates by id or name
+    const alreadyIn=allClients.some(c=>(c.id&&c.id===newClient.id)||(c.name===newClient.name));
+    if(!alreadyIn){
+      clients.push(newClient);
+      allClients=[...clients];
+    }
+    leads.splice(idx,1);
+    document.getElementById('nb-leads').textContent=leads.length;
+    setTimeout(()=>{renderLeads();},300);
+    notify('✓','Closed Won',lead.name+' moved to Clients','var(--green)');
   }
 }
 
@@ -1438,8 +1460,9 @@ function renderStock(){
       const mc=m>=20?'g':m>=10?'o':'r';
       const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':w.status==='Sold'?'b-sold':'b-src';
       const tc=w.type==='Consignment'?'b-con':w.type==='Sourcing'?'b-src':w.type==='Part Exchange'?'b-res':'';
+      const thumb=w.photos&&w.photos.length>0?`<img src="${w.photos[0]}" style="width:36px;height:28px;object-fit:cover;border-radius:1px;">`:`<div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3)">📷</div>`;
       return `<tr>
-        <td style="width:40px;padding:4px 6px"><div style="width:36px;height:28px;background:var(--panel2);border:1px solid var(--cell-border);border-radius:1px;display:flex;align-items:center;justify-content:center;font-size:8px;color:var(--white3)">📷</div></td>
+        <td style="width:40px;padding:4px 6px">${thumb}</td>
         <td class="mono">${w.ref||'—'}</td>
         <td class="bold">${w.brand||''} ${w.model||''}</td>
         <td style="font-size:10px;color:var(--white3)">${w.size||'—'}</td>
@@ -1453,7 +1476,7 @@ function renderStock(){
         <td style="color:var(--white3);font-size:10px;font-family:'JetBrains Mono',monospace">${w.days}d</td>
         <td><span class="badge ${bc}">${w.status}</span></td>
         <td>${tc?`<span class="badge ${tc}">${w.type||''}</span>`:''}</td>
-        <td><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button></td>
+        <td style="display:flex;gap:4px"><button class="btn btn-ghost btn-sm" onclick="openEdit(${i})">Edit</button><button class="btn btn-danger btn-sm" onclick="deleteStock(${i})">✕</button></td>
       </tr>`;
     }).join('');
 }
@@ -1461,10 +1484,23 @@ function renderStock(){
 function upStock(i,f,v){
   stock[i][f]=parseFloat(v)||0;
   renderStock();renderMargin();updateDashboard();
-  // Save to API
   if(stock[i].id){
     fetch(API+'/api/inventory/'+stock[i].id,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(stock[i])}).catch(()=>{});
   }
+}
+
+async function deleteStock(i){
+  if(!confirm('Remove '+stock[i].brand+' '+stock[i].model+' from inventory?'))return;
+  try{
+    if(stock[i].id){
+      await fetch('/api/inventory/'+stock[i].id,{method:'DELETE'});
+    }
+    stock.splice(i,1);
+    renderStock();renderCards();renderMargin();updateDashboard();
+    document.getElementById('nb-stock').textContent=stock.length;
+    document.getElementById('sc-label').textContent=stock.length;
+    notify('✓','Removed','Item deleted from inventory');
+  }catch(e){notify('⚠','Delete Failed','Check connection','var(--red)');}
 }
 
 // ===== RENDER CARDS =====
@@ -1475,7 +1511,7 @@ function renderCards(){
       const cost=w.bought+w.recon+(w.fees||0)+(w.delivery||0),profit=w.asking-cost,m=pct(profit,cost);
       const bc=w.status==='Available'?'b-av':w.status==='Reserved'?'b-res':'b-sold';
       return `<div class="wcard">
-        <div class="wcard-img"><span style="font-size:11px;letter-spacing:.06em">📷 No photo</span></div>
+        <div class="wcard-img">${w.photos&&w.photos.length>0?`<img src="${w.photos[0]}">`:'<span style="font-size:11px;letter-spacing:.06em">📷 No photo</span>'}</div>
         <div class="wcard-body">
           <div class="wc-ref">${w.ref||'—'}</div>
           <div class="wc-name">${w.brand||''} ${w.model||''}</div>
@@ -1677,6 +1713,7 @@ async function addStock(){
     asking:parseFloat(document.getElementById('a-asking').value)||0,
     status:document.getElementById('a-status').value,
     notes:document.getElementById('a-notes').value,
+    photos:[...pendingPhotos],
     days:0
   };
   try{
@@ -1714,6 +1751,7 @@ function clearAdd(){
   document.getElementById('lookup-result').textContent='';
   document.getElementById('lookup-ref').value='';
   document.getElementById('stock-photo-grid').innerHTML='';
+  pendingPhotos=[];
 }
 
 // ===== WISHLIST =====
@@ -1994,9 +2032,19 @@ function genLink(){
 function copyLink(){navigator.clipboard.writeText(document.getElementById('slink-url').textContent).then(()=>notify('✓','Copied','Link copied to clipboard'));}
 
 // ===== PHOTOS =====
+let pendingPhotos=[];
 function handleStockPhotos(input){
   const grid=document.getElementById('stock-photo-grid');
-  Array.from(input.files).forEach(f=>{const r=new FileReader();r.onload=e=>{const d=document.createElement('div');d.className='pthumb';d.innerHTML='<img src="'+e.target.result+'">';grid.appendChild(d);};r.readAsDataURL(f);});
+  Array.from(input.files).forEach(f=>{
+    const r=new FileReader();
+    r.onload=e=>{
+      pendingPhotos.push(e.target.result);
+      const d=document.createElement('div');d.className='pthumb';
+      d.innerHTML='<img src="'+e.target.result+'">';
+      grid.appendChild(d);
+    };
+    r.readAsDataURL(f);
+  });
 }
 function handlePhotos(input){
   const grid=document.getElementById('pgrid');
